@@ -1,9 +1,18 @@
-import { FaWhatsapp } from "react-icons/fa";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/home";
+import Login from "./pages/login";
+import Register from "./pages/register";
+
 function App() {
   return (
     <div className="dark">
-      <h1 className="text-2xl text-red-400">Welcome to front end</h1>
-      <FaWhatsapp fill="green" />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
