@@ -10,9 +10,9 @@ function AuthComponent({
   return (
     <div>
       <div className="flex h-screen w-full font-inter">
-        <div className={`hidden lg:block lg:w-3/5 ${className}`}></div>
+        <div className={`bg-fight hidden lg:block lg:w-3/5 ${className}`}></div>
         <div className="flex w-full flex-col items-center justify-center dark:bg-[#0E1013] lg:w-2/5">
-          <div className="flex flex-col gap-2">{children}</div>
+          <div className="flex max-w-[500px] flex-col gap-2">{children}</div>
         </div>
       </div>
     </div>

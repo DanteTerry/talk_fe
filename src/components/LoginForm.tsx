@@ -23,11 +23,8 @@ function LoginForm() {
         Sign in and Start Chatting!
       </h4>
 
-      <form
-        className="flex w-full flex-col gap-4"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="flex w-full flex-col gap-3">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex flex-col gap-3">
           <div className="flex flex-col">
             <input
               type="email"
@@ -36,7 +33,7 @@ function LoginForm() {
               {...register("email")}
             />
             {errors.email?.message && (
-              <p className="mt-2 text-xs text-red-300">
+              <p className="mt-2 text-xs text-red-700 dark:text-red-300">
                 {errors.email?.message}
               </p>
             )}
@@ -49,30 +46,29 @@ function LoginForm() {
               {...register("password")}
             />
             {errors.password?.message && (
-              <p className="mt-2 text-xs text-red-300">
+              <p className="mt-2 text-xs text-red-700 dark:text-red-300">
                 {errors.password?.message}
               </p>
             )}
           </div>
-        </div>
-
-        <button
-          disabled={isSubmitting}
-          type="submit"
-          className="w-full rounded-lg bg-[#1D33C0] px-3 py-2 text-white"
-        >
-          Login
-        </button>
-
-        <p className="text-center font-semibold dark:text-white">
-          you don't an account ?{" "}
-          <Link
-            to={"/register"}
-            className="font-inter text-[#6876D5] dark:text-[#1D33C0]"
+          <button
+            disabled={isSubmitting}
+            type="submit"
+            className="w-full rounded-lg bg-[#1D33C0] px-3 py-2 text-white"
           >
-            Sign Up Here
-          </Link>
-        </p>
+            Login
+          </button>
+
+          <p className="text-center font-semibold dark:text-white">
+            you don't an account ?{" "}
+            <Link
+              to={"/register"}
+              className="font-inter text-[#6876D5] dark:text-[#1D33C0]"
+            >
+              Sign Up Here
+            </Link>
+          </p>
+        </div>
       </form>
     </>
   );

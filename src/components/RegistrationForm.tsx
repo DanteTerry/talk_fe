@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { TRegisterSchema, registerSchema } from "../types/schema.types";
+import { Loader } from "lucide-react";
 
 function RegistrationForm() {
   const {
@@ -11,7 +12,11 @@ function RegistrationForm() {
   } = useForm<TRegisterSchema>({ resolver: zodResolver(registerSchema) });
 
   const onSubmit = (data: TRegisterSchema) => {
-    console.log(data);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(data);
+      }, 5000);
+    });
   };
 
   return (
@@ -83,9 +88,13 @@ function RegistrationForm() {
           <button
             disabled={isSubmitting}
             type="submit"
-            className="w-full rounded-lg bg-[#1D33C0] px-3 py-2 text-white"
+            className="flex w-full items-center justify-center rounded-lg bg-[#1D33C0] px-3 py-2 text-white"
           >
-            Register
+            {isSubmitting ? (
+              <Loader className="text-muted-foreground h-6 w-6 animate-spin" />
+            ) : (
+              "Register"
+            )}
           </button>
 
           <p className="text-center font-semibold dark:text-white">
