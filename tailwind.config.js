@@ -10,6 +10,8 @@ export default {
       backgroundImage: {
         registerImageLight: "url('/src/assets/registerLight.svg')",
         registerImageDark: "url('/src/assets/registerDark.svg')",
+        loginImageLight: "url('/src/assets/loginLight.svg')",
+        loginImageDark: "url('/src/assets/loginDark.svg')",
       },
     },
   },

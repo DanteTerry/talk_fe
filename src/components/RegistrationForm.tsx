@@ -13,6 +13,7 @@ function RegistrationForm() {
   const onSubmit = (data: TRegisterSchema) => {
     console.log(data);
   };
+
   return (
     <>
       <h3 className="text-center text-3xl font-semibold text-[#1D33C0] dark:text-white">

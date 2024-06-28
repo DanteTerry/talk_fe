@@ -1,5 +1,12 @@
+import AuthComponent from "../components/AuthComponent";
+import LoginForm from "../components/LoginForm";
+
 function Login() {
-  return <div>login</div>;
+  return (
+    <AuthComponent className={"bg-loginImageLight dark:bg-loginImageDark"}>
+      <LoginForm />
+    </AuthComponent>
+  );
 }
 
 export default Login;
