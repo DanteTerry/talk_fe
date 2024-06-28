@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-  .custom {
-    @apply bg-red-500 text-white;
-  }
+* {
+  @apply transition-colors duration-200;
 }
