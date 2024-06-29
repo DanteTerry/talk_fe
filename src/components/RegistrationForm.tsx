@@ -4,15 +4,21 @@ import { Link } from "react-router-dom";
 import { TRegisterSchema, registerSchema } from "../types/schema.types";
 import { BanIcon, CircleCheck, Loader } from "lucide-react";
 import { useState } from "react";
-
-import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logIn } from "../features/userSlice";
+import Picture from "./Picture";
+import { UserData } from "../types/types";
+import axios from "axios";
 
 function RegistrationForm() {
+  // State for tracking user creation status
   const [createUser, setCreatedUser] = useState<"pending" | true | false>(
     "pending",
   );
 
-  const navigator = useNavigate();
+  const [picture, setPicture] = useState<File>();
+
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -20,8 +26,35 @@ function RegistrationForm() {
     handleSubmit,
   } = useForm<TRegisterSchema>({ resolver: zodResolver(registerSchema) });
 
-  let userData: any;
+  let userData: UserData;
 
+  const createUserFunction = async (data: UserData) => {
+    try {
+      // Send user data to the server for registration
+      const req = await fetch(import.meta.env.VITE_APP_API_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const res = await req.json();
+
+      if (res.user) {
+        // Dispatch action to log in the user
+        dispatch(logIn(res.user));
+        setCreatedUser(true);
+      } else {
+        setCreatedUser(false);
+      }
+
+      return res;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Function to handle form submission
   const onSubmit = async (data: TRegisterSchema) => {
     const { firstName, lastName, email, password } = data;
 
@@ -33,38 +66,40 @@ function RegistrationForm() {
 
     userData = user;
 
-    try {
-      const req = await fetch(import.meta.env.VITE_APP_API_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
+    if (picture) {
+      await uploadImage().then(async (imageData) => {
+        const newData = { ...userData, picture: imageData?.secure_url };
+        const newUser = await createUserFunction(newData);
+        return newUser;
       });
-      const res = await req.json();
-
-      if (res.user) {
-        setCreatedUser(true);
-        navigator("/login");
-      } else {
-        setCreatedUser(false);
-      }
-
-      console.log(res);
-      return res;
-    } catch (error) {
-      if (error) {
-        setCreatedUser(false);
-      }
-      console.log(error);
+    } else {
+      await createUserFunction(userData);
     }
+  };
+
+  const uploadImage = async () => {
+    const formData = new FormData();
+    formData.append("upload_preset", import.meta.env.VITE_APP_CLOUD_SECRET);
+    if (picture) {
+      formData.append("file", picture);
+    }
+
+    const { data } = await axios.post(
+      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_APP_CLOUD_NAME}/image/upload`,
+      formData,
+    );
+
+    return data;
   };
 
   return (
     <>
+      {/* Registration form title */}
       <h3 className="text-center text-3xl font-semibold text-[#1D33C0] dark:text-white">
         Join our chat revolution
       </h3>
+
+      {/* Registration form subtitle */}
       <h4 className="mb-3 text-center text-[#80868B] dark:text-[#DADCE0]">
         Sign Up and Start Chatting!
       </h4>
@@ -72,6 +107,7 @@ function RegistrationForm() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-3">
           <div className="flex gap-3">
+            {/* First Name input */}
             <div className="flex flex-col">
               <input
                 type="text"
@@ -79,12 +115,16 @@ function RegistrationForm() {
                 placeholder="First Name"
                 {...register("firstName")}
               />
+
+              {/* First Name input error message */}
               {errors.firstName?.message && (
                 <p className="mt-2 text-xs text-red-300">
                   {errors.firstName?.message}
                 </p>
               )}
             </div>
+
+            {/* Last Name input */}
             <div className="flex flex-col">
               <input
                 type="text"
@@ -92,6 +132,8 @@ function RegistrationForm() {
                 placeholder="Last Name"
                 {...register("lastName")}
               />
+
+              {/* Last Name input error message */}
               {errors.lastName?.message && (
                 <p className="mt-2 text-xs text-red-300">
                   {errors.lastName?.message}
@@ -99,6 +141,8 @@ function RegistrationForm() {
               )}
             </div>
           </div>
+
+          {/* Email input */}
           <div className="flex flex-col">
             <input
               type="email"
@@ -106,12 +150,16 @@ function RegistrationForm() {
               placeholder="Email"
               {...register("email")}
             />
+
+            {/* Email input error message */}
             {errors.email?.message && (
               <p className="mt-2 text-xs text-red-300">
                 {errors.email?.message}
               </p>
             )}
           </div>
+
+          {/* Password input */}
           <div className="flex flex-col">
             <input
               type="password"
@@ -119,6 +167,8 @@ function RegistrationForm() {
               placeholder="Password"
               {...register("password")}
             />
+
+            {/* Password input error message */}
             {errors.password?.message && (
               <p className="mt-2 text-xs text-red-300">
                 {errors.password?.message}
@@ -126,15 +176,20 @@ function RegistrationForm() {
             )}
           </div>
 
+          <Picture setPicture={setPicture} picture={picture} />
+
+          {/* Submit button */}
           <button
             disabled={isSubmitting}
             type="submit"
             className="flex w-full items-center justify-center rounded-lg bg-[#1D33C0] px-3 py-2 text-white"
           >
+            {/* Loading spinner */}
             {isSubmitting && (
               <Loader className="text-muted-foreground h-6 w-6 animate-spin" />
             )}
 
+            {/* Registration status message */}
             {createUser === "pending" ? (
               "Register"
             ) : createUser === true ? (
@@ -150,6 +205,7 @@ function RegistrationForm() {
             )}
           </button>
 
+          {/* Sign in link */}
           <p className="text-center font-semibold dark:text-white">
             Already have an account ?{" "}
             <Link
