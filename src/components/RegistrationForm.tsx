@@ -2,21 +2,62 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { TRegisterSchema, registerSchema } from "../types/schema.types";
-import { Loader } from "lucide-react";
+import { BanIcon, CircleCheck, Loader } from "lucide-react";
+import { useState } from "react";
+
+import { useNavigate } from "react-router-dom";
 
 function RegistrationForm() {
+  const [createUser, setCreatedUser] = useState<"pending" | true | false>(
+    "pending",
+  );
+
+  const navigator = useNavigate();
+
   const {
     register,
     formState: { errors, isSubmitting },
     handleSubmit,
   } = useForm<TRegisterSchema>({ resolver: zodResolver(registerSchema) });
 
-  const onSubmit = (data: TRegisterSchema) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(data);
-      }, 5000);
-    });
+  let userData: any;
+
+  const onSubmit = async (data: TRegisterSchema) => {
+    const { firstName, lastName, email, password } = data;
+
+    const user = {
+      name: `${firstName} ${lastName}`,
+      email,
+      password,
+    };
+
+    userData = user;
+
+    try {
+      const req = await fetch(import.meta.env.VITE_APP_API_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+      const res = await req.json();
+
+      if (res.user) {
+        setCreatedUser(true);
+        navigator("/login");
+      } else {
+        setCreatedUser(false);
+      }
+
+      console.log(res);
+      return res;
+    } catch (error) {
+      if (error) {
+        setCreatedUser(false);
+      }
+      console.log(error);
+    }
   };
 
   return (
@@ -90,10 +131,22 @@ function RegistrationForm() {
             type="submit"
             className="flex w-full items-center justify-center rounded-lg bg-[#1D33C0] px-3 py-2 text-white"
           >
-            {isSubmitting ? (
+            {isSubmitting && (
               <Loader className="text-muted-foreground h-6 w-6 animate-spin" />
-            ) : (
+            )}
+
+            {createUser === "pending" ? (
               "Register"
+            ) : createUser === true ? (
+              <div className="flex gap-2">
+                <CircleCheck /> User Created Successfully
+              </div>
+            ) : createUser === false ? (
+              <div className="flex gap-2">
+                <BanIcon /> {"Something went wrong"}
+              </div>
+            ) : (
+              ""
             )}
           </button>
 

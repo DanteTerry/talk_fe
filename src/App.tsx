@@ -5,7 +5,7 @@ import Register from "./pages/register";
 
 function App() {
   return (
-    <div className="">
+    <div className="dark">
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
