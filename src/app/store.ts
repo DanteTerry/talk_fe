@@ -3,18 +3,20 @@ import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import createFilter from "redux-persist-transform-filter";
 import userSlice from "../features/userSlice";
+import darkModeReducer from "../features/darkmodeSlice";
 
-const saveUserOnlyFilter = createFilter("user", ["user"]);
+const saveUserAndDarkModeFilter = createFilter("root", ["user", "darkMode"]);
 const rootReducer = combineReducers({
   user: userSlice,
+  darkMode: darkModeReducer,
 });
 
-//persisting the user state in the local storage
+// persisting the user and darkMode state in the local storage
 const persistConfig = {
-  key: "user",
+  key: "root",
   storage,
-  whitelist: ["user"],
-  transform: [saveUserOnlyFilter],
+  whitelist: ["user", "darkMode"],
+  transforms: [saveUserAndDarkModeFilter],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -28,4 +30,4 @@ export const store = configureStore({
     }),
 });
 
-export const persistor = persistStore(store);
+export const persister = persistStore(store);

@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TRegisterSchema, registerSchema } from "../types/schema.types";
-import { BanIcon, CircleCheck, Loader } from "lucide-react";
+import { CircleCheck, Loader } from "lucide-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { logIn } from "../features/userSlice";
@@ -15,10 +15,12 @@ function RegistrationForm() {
   const [createUser, setCreatedUser] = useState<"pending" | true | false>(
     "pending",
   );
+  const [error, setError] = useState<string>("");
 
-  const [picture, setPicture] = useState<File>();
+  const [picture, setPicture] = useState<File | null>(null);
 
   const dispatch = useDispatch();
+  const navigator = useNavigate();
 
   const {
     register,
@@ -31,22 +33,28 @@ function RegistrationForm() {
   const createUserFunction = async (data: UserData) => {
     try {
       // Send user data to the server for registration
-      const req = await fetch(import.meta.env.VITE_APP_API_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const req = await fetch(
+        `${import.meta.env.VITE_APP_API_ENDPOINT}/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
+      );
       const res = await req.json();
 
       if (res.user) {
         // Dispatch action to log in the user
         dispatch(logIn(res.user));
         setCreatedUser(true);
+        navigator("/login");
       } else {
         setCreatedUser(false);
       }
+
+      if (res.error) setError(res.error.message);
 
       return res;
     } catch (error) {
@@ -190,15 +198,15 @@ function RegistrationForm() {
             )}
 
             {/* Registration status message */}
-            {createUser === "pending" ? (
+            {!isSubmitting && createUser === "pending" ? (
               "Register"
-            ) : createUser === true ? (
+            ) : !isSubmitting && createUser === true ? (
               <div className="flex gap-2">
                 <CircleCheck /> User Created Successfully
               </div>
-            ) : createUser === false ? (
+            ) : !isSubmitting && createUser === false ? (
               <div className="flex gap-2">
-                <BanIcon /> {"Something went wrong"}
+                {error.split(": ")[1] || "User Creation Failed"}
               </div>
             ) : (
               ""

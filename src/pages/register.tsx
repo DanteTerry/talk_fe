@@ -1,7 +1,7 @@
 import AuthComponent from "../components/AuthComponent";
 import RegistrationForm from "../components/RegistrationForm";
 
-function register() {
+function Register() {
   return (
     <AuthComponent
       className={"bg-registerImageLight dark:bg-registerImageDark"}
@@ -11,4 +11,4 @@ function register() {
   );
 }
 
-export default register;
+export default Register;

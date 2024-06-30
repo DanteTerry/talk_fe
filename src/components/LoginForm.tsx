@@ -1,17 +1,51 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TLoginSchema, loginSchema } from "../types/schema.types";
+import { useDispatch } from "react-redux";
+import { logIn } from "../features/userSlice";
+import { Loader } from "lucide-react";
+import { useState } from "react";
 
 function LoginForm() {
+  const dispatch = useDispatch();
+  const [error, setError] = useState<string>("");
   const {
     register,
     formState: { errors, isSubmitting },
     handleSubmit,
   } = useForm<TLoginSchema>({ resolver: zodResolver(loginSchema) });
+  const navigator = useNavigate();
 
-  const onSubmit = (data: TLoginSchema) => {
-    console.log(data);
+  const loginUser = async (userData: { email: string; password: string }) => {
+    try {
+      setError("");
+      const req = await fetch(
+        `${import.meta.env.VITE_APP_API_ENDPOINT}/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userData),
+        },
+      );
+      const data = await req.json();
+
+      if (data.error) setError(data.error.message);
+
+      if (data.user) {
+        dispatch(logIn(data.user));
+        navigator("/");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  console.log(error);
+
+  const onSubmit = async (data: TLoginSchema) => {
+    await loginUser(data);
   };
 
   return (
@@ -54,9 +88,14 @@ function LoginForm() {
           <button
             disabled={isSubmitting}
             type="submit"
-            className="w-full rounded-lg bg-[#1D33C0] px-3 py-2 text-white"
+            className="flex w-full justify-center rounded-lg bg-[#1D33C0] px-3 py-2 text-white"
           >
-            Login
+            {isSubmitting && (
+              <Loader className="text-muted-foreground h-6 w-6 animate-spin" />
+            )}
+            {!isSubmitting && !error && "Login"}
+
+            {!isSubmitting && error && <p className="text-white">{error}</p>}
           </button>
 
           <p className="text-center font-semibold dark:text-white">
