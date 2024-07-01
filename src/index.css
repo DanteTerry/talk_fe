@@ -9,13 +9,3 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
-
-/* For Firefox */
-.no-scrollbar {
-  scrollbar-width: none; /* For Firefox */
-}
-
-/* For IE, Edge */
-.no-scrollbar {
-  -ms-overflow-style: none; /* For Internet Explorer and Edge */
-}

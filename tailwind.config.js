@@ -33,6 +33,6 @@ export default {
       reverse180: "reverse180 .5s ease-in-out forward",
     },
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar")],
   darkMode: "class",
 };

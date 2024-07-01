@@ -2,17 +2,17 @@ import { FileText, Mic, Smile } from "lucide-react";
 
 function Inputs() {
   return (
-    <div className="row-span-1 flex items-center justify-between gap-5 border-t-2 px-5 dark:border-gray-700">
+    <div className="row-span-1  flex items-center justify-between gap-5 border-t-2 px-5 dark:border-gray-700">
       <div className="flex gap-4">
         <FileText
           size={24}
           strokeWidth={1.8}
-          className="course-pointer text-green-500"
+          className="course-pointer text-green-500 dark:text-white"
         />
         <Smile
           size={24}
           strokeWidth={1.8}
-          className="course-pointer text-green-500"
+          className="course-pointer text-green-500 dark:text-white"
         />
       </div>
 
