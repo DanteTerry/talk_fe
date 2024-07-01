@@ -1,17 +1,18 @@
+import { Outlet } from "react-router-dom";
 import SideMenu from "../components/SideMenu";
 
 function Home() {
   return (
-    <div className="h-screen">
-      <div className="grid h-full w-full grid-cols-12">
-        <div className="col-span-1 px-5 pb-0 pt-5 dark:bg-[#17181B] dark:text-white">
-          <div className="flex h-full justify-center">
-            <SideMenu />
+    <div className="h-screen overflow-hidden dark:bg-[#17181B]">
+      <div className="flex h-full">
+        <SideMenu />
+        <div className="grid h-full w-full grid-cols-12">
+          <div className="col-span-3 h-[99.5vh] w-full overflow-hidden border-l-2 border-r-2 py-5 dark:border-gray-700 dark:bg-[#17181B]">
+            <Outlet />
           </div>
+          <div className="col-span-9 bg-gray-600">options</div>
+          {/* <div className="col-span-3 bg-blue-600">options</div> */}
         </div>
-        <div className="col-span-2 bg-green-600">options</div>
-        <div className="col-span-9 bg-gray-600">options</div>
-        {/* <div className="col-span-3 bg-blue-600">options</div> */}
       </div>
     </div>
   );

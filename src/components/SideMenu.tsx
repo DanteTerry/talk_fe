@@ -1,5 +1,4 @@
-import chatLogo from "../assets/chat3.svg";
-import chatDarkLogo from "../assets/chatDark.svg";
+import chatDarkLogo from "../assets/chatGreen.svg";
 import { Sun, SunMoon } from "lucide-react";
 import { sidebarItems } from "../constants/constants";
 import { Link, useLocation } from "react-router-dom";
@@ -13,24 +12,24 @@ function SideMenu() {
   const darkMode = useSelector((state) => state.darkMode.isDarkMode);
 
   return (
-    <aside className="flex w-full flex-col items-center justify-between">
-      <img src={chatDarkLogo} className="fill-white" />
+    <aside className="flex h-full w-[130px] flex-col items-center justify-between dark:bg-[#17181B]">
+      <img src={chatDarkLogo} className="w-[100px]" />
 
       <div className="flex w-full flex-col items-center gap-8">
         {sidebarItems.map((items, index) => {
           return (
-            <div
-              key={index}
-              className={`flex h-14 w-14 items-center justify-center rounded-xl ${items.name === location.pathname && "bg-[#E8EBF9]"}`}
-            >
-              <Link to={`${items.url}`}>
+            <Link to={`${items.url}`} key={items.name}>
+              <div
+                key={index}
+                className={`flex h-14 w-14 items-center justify-center rounded-xl ${items.name === location.pathname.split("/")[1] && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
+              >
                 <items.icon
                   size={36}
                   className="text-black dark:text-white"
                   strokeWidth={1.25}
                 />
-              </Link>
-            </div>
+              </div>
+            </Link>
           );
         })}
       </div>

@@ -4,21 +4,21 @@ export const sidebarItems = [
   {
     name: "messages",
     icon: MessageCircleMore,
-    url: "/messages",
+    url: "messages",
   },
   {
     name: "search",
     icon: Search,
-    url: "/search",
+    url: "search",
   },
   {
-    name: "users",
+    name: "friends",
     icon: Users,
-    url: "/users",
+    url: "friends",
   },
   {
-    name: "add-User",
+    name: "add-friends",
     icon: UserPlus,
-    url: "/add-user",
+    url: "add-friends",
   },
 ];

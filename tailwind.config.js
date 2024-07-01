@@ -16,6 +16,22 @@ export default {
         loginImageDark: "url('/src/assets/loginDark.svg')",
       },
     },
+    keyframes: {
+      rotate180: {
+        "0%": { transform: "rotate(0deg)" },
+        "50%": { transform: "rotate(180deg)", color: "#22c55e" },
+        "100%": { transform: "rotate(180deg)" },
+      },
+      reverse180: {
+        "0%": { transform: "rotate(180deg)", color: "#22c55e" },
+        "50%": { transform: "rotate(180deg)", color: "#22c55e" },
+        "100%": { transform: "rotate(0deg)" },
+      },
+    },
+    animation: {
+      rotate180: "rotate180 .5s ease-in-out ",
+      reverse180: "reverse180 .5s ease-in-out forward",
+    },
   },
   plugins: [],
   darkMode: "class",

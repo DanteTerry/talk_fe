@@ -190,7 +190,7 @@ function RegistrationForm() {
           <button
             disabled={isSubmitting}
             type="submit"
-            className="flex w-full items-center justify-center rounded-lg bg-[#1D33C0] px-3 py-2 text-white"
+            className="flex w-full items-center justify-center rounded-lg bg-[#22c55e] px-3 py-2 text-white"
           >
             {/* Loading spinner */}
             {isSubmitting && (
@@ -218,7 +218,7 @@ function RegistrationForm() {
             Already have an account ?{" "}
             <Link
               to={"/login"}
-              className="font-inter text-[#6876D5] dark:text-[#1D33C0]"
+              className="font-inter text-[##22c55e] dark:text-[#22c55e]"
             >
               Sign In Here
             </Link>
