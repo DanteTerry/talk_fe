@@ -14,7 +14,8 @@ import Friends from "./components/Friends";
 import AddFriend from "./components/AddFriend";
 
 function App() {
-  const { accessToken: token } = useSelector((state) => state.user.user);
+  const { token } = useSelector((state) => state.user.user);
+  console.log(token);
   const darkMode = useSelector((state) => state.darkMode.isDarkMode);
 
   return (

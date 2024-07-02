@@ -1,6 +1,9 @@
 import { Info, Phone, Video } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { logout } from "../features/userSlice";
 
 function ChatBar() {
+  const dispatch = useDispatch();
   return (
     <div className="row-span-1 flex items-center justify-between border-b-2 px-6 shadow-sm dark:border-gray-700 dark:bg-green-500">
       <div className="flex items-center gap-3">
@@ -30,6 +33,8 @@ function ChatBar() {
             strokeWidth={1.5}
             className="text-green-500 dark:text-white"
           />
+
+          <button onClick={() => dispatch(logout())}></button>
         </div>
 
         <div className="cursor-pointer">

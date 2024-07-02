@@ -1,9 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MoveRight, Plus, Search } from "lucide-react";
 import SingleConversation from "./SingleConversation";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { getConversation } from "../features/chatSlice";
 
 function Message() {
   const [isFocused, setIsFocused] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (user?.token) {
+      dispatch(getConversation(user?.token));
+    }
+  }, [user]);
+
   return (
     <div className="h-full w-full px-6 py-5">
       <div className="relative mb-5 flex flex-col gap-3 border-b-2 pb-5 dark:border-gray-700">
@@ -13,14 +26,15 @@ function Message() {
           placeholder="Search"
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
+          onChange={(e) => setSearchText(e.target.value)}
         />
         <Search
           size={20}
-          className={`absolute left-3 top-[10px] text-gray-400 ${isFocused === false ? "opacity-100" : "animate-rotate180 opacity-0"}`}
+          className={`absolute left-3 top-[10px] text-gray-400 ${isFocused === false && searchText.length === 0 ? "opacity-100" : "animate-rotate180 opacity-0"}`}
         />
         <MoveRight
           size={20}
-          className={`absolute left-3 top-[10px] text-gray-400 ${isFocused === true ? "rotate-180 animate-rotate180 text-green-500 opacity-100" : "animate-reverse180 opacity-0"}`}
+          className={`absolute left-3 top-[10px] text-gray-400 ${isFocused === true || searchText.length > 0 ? "rotate-180 animate-rotate180 text-green-500 opacity-100" : "animate-reverse180 opacity-0"}`}
         />
 
         <button className="flex items-center justify-center gap-1 rounded-md bg-green-500 p-2 text-center font-bold text-white">

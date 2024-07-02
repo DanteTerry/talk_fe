@@ -34,7 +34,7 @@ function RegistrationForm() {
     try {
       // Send user data to the server for registration
       const req = await fetch(
-        `${import.meta.env.VITE_APP_API_ENDPOINT}/register`,
+        `${import.meta.env.VITE_APP_API_ENDPOINT}/auth/register`,
         {
           method: "POST",
           headers: {
@@ -194,7 +194,7 @@ function RegistrationForm() {
           >
             {/* Loading spinner */}
             {isSubmitting && (
-              <Loader className="text-muted-foreground h-6 w-6 animate-spin" />
+              <Loader className="text-muted-foreground animate-spin h-6 w-6" />
             )}
 
             {/* Registration status message */}

@@ -2,10 +2,10 @@ import { messages } from "../constants/constants";
 
 function Chats() {
   return (
-    <div className="no-scrollbar dark:scrollbar-track-black scrollbar-thumb-green-500 scrollbar-track-white row-span-10 flex h-[80vh] flex-col gap-1 overflow-y-scroll px-5 py-3 text-white">
+    <div className="no-scrollbar row-span-10 flex h-[80vh] flex-col gap-1 overflow-y-scroll px-5 py-3 text-white scrollbar-track-white scrollbar-thumb-green-500 dark:scrollbar-track-black">
       {messages.map((message, index: number) =>
         index % 2 === 0 ? (
-          <div className="flex items-center gap-3">
+          <div key={index} className="flex items-center gap-3">
             <div className="h-5!important w-5 self-end rounded-full">
               <img
                 src="https://gravatar.com/avatar/d6771c28560592154cf60f8bea68d484?s=400&d=retro&r=x"
@@ -14,8 +14,11 @@ function Chats() {
               />
             </div>
             <div className="flex flex-col gap-1">
-              {message.messages.map((msg) => (
-                <div className="bg-white-500 w-max rounded-md bg-black/90 px-3 py-1 text-lg dark:bg-white dark:text-black">
+              {message.messages.map((msg, index) => (
+                <div
+                  key={index++}
+                  className="bg-white-500 w-max rounded-md bg-black/90 px-3 py-1 text-lg dark:bg-white dark:text-black"
+                >
                   <p className="flex gap-2">
                     {msg.message}{" "}
                     <span className="self-end text-xs">{msg.time}</span>
@@ -25,10 +28,13 @@ function Chats() {
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-end gap-3">
+          <div key={index} className="flex items-center justify-end gap-3">
             <div className="flex flex-col gap-1">
               {message.messages.map((msg) => (
-                <div className="bg-white-500 w-max rounded-md bg-green-500 px-3 py-1 text-lg">
+                <div
+                  key={index++}
+                  className="bg-white-500 w-max rounded-md bg-green-500 px-3 py-1 text-lg"
+                >
                   <p className="flex gap-2">
                     {msg.message}{" "}
                     <span className="self-end text-xs">{msg.time}</span>

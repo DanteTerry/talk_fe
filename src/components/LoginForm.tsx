@@ -21,7 +21,7 @@ function LoginForm() {
     try {
       setError("");
       const req = await fetch(
-        `${import.meta.env.VITE_APP_API_ENDPOINT}/login`,
+        `${import.meta.env.VITE_APP_API_ENDPOINT}/auth/login`,
         {
           method: "POST",
           headers: {
@@ -91,7 +91,7 @@ function LoginForm() {
             className="flex w-full justify-center rounded-lg bg-[#22c55e] px-3 py-2 text-white"
           >
             {isSubmitting && (
-              <Loader className="text-muted-foreground h-6 w-6 animate-spin" />
+              <Loader className="text-muted-foreground animate-spin h-6 w-6" />
             )}
             {!isSubmitting && !error && "Login"}
 
