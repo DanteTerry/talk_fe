@@ -18,5 +18,6 @@ export interface UserProfile {
   status: string;
   createdAt: string;
   updatedAt: string;
+  latestMessage?: unknown;
   __v: number;
 }

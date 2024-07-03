@@ -1,6 +1,7 @@
 import { trimString } from "../lib/utils/utils";
+import { UserProfile } from "../types/types";
 
-function SingleConversation({ conversation }: { conversation: any }) {
+function SingleConversation({ conversation }: { conversation: UserProfile }) {
   return (
     <div className="mb-3 flex w-full cursor-pointer items-center gap-3 rounded-md bg-green-500 px-2 py-3 dark:bg-white">
       <div className="h-12!important w-12 rounded-full">

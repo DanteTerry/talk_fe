@@ -64,7 +64,6 @@ function SearchUser() {
       </div>
 
       {users &&
-        searchText.length > 1 &&
         users.map((user: UserProfile) => {
           return <SingleUser key={user?._id} user={user} />;
         })}

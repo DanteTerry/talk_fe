@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import SingleConversation from "./SingleConversation";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { getConversation } from "../features/chatSlice";
+import { UserProfile } from "../types/types";
 
-function Conversations() {
+function Conversations({ searchText }: { searchText: string }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const { conversations } = useSelector((state) => state.chat);
@@ -13,12 +14,36 @@ function Conversations() {
     if (user?.token) {
       dispatch(getConversation(user?.token));
     }
-  }, [user]);
+  }, [user, dispatch]);
+
+  if (!conversations) {
+    return <div>Loading...</div>;
+  }
+
+  if (searchText) {
+    const filteredConversations = conversations.filter(
+      (conversation: UserProfile) =>
+        conversation.name.toLowerCase().includes(searchText.toLowerCase()),
+    );
+
+    return (
+      <div className="no-scrollbar h-screen overflow-y-scroll">
+        {filteredConversations.map((conversation: UserProfile) => {
+          return (
+            <SingleConversation
+              key={conversation._id}
+              conversation={conversation}
+            />
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div className="no-scrollbar h-screen overflow-y-scroll">
       {conversations &&
-        conversations.map((conversation) => {
+        conversations.map((conversation: UserProfile) => {
           return (
             <SingleConversation
               key={conversation._id}

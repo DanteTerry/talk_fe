@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MoveRight, Plus, Search } from "lucide-react";
-
+import { Link } from "react-router-dom";
 import Conversations from "./Conversations";
 
 function Message() {
@@ -27,13 +27,15 @@ function Message() {
           className={`absolute left-3 top-[10px] text-gray-400 ${isFocused === true || searchText.length > 0 ? "rotate-180 animate-rotate180 text-green-500 opacity-100" : "animate-reverse180 opacity-0"}`}
         />
 
-        <button className="flex items-center justify-center gap-1 rounded-md bg-green-500 p-2 text-center font-bold text-white">
-          <Plus size={20} strokeWidth={2.5} />
-          New Chat
-        </button>
+        <Link to="/search" className="w-full">
+          <button className="flex w-full items-center justify-center gap-1 rounded-md bg-green-500 p-2 text-center font-bold text-white">
+            <Plus size={20} strokeWidth={2.5} />
+            New Chat
+          </button>
+        </Link>
       </div>
 
-      <Conversations />
+      <Conversations searchText={searchText} />
     </div>
   );
 }
