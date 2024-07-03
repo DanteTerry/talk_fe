@@ -1,21 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MoveRight, Plus, Search } from "lucide-react";
-import SingleConversation from "./SingleConversation";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { getConversation } from "../features/chatSlice";
+
+import Conversations from "./Conversations";
 
 function Message() {
   const [isFocused, setIsFocused] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user);
-
-  useEffect(() => {
-    if (user?.token) {
-      dispatch(getConversation(user?.token));
-    }
-  }, [user]);
 
   return (
     <div className="h-full w-full px-6 py-5">
@@ -43,9 +33,7 @@ function Message() {
         </button>
       </div>
 
-      <div className="no-scrollbar h-screen overflow-y-scroll">
-        <SingleConversation />
-      </div>
+      <Conversations />
     </div>
   );
 }

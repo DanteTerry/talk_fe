@@ -33,8 +33,6 @@ function ChatBar() {
             strokeWidth={1.5}
             className="text-green-500 dark:text-white"
           />
-
-          <button onClick={() => dispatch(logout())}></button>
         </div>
 
         <div className="cursor-pointer">
