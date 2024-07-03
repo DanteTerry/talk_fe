@@ -42,7 +42,6 @@ function LoginForm() {
       console.log(error);
     }
   };
-  console.log(error);
 
   const onSubmit = async (data: TLoginSchema) => {
     await loginUser(data);

@@ -12,7 +12,7 @@ function SideMenu() {
   const darkMode = useSelector((state) => state.darkMode.isDarkMode);
 
   return (
-    <aside className="flex h-full w-[130px] flex-col items-center justify-between dark:bg-[#17181B]">
+    <aside className="flex h-full w-[130px] flex-col items-center justify-between pb-10 dark:bg-[#17181B]">
       <img src={chatDarkLogo} className="w-[100px]" />
 
       <div className="flex w-full flex-col items-center gap-8">
@@ -53,16 +53,15 @@ function SideMenu() {
             />
           )}
         </div>
-
-        <div className="h-10 w-10 rounded-full">
-          <img
-            src="https://gravatar.com/avatar/d6771c28560592154cf60f8bea68d484?s=400&d=retro&r=x"
-            alt="user avatar"
-            className="h-full w-full rounded-full object-cover"
-          />
-        </div>
-
-        <div></div>
+        <Link to="/profile">
+          <div className="h-10 w-10 cursor-pointer rounded-full">
+            <img
+              src="https://gravatar.com/avatar/d6771c28560592154cf60f8bea68d484?s=400&d=retro&r=x"
+              alt="user avatar"
+              className="h-full w-full rounded-full object-cover"
+            />
+          </div>
+        </Link>
       </div>
     </aside>
   );

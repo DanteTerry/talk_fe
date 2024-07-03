@@ -2,7 +2,7 @@ import { messages } from "../constants/constants";
 
 function Chats() {
   return (
-    <div className="no-scrollbar row-span-10 flex h-[80vh] flex-col gap-1 overflow-y-scroll px-5 py-3 text-white scrollbar-track-white scrollbar-thumb-green-500 dark:scrollbar-track-black">
+    <div className="no-scrollbar row-span-9 flex h-[82vh] flex-col gap-1 overflow-y-scroll px-5 py-3 text-white scrollbar-track-white scrollbar-thumb-green-500 dark:scrollbar-track-black">
       {messages.map((message, index: number) =>
         index % 2 === 0 ? (
           <div key={index} className="flex items-center gap-3">

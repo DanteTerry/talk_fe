@@ -54,6 +54,7 @@ function SearchUser() {
           onChange={(e) => setSearchText(e.target.value)}
           value={searchText}
         />
+
         <Search
           size={20}
           className={`absolute left-3 top-[10px] text-gray-400 ${isFocused === false && searchText.length === 0 ? "opacity-100" : "animate-rotate180 opacity-0"}`}

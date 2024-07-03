@@ -1,9 +1,15 @@
+import { useDispatch } from "react-redux";
 import { dateHandler, trimString } from "../lib/utils/utils";
 import { UserProfile } from "../types/types";
+import { setActiveConversation } from "../features/chatSlice";
 
 function SingleConversation({ conversation }: { conversation: UserProfile }) {
+  const dispatch = useDispatch();
   return (
-    <div className="mb-3 flex w-full cursor-pointer items-center gap-3 rounded-md bg-green-500 px-2 py-3 dark:bg-white">
+    <div
+      onClick={() => dispatch(setActiveConversation(conversation))}
+      className="mb-3 flex w-full cursor-pointer items-center gap-3 rounded-md bg-green-500 px-2 py-3 dark:bg-white"
+    >
       <div className="h-12!important w-12 rounded-full">
         <img
           src={conversation?.picture}

@@ -6,11 +6,7 @@ import userSlice from "../features/userSlice";
 import darkModeReducer from "../features/darkmodeSlice";
 import chatSlice from "../features/chatSlice";
 
-const saveUserAndDarkModeFilter = createFilter("root", [
-  "user",
-  "darkMode",
-  "chat",
-]);
+const saveUserAndDarkModeFilter = createFilter("root", ["user", "darkMode"]);
 const rootReducer = combineReducers({
   user: userSlice,
   darkMode: darkModeReducer,
@@ -21,7 +17,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user", "darkMode", "chat"],
+  whitelist: ["user", "darkMode"],
   transforms: [saveUserAndDarkModeFilter],
 };
 

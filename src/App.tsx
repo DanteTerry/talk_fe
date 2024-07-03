@@ -12,6 +12,7 @@ import Message from "./components/Message";
 import Search from "./components/SearchUser";
 import Friends from "./components/Friends";
 import AddFriend from "./components/AddFriend";
+import Profile from "./components/Profile";
 
 function App() {
   const { token } = useSelector((state) => state.user.user);
@@ -30,6 +31,7 @@ function App() {
             <Route path="search" element={<Search />} />
             <Route path="friends" element={<Friends />} />
             <Route path="add-friends" element={<AddFriend />} />
+            <Route path="profile" element={<Profile />} />
           </Route>
           <Route
             path="/login"
