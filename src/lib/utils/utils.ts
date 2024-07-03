@@ -6,5 +6,5 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const trimString = (str: string, length: number = 27) => {
-  return str.length > length ? str.substring(0, length) + "..." : str;
+  return str?.length > length ? str?.substring(0, length) + "..." : str;
 };

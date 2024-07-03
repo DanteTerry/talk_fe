@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const CONVERSATION_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/conversation`;
-console.log(CONVERSATION_ENDPOINT);
 
 const initialState = {
   status: "",
@@ -17,14 +16,12 @@ export const getConversation = createAsyncThunk(
   "conversation/all",
   async (token, { rejectWithValue }) => {
     try {
-      console.log(token);
       const { data } = await axios.get(`${CONVERSATION_ENDPOINT}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log(data);
       return data;
     } catch (error: unknown) {
       console.log(error);

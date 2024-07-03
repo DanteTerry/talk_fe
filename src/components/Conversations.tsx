@@ -8,7 +8,6 @@ function Conversations() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const { conversations } = useSelector((state) => state.chat);
-  console.log(conversations);
 
   useEffect(() => {
     if (user?.token) {

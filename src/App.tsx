@@ -9,13 +9,12 @@ import Login from "./pages/login";
 import { useSelector } from "react-redux";
 import Register from "./pages/register";
 import Message from "./components/Message";
-import Search from "./components/Search";
+import Search from "./components/SearchUser";
 import Friends from "./components/Friends";
 import AddFriend from "./components/AddFriend";
 
 function App() {
   const { token } = useSelector((state) => state.user.user);
-  console.log(token);
   const darkMode = useSelector((state) => state.darkMode.isDarkMode);
 
   return (

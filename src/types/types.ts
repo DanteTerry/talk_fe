@@ -9,3 +9,14 @@ export interface UserData {
   email: string;
   password: string;
 }
+
+export interface UserProfile {
+  _id: string;
+  name: string;
+  email: string;
+  picture: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
