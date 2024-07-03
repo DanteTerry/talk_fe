@@ -1,5 +1,5 @@
 import { MoveRight, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SingleUser from "./SingleUser";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -52,18 +52,20 @@ function SearchUser() {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           onChange={(e) => setSearchText(e.target.value)}
+          value={searchText}
         />
         <Search
           size={20}
           className={`absolute left-3 top-[10px] text-gray-400 ${isFocused === false && searchText.length === 0 ? "opacity-100" : "animate-rotate180 opacity-0"}`}
         />
         <MoveRight
+          onClick={() => setSearchText("")}
           size={20}
-          className={`absolute left-3 top-[10px] text-gray-400 ${isFocused === true || searchText.length > 0 ? "rotate-180 animate-rotate180 text-green-500 opacity-100" : "animate-reverse180 opacity-0"}`}
+          className={`absolute left-3 top-[10px] cursor-pointer text-gray-400 ${isFocused === true || searchText.length > 0 ? "rotate-180 animate-rotate180 text-green-500 opacity-100" : "animate-reverse180 opacity-0"}`}
         />
       </div>
 
-      {users &&
+      {users.length > 0 &&
         users.map((user: UserProfile) => {
           return <SingleUser key={user?._id} user={user} />;
         })}

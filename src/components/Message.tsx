@@ -17,6 +17,7 @@ function Message() {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           onChange={(e) => setSearchText(e.target.value)}
+          value={searchText}
         />
         <Search
           size={20}
