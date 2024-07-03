@@ -1,4 +1,4 @@
-import { trimString } from "../lib/utils/utils";
+import { dateHandler, trimString } from "../lib/utils/utils";
 import { UserProfile } from "../types/types";
 
 function SingleConversation({ conversation }: { conversation: UserProfile }) {
@@ -17,11 +17,11 @@ function SingleConversation({ conversation }: { conversation: UserProfile }) {
             {conversation?.name}
           </span>
           <span className="text-[13px] font-semibold text-white opacity-95 dark:text-black">
-            {trimString(conversation?.latestMessage.message, 26)}
+            {trimString("Hello world how are you all ", 26)}
           </span>
         </div>
         <span className="justify-start text-xs text-white opacity-95 dark:text-black">
-          02:30 AM
+          {dateHandler(conversation?.createdAt)}
         </span>
       </div>
     </div>

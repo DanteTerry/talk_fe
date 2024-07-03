@@ -28,11 +28,11 @@ export const messages = [
     sender: "Arpit Yadav",
     messages: [
       {
-        message: "Hi Baby",
+        message: "Hello there!",
         time: "10:00",
       },
       {
-        message: " I love you so much",
+        message: " how are you doing?",
         time: "10:01",
       },
     ],
@@ -45,7 +45,7 @@ export const messages = [
         time: "10:00",
       },
       {
-        message: "I love you too",
+        message: "I am good, how about you?",
         time: "10:01",
       },
     ],
