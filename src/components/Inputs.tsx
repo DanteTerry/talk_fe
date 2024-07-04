@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { sendMessages } from "../features/chatSlice";
 import { useSelector } from "react-redux";
+import EmojiPicker from "emoji-picker-react";
 
 function Inputs() {
   const [sendMessage, setSendMessage] = useState("");

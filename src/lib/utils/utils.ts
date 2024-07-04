@@ -12,9 +12,9 @@ export const dateHandler = (date: string) => {
   if (diffInMinutes < 1) {
     return "Just now";
   } else if (diffInMinutes < 60) {
-    return `${diffInMinutes} minutes ago`;
+    return momentDate.format("HH:MM");
   } else if (diffInMinutes < 1440) {
-    return momentDate.format("hh:mm A");
+    return momentDate.format("HH:MM");
   } else if (diffInMinutes < 2880) {
     return "Yesterday";
   } else if (diffInMinutes < 10080) {
@@ -27,5 +27,5 @@ export const dateHandler = (date: string) => {
 // write another utility function like dateHandler in which only time is shown for all scenarios
 export const timeHandler = (date: string) => {
   const momentDate = moment(date);
-  return momentDate.format("hh:mm");
+  return momentDate.format("HH:MM");
 };

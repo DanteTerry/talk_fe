@@ -26,8 +26,8 @@ function SingleConversation({ conversation }: { conversation: UserProfile }) {
             {trimString(conversation?.latestMessage.message, 26)}
           </span>
         </div>
-        <span className="justify-start text-xs text-white opacity-95 dark:text-black">
-          {dateHandler(conversation?.createdAt)}
+        <span className="justify-start text-xs text-green-500 opacity-95 dark:text-green-500">
+          {dateHandler(conversation?.latestMessage?.createdAt)}
         </span>
       </div>
     </div>

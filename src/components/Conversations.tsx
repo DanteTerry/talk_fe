@@ -2,13 +2,15 @@ import { useEffect } from "react";
 import SingleConversation from "./SingleConversation";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { getConversation } from "../features/chatSlice";
+import { getConversation, setActiveConversation } from "../features/chatSlice";
 import { UserProfile } from "../types/types";
 
 function Conversations({ searchText }: { searchText: string }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  const { conversations } = useSelector((state) => state.chat);
+  const { conversations, activeConversation } = useSelector(
+    (state) => state.chat,
+  );
 
   useEffect(() => {
     if (user?.token) {
@@ -22,8 +24,12 @@ function Conversations({ searchText }: { searchText: string }) {
 
   if (searchText) {
     const filteredConversations = conversations.filter(
-      (conversation: UserProfile) =>
-        conversation.name.toLowerCase().includes(searchText.toLowerCase()),
+      (conversation: UserProfile) => {
+        conversation.latestMessage ||
+          conversation._id === activeConversation._id;
+        conversation.name.toLowerCase().includes(searchText.toLowerCase());
+        return conversation;
+      },
     );
 
     return (

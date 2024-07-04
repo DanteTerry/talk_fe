@@ -10,6 +10,7 @@ function SideMenu() {
   const location = useLocation();
   const dispatch = useDispatch();
   const darkMode = useSelector((state) => state.darkMode.isDarkMode);
+  const { user } = useSelector((state) => state.user);
 
   return (
     <aside className="flex h-full w-[130px] flex-col items-center justify-between pb-10 dark:bg-[#17181B]">
@@ -56,7 +57,7 @@ function SideMenu() {
         <Link to="/profile">
           <div className="h-10 w-10 cursor-pointer rounded-full">
             <img
-              src="https://gravatar.com/avatar/d6771c28560592154cf60f8bea68d484?s=400&d=retro&r=x"
+              src={user?.picture}
               alt="user avatar"
               className="h-full w-full rounded-full object-cover"
             />
