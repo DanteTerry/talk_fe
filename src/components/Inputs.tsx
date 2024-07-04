@@ -1,12 +1,21 @@
-import { FileText, Loader, Mic, SendHorizonal, Smile } from "lucide-react";
-import { useState } from "react";
+import { Loader, Mic, Paperclip, SendHorizonal, Smile, X } from "lucide-react";
+import { Dispatch, SetStateAction } from "react";
 import { useDispatch } from "react-redux";
 import { sendMessages } from "../features/chatSlice";
 import { useSelector } from "react-redux";
-import EmojiPicker from "emoji-picker-react";
 
-function Inputs() {
-  const [sendMessage, setSendMessage] = useState("");
+function Inputs({
+  sendMessage,
+  emojiPicker,
+  setSendMessage,
+  setEmojiPicker,
+}: {
+  setEmojiPicker: Dispatch<SetStateAction<boolean>>;
+  emojiPicker: boolean;
+  textRef: React.RefObject<HTMLInputElement>;
+  sendMessage: string;
+  setSendMessage: Dispatch<SetStateAction<string>>;
+}) {
   const dispatch = useDispatch();
   const { activeConversation, status } = useSelector(
     (state: any) => state.chat,
@@ -19,30 +28,44 @@ function Inputs() {
     files: [],
     token,
   };
+
   const sendMessageHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!sendMessage) return;
     dispatch(sendMessages(values));
     setSendMessage("");
+    setEmojiPicker(false);
   };
 
-  console.log(status);
   return (
     <form
-      className="row-span-1 flex items-center justify-between gap-5 border-t-2 px-5 dark:border-gray-700"
+      className="relative row-span-1 flex items-center justify-between gap-5 border-t-2 px-5 dark:border-gray-700"
       onSubmit={(e) => sendMessageHandler(e)}
     >
-      <div className="flex gap-4">
-        <FileText
-          size={24}
-          strokeWidth={1.8}
-          className="course-pointer text-green-500 dark:text-white"
-        />
-        <Smile
-          size={24}
-          strokeWidth={1.8}
-          className="course-pointer text-green-500 dark:text-white"
-        />
+      <div className="relative flex gap-4">
+        {/* //Todo: Add emoji picker */}
+        <button onClick={() => setEmojiPicker((state) => !state)}>
+          {emojiPicker ? (
+            <X
+              size={24}
+              strokeWidth={1.8}
+              className="course-pointer text-green-500 dark:text-white"
+            />
+          ) : (
+            <Smile
+              size={24}
+              strokeWidth={1.8}
+              className="course-pointer text-green-500 dark:text-white"
+            />
+          )}
+        </button>
+        <button>
+          <Paperclip
+            size={24}
+            strokeWidth={1.8}
+            className="course-pointer text-green-500 dark:text-white"
+          />
+        </button>
       </div>
 
       <div className="relative w-full">

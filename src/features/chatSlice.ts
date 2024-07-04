@@ -57,7 +57,6 @@ export const getConversationMessages = createAsyncThunk(
 export const sendMessages = createAsyncThunk(
   "message/send",
   async (values, { rejectWithValue }) => {
-    console.log(values);
     const message = values.sendMessage;
     const conversation_id = values.conversation_id;
     const token = values.token;
