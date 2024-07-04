@@ -1,6 +1,5 @@
 import moment from "moment";
 
-
 export const trimString = (str: string, length: number = 27) => {
   return str?.length > length ? str?.substring(0, length) + "..." : str;
 };
@@ -23,4 +22,10 @@ export const dateHandler = (date: string) => {
   } else {
     return momentDate.format("dd/MM/YYYY");
   }
+};
+
+// write another utility function like dateHandler in which only time is shown for all scenarios
+export const timeHandler = (date: string) => {
+  const momentDate = moment(date);
+  return momentDate.format("hh:mm");
 };

@@ -21,3 +21,34 @@ export interface UserProfile {
   latestMessage?: unknown;
   __v: number;
 }
+
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  picture: string;
+  status: string;
+}
+
+export interface Conversation {
+  _id: string;
+  name: string;
+  picture: string;
+  isGroup: boolean;
+  users: string[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  latestMessage: string;
+}
+
+export interface Message {
+  _id: string;
+  sender: User;
+  message: string;
+  conversation: Conversation;
+  files: string[]; // Adjust this type if you know the structure of files
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}

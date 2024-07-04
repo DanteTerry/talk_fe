@@ -2,16 +2,18 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const CONVERSATION_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/conversation`;
+const MESSAGES_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/message`;
 
 const initialState = {
   status: "",
   error: "",
   conversations: [],
+  messages: [],
   activeConversation: {},
   notifications: [],
 };
 
-// function
+// function to get all conversations
 export const getConversation = createAsyncThunk(
   "conversation/all",
   async (token, { rejectWithValue }) => {
@@ -21,6 +23,56 @@ export const getConversation = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
+
+      return data;
+    } catch (error: unknown) {
+      console.log(error);
+      return rejectWithValue(error.response.data.error.message);
+    }
+  },
+);
+
+export const getConversationMessages = createAsyncThunk(
+  "conversation/messages",
+  async (values, { rejectWithValue }) => {
+    const { token, conversation_id } = values;
+    try {
+      const { data } = await axios.get(
+        `${MESSAGES_ENDPOINT}/${conversation_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      return data;
+    } catch (error: unknown) {
+      console.log(error);
+      return rejectWithValue(error.response.data.error.message);
+    }
+  },
+);
+
+export const sendMessages = createAsyncThunk(
+  "message/send",
+  async (values, { rejectWithValue }) => {
+    console.log(values);
+    const message = values.sendMessage;
+    const conversation_id = values.conversation_id;
+    const token = values.token;
+    const files = values.files;
+
+    try {
+      const { data } = await axios.post(
+        `${MESSAGES_ENDPOINT}`,
+        { message, conversation_id, files },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       return data;
     } catch (error: unknown) {
@@ -48,6 +100,28 @@ export const chatSlice = createSlice({
         state.conversations = action.payload;
       })
       .addCase(getConversation.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getConversationMessages.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getConversationMessages.fulfilled, (state, action) => {
+        state.status = "success";
+        state.messages = action.payload;
+      })
+      .addCase(getConversationMessages.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(sendMessages.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(sendMessages.fulfilled, (state, action) => {
+        state.status = "success";
+        state.messages = [...state.messages, action.payload];
+      })
+      .addCase(sendMessages.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

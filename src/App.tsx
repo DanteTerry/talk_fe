@@ -8,7 +8,7 @@ import Home from "./pages/home";
 import Login from "./pages/login";
 import { useSelector } from "react-redux";
 import Register from "./pages/register";
-import Message from "./components/Message";
+import Message from "./components/MessageBar";
 import Search from "./components/SearchUser";
 import Friends from "./components/Friends";
 import AddFriend from "./components/AddFriend";

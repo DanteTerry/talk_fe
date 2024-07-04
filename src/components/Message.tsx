@@ -1,43 +1,48 @@
-import { useState } from "react";
-import { MoveRight, Plus, Search } from "lucide-react";
-import { Link } from "react-router-dom";
-import Conversations from "./Conversations";
+import { timeHandler } from "../lib/utils/utils";
+import { Message as IMessage } from "../types/types";
 
-function Message() {
-  const [isFocused, setIsFocused] = useState(false);
-  const [searchText, setSearchText] = useState("");
-
+function Message({ message, me }: { message: IMessage; me: boolean }) {
   return (
-    <div className="h-full w-full px-6 py-5">
-      <div className="relative mb-5 flex flex-col gap-3 border-b-2 pb-5 dark:border-gray-700">
-        <input
-          type="text"
-          className="relative w-full rounded-md bg-[#f0f2f5] px-2 py-2 pl-10 text-green-500 focus:outline-none dark:bg-[#202124]"
-          placeholder="Search"
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          onChange={(e) => setSearchText(e.target.value)}
-          value={searchText}
-        />
-        <Search
-          size={20}
-          className={`absolute left-3 top-[10px] text-gray-400 ${isFocused === false && searchText.length === 0 ? "opacity-100" : "animate-rotate180 opacity-0"}`}
-        />
-        <MoveRight
-          size={20}
-          className={`absolute left-3 top-[10px] text-gray-400 ${isFocused === true || searchText.length > 0 ? "rotate-180 animate-rotate180 text-green-500 opacity-100" : "animate-reverse180 opacity-0"}`}
-        />
-
-        <Link to="/search" className="w-full">
-          <button className="flex w-full items-center justify-center gap-1 rounded-md bg-green-500 p-2 text-center font-bold text-white">
-            <Plus size={20} strokeWidth={2.5} />
-            New Chat
-          </button>
-        </Link>
-      </div>
-
-      <Conversations searchText={searchText} />
-    </div>
+    <>
+      {me ? (
+        <div className="flex justify-end gap-3">
+          <div className="flex flex-col gap-1">
+            <div className="w-max rounded-md bg-green-500 px-3 py-1 text-lg text-white dark:text-white">
+              <p className="flex gap-2">
+                {message.message}{" "}
+                <span className="self-end text-xs">
+                  {timeHandler(message.createdAt)}
+                </span>
+              </p>
+            </div>
+          </div>
+          <div className="h-5!important w-5 self-end rounded-full">
+            <img
+              src={message.sender.picture}
+              alt="user avatar"
+              className="h-full w-full rounded-full object-cover"
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-center gap-3">
+          <div className="h-5!important w-5 self-end rounded-full">
+            <img
+              src="https://gravatar.com/avatar/d6771c28560592154cf60f8bea68d484?s=400&d=retro&r=x"
+              alt="user avatar"
+              className="h-full w-full rounded-full object-cover"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className="bg-white-500 w-max rounded-md bg-black/90 px-3 py-1 text-lg dark:bg-white dark:text-black">
+              <p className="flex gap-2">
+                Hello world <span className="self-end text-xs">2:30 AM</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

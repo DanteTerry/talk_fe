@@ -1,6 +1,7 @@
 import { Info, Phone, Video } from "lucide-react";
+import { Conversation } from "../types/types";
 
-function ChatBar({ conversation }) {
+function ChatBar({ conversation }: { conversation: Conversation }) {
   return (
     <div className="row-span-1 flex items-center justify-between border-b-2 px-6 shadow-sm dark:border-gray-700 dark:bg-green-500">
       <div className="flex items-center gap-3">
