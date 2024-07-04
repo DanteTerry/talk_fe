@@ -14,6 +14,7 @@ export default {
         registerImageDark: "url('/src/assets/registerDark.svg')",
         loginImageLight: "url('/src/assets/loginLight.svg')",
         loginImageDark: "url('/src/assets/loginDark.svg')",
+        pattern: "url('/src/assets/pattern2.png')",
       },
     },
     keyframes: {

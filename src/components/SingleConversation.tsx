@@ -23,7 +23,7 @@ function SingleConversation({ conversation }: { conversation: UserProfile }) {
             {conversation?.name}
           </span>
           <span className="text-[13px] font-semibold text-white opacity-95 dark:text-black">
-            {trimString("Hello world how are you all ", 26)}
+            {trimString(conversation?.latestMessage.message, 26)}
           </span>
         </div>
         <span className="justify-start text-xs text-white opacity-95 dark:text-black">
