@@ -1,8 +1,9 @@
 import { Loader, Mic, Paperclip, SendHorizonal, Smile, X } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useDispatch } from "react-redux";
 import { sendMessages } from "../features/chatSlice";
 import { useSelector } from "react-redux";
+import FileSender from "./FileSender";
 
 function Inputs({
   sendMessage,
@@ -21,6 +22,7 @@ function Inputs({
     (state: any) => state.chat,
   );
   const { token } = useSelector((state: any) => state.user.user);
+  const [filesSender, setFilesSender] = useState(false);
 
   const values = {
     sendMessage,
@@ -43,8 +45,13 @@ function Inputs({
       onSubmit={(e) => sendMessageHandler(e)}
     >
       <div className="relative flex gap-4">
-        {/* //Todo: Add emoji picker */}
-        <button onClick={() => setEmojiPicker((state) => !state)}>
+        {/* //Todo: Fix emoji picker bug*/}
+        <button
+          onClick={() => {
+            setEmojiPicker((state) => !state);
+            setFilesSender(false);
+          }}
+        >
           {emojiPicker ? (
             <X
               size={24}
@@ -59,12 +66,25 @@ function Inputs({
             />
           )}
         </button>
-        <button>
-          <Paperclip
-            size={24}
-            strokeWidth={1.8}
-            className="course-pointer text-green-500 dark:text-white"
-          />
+        <button
+          onClick={() => {
+            setFilesSender((state) => !state);
+            setEmojiPicker(false);
+          }}
+        >
+          {filesSender ? (
+            <X
+              size={24}
+              strokeWidth={1.8}
+              className="course-pointer text-green-500 dark:text-white"
+            />
+          ) : (
+            <Paperclip
+              size={24}
+              strokeWidth={1.8}
+              className="course-pointer text-green-500 dark:text-white"
+            />
+          )}
         </button>
       </div>
 
@@ -101,6 +121,7 @@ function Inputs({
           </div>
         </div>
       </div>
+      {filesSender && <FileSender filesSender={filesSender} />}
     </form>
   );
 }
