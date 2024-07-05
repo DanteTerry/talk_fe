@@ -4,18 +4,21 @@ import { useDispatch } from "react-redux";
 import { sendMessages } from "../features/chatSlice";
 import { useSelector } from "react-redux";
 import FileSender from "./FileSender";
+import SocketContext from "../context/SocketContext";
 
 function Inputs({
   sendMessage,
   emojiPicker,
   setSendMessage,
   setEmojiPicker,
+  socket,
 }: {
   setEmojiPicker: Dispatch<SetStateAction<boolean>>;
   emojiPicker: boolean;
   textRef: React.RefObject<HTMLInputElement>;
   sendMessage: string;
   setSendMessage: Dispatch<SetStateAction<string>>;
+  socket: any;
 }) {
   const dispatch = useDispatch();
   const { activeConversation, status } = useSelector(
@@ -37,10 +40,11 @@ function Inputs({
     e.preventDefault();
     setLoading(true);
     if (!sendMessage) return;
-    dispatch(sendMessages(values));
+    const newMessage = await dispatch(sendMessages(values));
+    socket.emit("send message", newMessage.payload);
+    setEmojiPicker(false);
     setSendMessage("");
     setLoading(false);
-    setEmojiPicker(false);
   };
 
   return (
@@ -130,4 +134,9 @@ function Inputs({
   );
 }
 
-export default Inputs;
+const InputsWithSocket = (props) => (
+  <SocketContext.Consumer>
+    {(socket) => <Inputs {...props} socket={socket} />}
+  </SocketContext.Consumer>
+);
+export default InputsWithSocket;

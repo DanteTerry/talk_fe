@@ -5,12 +5,14 @@ import createFilter from "redux-persist-transform-filter";
 import userSlice from "../features/userSlice";
 import darkModeReducer from "../features/darkmodeSlice";
 import chatSlice from "../features/chatSlice";
+import onlineUserSlice from "../features/onlineUserSlice";
 
 const saveUserAndDarkModeFilter = createFilter("root", ["user", "darkMode"]);
 const rootReducer = combineReducers({
   user: userSlice,
   darkMode: darkModeReducer,
   chat: chatSlice,
+  onlineUsers: onlineUserSlice,
 });
 
 // persisting the user and darkMode state in the local storage

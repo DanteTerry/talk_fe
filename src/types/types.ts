@@ -35,7 +35,7 @@ export interface Conversation {
   name: string;
   picture: string;
   isGroup: boolean;
-  users: string[];
+  users: User[];
   createdAt: string;
   updatedAt: string;
   __v: number;

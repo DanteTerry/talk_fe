@@ -2,11 +2,15 @@ import { useEffect } from "react";
 import SingleConversation from "./SingleConversation";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { getConversation, setActiveConversation } from "../features/chatSlice";
-import { UserProfile } from "../types/types";
+import { getConversation } from "../features/chatSlice";
+import { Conversation, UserProfile } from "../types/types";
+import { getConversationId } from "../lib/utils/utils";
 
 function Conversations({ searchText }: { searchText: string }) {
+  const onlineUsers = useSelector((state) => state.onlineUsers);
+
   const dispatch = useDispatch();
+
   const { user } = useSelector((state) => state.user);
   const { conversations, activeConversation } = useSelector(
     (state) => state.chat,
@@ -24,12 +28,8 @@ function Conversations({ searchText }: { searchText: string }) {
 
   if (searchText) {
     const filteredConversations = conversations.filter(
-      (conversation: UserProfile) => {
-        conversation.latestMessage ||
-          conversation._id === activeConversation._id;
-        conversation.name.toLowerCase().includes(searchText.toLowerCase());
-        return conversation;
-      },
+      (conversation: UserProfile) =>
+        conversation.name.toLowerCase().includes(searchText.toLowerCase()),
     );
 
     return (
@@ -49,11 +49,18 @@ function Conversations({ searchText }: { searchText: string }) {
   return (
     <div className="no-scrollbar h-screen overflow-y-scroll">
       {conversations &&
-        conversations.map((conversation: UserProfile) => {
+        conversations.map((conversation: Conversation) => {
+          const check = onlineUsers.find(
+            (onlineUser) =>
+              onlineUser.userId === getConversationId(user, conversation.users),
+          );
+
+          console.log(check);
           return (
             <SingleConversation
               key={conversation._id}
               conversation={conversation}
+              online={check}
             />
           );
         })}

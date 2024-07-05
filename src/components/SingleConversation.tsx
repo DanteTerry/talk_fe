@@ -1,18 +1,43 @@
 import { useDispatch } from "react-redux";
-import { dateHandler, trimString } from "../lib/utils/utils";
-import { UserProfile } from "../types/types";
+import {
+  dateHandler,
+  getConversationId,
+  getConversationName,
+  getConversationPicture,
+  trimString,
+} from "../lib/utils/utils";
+import { Conversation } from "../types/types";
 import { setActiveConversation } from "../features/chatSlice";
+import SocketContext from "../context/SocketContext";
+import { useSelector } from "react-redux";
 
-function SingleConversation({ conversation }: { conversation: UserProfile }) {
+function SingleConversation({
+  conversation,
+  socket,
+  online,
+}: {
+  conversation: Conversation;
+  socket: any;
+  online: any;
+}) {
   const dispatch = useDispatch();
+  const openConversation = async () => {
+    await dispatch(setActiveConversation(conversation));
+    socket.emit("join conversation", conversation._id);
+  };
+
+  const { user } = useSelector((state: any) => state.user);
+
   return (
     <div
-      onClick={() => dispatch(setActiveConversation(conversation))}
+      onClick={openConversation}
       className="mb-3 flex w-full cursor-pointer items-center gap-3 rounded-md bg-green-500 px-2 py-3 dark:bg-white"
     >
-      <div className="h-12!important w-12 rounded-full">
+      <div
+        className={`h-12!important w-12 rounded-full ${online?.userId === getConversationId(user, conversation.users) ? "border-2 border-green-500" : ""} `}
+      >
         <img
-          src={conversation?.picture}
+          src={getConversationPicture(user, conversation.users)}
           alt="user avatar"
           className="h-full w-full rounded-full object-cover"
         />
@@ -20,7 +45,7 @@ function SingleConversation({ conversation }: { conversation: UserProfile }) {
       <div className="flex w-full justify-between">
         <div className="flex flex-col justify-between">
           <span className="font-semibold text-white opacity-95 dark:text-black">
-            {conversation?.name}
+            {getConversationName(user, conversation.users)}
           </span>
           <span className="text-[13px] font-semibold text-white opacity-95 dark:text-black">
             {trimString(conversation?.latestMessage.message, 26)}
@@ -34,4 +59,10 @@ function SingleConversation({ conversation }: { conversation: UserProfile }) {
   );
 }
 
-export default SingleConversation;
+const singleConversationWithSocket = (props) => (
+  <SocketContext.Consumer>
+    {(socket) => <SingleConversation {...props} socket={socket} />}
+  </SocketContext.Consumer>
+);
+
+export default singleConversationWithSocket;

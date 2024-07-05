@@ -4,10 +4,32 @@ import Chat from "../components/Chat";
 import { useSelector } from "react-redux";
 import HomeInfo from "../components/HomeInfo";
 import SocketContext from "../context/SocketContext";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { updateMessagesAndConversation } from "../features/chatSlice";
+import { setOnlineUsers } from "../features/onlineUserSlice";
 
 function Home({ socket }) {
   const { activeConversation } = useSelector((state) => state.chat);
-  console.log(socket);
+  const { user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  // Join the user to the socket room
+  useEffect(() => {
+    socket.emit("join", user._id);
+    // get all user online
+    socket.on("get-online-users", async (users) => {
+      await dispatch(setOnlineUsers(users));
+    });
+  }, [user, socket, dispatch]);
+
+  //listing for new messages
+  useEffect(() => {
+    socket.on("receive message", (message) => {
+      dispatch(updateMessagesAndConversation(message));
+    });
+  }, []);
+
   return (
     <div className="h-screen overflow-hidden dark:bg-[#17181B]">
       <div className="flex h-full">

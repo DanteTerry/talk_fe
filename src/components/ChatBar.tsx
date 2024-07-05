@@ -1,20 +1,26 @@
 import { Info, Phone, Video } from "lucide-react";
 import { Conversation } from "../types/types";
+import {
+  getConversationName,
+  getConversationPicture,
+} from "../lib/utils/utils";
+import { useSelector } from "react-redux";
 
 function ChatBar({ conversation }: { conversation: Conversation }) {
+  const user = useSelector((state: any) => state.user.user);
   return (
     <div className="row-span-1 flex items-center justify-between border-b-2 px-6 shadow-sm dark:border-gray-700 dark:bg-green-500">
       <div className="flex items-center gap-3">
         <div className="h-10!important w-10 rounded-full">
           <img
-            src={conversation?.picture}
+            src={getConversationPicture(user, conversation?.users)}
             alt="user avatar"
             className="h-full w-full rounded-full object-cover"
           />
         </div>
         <div className="flex flex-col">
           <p className="text-lg font-bold leading-tight text-green-500 dark:text-white">
-            {conversation?.name}
+            {getConversationName(user, conversation?.users)}
           </p>
           <p className="text-sm leading-tight text-white">online</p>
         </div>

@@ -88,6 +88,23 @@ export const chatSlice = createSlice({
     setActiveConversation: (state, action) => {
       state.activeConversation = action.payload;
     },
+    updateMessagesAndConversation: (state, action) => {
+      // update the messages
+      if (state.activeConversation._id === action.payload.conversation._id) {
+        state.messages = [...state.messages, action.payload];
+      }
+
+      // update the conversation
+      const conversation = {
+        ...action.payload.conversation,
+        latestMessage: action.payload,
+      };
+      const newConversation = [...state.conversations].filter(
+        (conv) => conv._id !== conversation._id,
+      );
+      newConversation.unshift(conversation);
+      state.conversations = newConversation;
+    },
   },
   extraReducers(builder) {
     builder
@@ -136,6 +153,7 @@ export const chatSlice = createSlice({
   },
 });
 
-export const { setActiveConversation } = chatSlice.actions;
+export const { setActiveConversation, updateMessagesAndConversation } =
+  chatSlice.actions;
 
 export default chatSlice.reducer;
