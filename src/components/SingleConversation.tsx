@@ -1,7 +1,6 @@
 import { useDispatch } from "react-redux";
 import {
   dateHandler,
-  getConversationId,
   getConversationName,
   getConversationPicture,
   trimString,
@@ -18,7 +17,7 @@ function SingleConversation({
 }: {
   conversation: Conversation;
   socket: any;
-  online: any;
+  online: boolean;
 }) {
   const dispatch = useDispatch();
   const openConversation = async () => {
@@ -34,7 +33,7 @@ function SingleConversation({
       className="mb-3 flex w-full cursor-pointer items-center gap-3 rounded-md bg-green-500 px-2 py-3 dark:bg-white"
     >
       <div
-        className={`h-12!important w-12 rounded-full ${online?.userId === getConversationId(user, conversation.users) ? "border-2 border-green-500" : ""} `}
+        className={`h-[52px]!important w-[52px] rounded-full ${online ? "border-2 border-green-500" : "border-2 border-white"} `}
       >
         <img
           src={getConversationPicture(user, conversation.users)}

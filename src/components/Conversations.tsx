@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { getConversation } from "../features/chatSlice";
 import { Conversation, UserProfile } from "../types/types";
-import { getConversationId } from "../lib/utils/utils";
+import { checkOnlineStatus } from "../lib/utils/utils";
 
 function Conversations({ searchText }: { searchText: string }) {
   const onlineUsers = useSelector((state) => state.onlineUsers);
@@ -12,9 +12,7 @@ function Conversations({ searchText }: { searchText: string }) {
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.user);
-  const { conversations, activeConversation } = useSelector(
-    (state) => state.chat,
-  );
+  const { conversations } = useSelector((state) => state.chat);
 
   useEffect(() => {
     if (user?.token) {
@@ -50,17 +48,11 @@ function Conversations({ searchText }: { searchText: string }) {
     <div className="no-scrollbar h-screen overflow-y-scroll">
       {conversations &&
         conversations.map((conversation: Conversation) => {
-          const check = onlineUsers.find(
-            (onlineUser) =>
-              onlineUser.userId === getConversationId(user, conversation.users),
-          );
-
-          console.log(check);
           return (
             <SingleConversation
               key={conversation._id}
               conversation={conversation}
-              online={check}
+              online={checkOnlineStatus(onlineUsers, user, conversation.users)}
             />
           );
         })}

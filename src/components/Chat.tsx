@@ -3,21 +3,25 @@ import ChatBar from "./ChatBar";
 import ChatMessages from "./ChatMessages";
 import Inputs from "./Inputs";
 import { useDispatch } from "react-redux";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { getConversationMessages } from "../features/chatSlice";
 import EmojiPicker from "emoji-picker-react";
+import { checkOnlineStatus } from "../lib/utils/utils";
 
 function Chat() {
-  const conversation = useSelector(
-    (state: any) => state.chat.activeConversation,
-  );
+  const dispatch = useDispatch();
 
   const { activeConversation } = useSelector((state: any) => state.chat);
   const { token } = useSelector((state: any) => state.user.user);
+  const onlineUsers = useSelector((state: any) => state.onlineUsers);
+  const { user } = useSelector((state: any) => state.user);
+
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [sendMessage, setSendMessage] = useState("");
 
-  const dispatch = useDispatch();
+  const conversation = useSelector(
+    (state: any) => state.chat.activeConversation,
+  );
 
   const values = {
     token,
@@ -26,7 +30,16 @@ function Chat() {
 
   const handleEmojiClick = (emojiData) => {
     const { emoji } = emojiData;
+    console.log(emoji);
   };
+
+  let online;
+
+  if (Object.keys(activeConversation).length > 0) {
+    online = activeConversation?._id
+      ? checkOnlineStatus(onlineUsers, user, activeConversation?.users)
+      : false;
+  }
 
   useEffect(() => {
     if (activeConversation._id) {
@@ -36,7 +49,7 @@ function Chat() {
 
   return (
     <div className="relative grid grid-rows-12">
-      <ChatBar conversation={conversation} />
+      <ChatBar conversation={conversation} online={online} />
       <ChatMessages />
       <Inputs
         sendMessage={sendMessage}

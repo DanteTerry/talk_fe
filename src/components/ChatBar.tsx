@@ -6,7 +6,13 @@ import {
 } from "../lib/utils/utils";
 import { useSelector } from "react-redux";
 
-function ChatBar({ conversation }: { conversation: Conversation }) {
+function ChatBar({
+  conversation,
+  online,
+}: {
+  conversation: Conversation;
+  online: boolean;
+}) {
   const user = useSelector((state: any) => state.user.user);
   return (
     <div className="row-span-1 flex items-center justify-between border-b-2 px-6 shadow-sm dark:border-gray-700 dark:bg-green-500">
@@ -22,7 +28,7 @@ function ChatBar({ conversation }: { conversation: Conversation }) {
           <p className="text-lg font-bold leading-tight text-green-500 dark:text-white">
             {getConversationName(user, conversation?.users)}
           </p>
-          <p className="text-sm leading-tight text-white">online</p>
+          {online && <p className="text-sm leading-tight text-white">online</p>}
         </div>
       </div>
 
