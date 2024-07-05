@@ -13,6 +13,12 @@ import Search from "./components/SearchUser";
 import Friends from "./components/Friends";
 import AddFriend from "./components/AddFriend";
 import Profile from "./components/Profile";
+import { io } from "socket.io-client";
+import SocketContext from "./context/SocketContext";
+
+// socket.io-client
+const localhost = import.meta.env.VITE_APP_LOCALHOST;
+const socket = io(localhost, { autoConnect: true });
 
 function App() {
   const { token } = useSelector((state) => state.user.user);
@@ -20,29 +26,31 @@ function App() {
 
   return (
     <div className={`${darkMode ? "dark" : ""}`}>
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={!token ? <Navigate to={"/login"} /> : <Home />}
-          >
-            <Route index element={<Navigate to={"messages"} />} />
-            <Route path="messages" element={<Message />} />
-            <Route path="search" element={<Search />} />
-            <Route path="friends" element={<Friends />} />
-            <Route path="add-friends" element={<AddFriend />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
-          <Route
-            path="/login"
-            element={!token ? <Login /> : <Navigate to={"/"} />}
-          />
-          <Route
-            path="/register"
-            element={!token ? <Register /> : <Navigate to={"/"} />}
-          />
-        </Routes>
-      </Router>
+      <SocketContext.Provider value={socket}>
+        <Router>
+          <Routes>
+            <Route
+              path="/"
+              element={!token ? <Navigate to={"/login"} /> : <Home />}
+            >
+              <Route index element={<Navigate to={"messages"} />} />
+              <Route path="messages" element={<Message />} />
+              <Route path="search" element={<Search />} />
+              <Route path="friends" element={<Friends />} />
+              <Route path="add-friends" element={<AddFriend />} />
+              <Route path="profile" element={<Profile />} />
+            </Route>
+            <Route
+              path="/login"
+              element={!token ? <Login /> : <Navigate to={"/"} />}
+            />
+            <Route
+              path="/register"
+              element={!token ? <Register /> : <Navigate to={"/"} />}
+            />
+          </Routes>
+        </Router>
+      </SocketContext.Provider>
     </div>
   );
 }

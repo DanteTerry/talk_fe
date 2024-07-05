@@ -12,9 +12,12 @@ function ChatBar({ conversation }: { conversation: Conversation }) {
             className="h-full w-full rounded-full object-cover"
           />
         </div>
-        <p className="text-lg font-bold text-green-500 dark:text-white">
-          {conversation?.name}
-        </p>
+        <div className="flex flex-col">
+          <p className="text-lg font-bold leading-tight text-green-500 dark:text-white">
+            {conversation?.name}
+          </p>
+          <p className="text-sm leading-tight text-white">online</p>
+        </div>
       </div>
 
       <div className="flex items-center gap-10">

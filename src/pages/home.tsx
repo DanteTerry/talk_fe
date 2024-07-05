@@ -3,10 +3,11 @@ import SideMenu from "../components/SideMenu";
 import Chat from "../components/Chat";
 import { useSelector } from "react-redux";
 import HomeInfo from "../components/HomeInfo";
+import SocketContext from "../context/SocketContext";
 
-function Home() {
+function Home({ socket }) {
   const { activeConversation } = useSelector((state) => state.chat);
-
+  console.log(socket);
   return (
     <div className="h-screen overflow-hidden dark:bg-[#17181B]">
       <div className="flex h-full">
@@ -25,4 +26,10 @@ function Home() {
   );
 }
 
-export default Home;
+const HomeWithSocket = (props) => (
+  <SocketContext.Consumer>
+    {(socket) => <Home {...props} socket={socket} />}
+  </SocketContext.Consumer>
+);
+
+export default HomeWithSocket;
