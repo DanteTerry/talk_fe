@@ -4,10 +4,11 @@ import Chat from "../components/Chat";
 import { useSelector } from "react-redux";
 import HomeInfo from "../components/HomeInfo";
 import SocketContext from "../context/SocketContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateMessagesAndConversation } from "../features/chatSlice";
 import { setOnlineUsers } from "../features/onlineUserSlice";
+import { setTyping } from "../features/typingSlice";
 
 function Home({ socket }) {
   const { activeConversation } = useSelector((state) => state.chat);
@@ -25,9 +26,16 @@ function Home({ socket }) {
 
   //listing for new messages
   useEffect(() => {
+    // receive message
     socket.on("receive message", (message) => {
       dispatch(updateMessagesAndConversation(message));
     });
+
+    // set typing
+    socket.on("typing", () => dispatch(setTyping(true)));
+
+    // remove typing
+    socket.on("stop typing", () => dispatch(setTyping(false)));
   }, []);
 
   return (

@@ -2,11 +2,14 @@ import { useSelector } from "react-redux";
 import Message from "./Message";
 import { Message as IMessage } from "../types/types";
 import { useEffect, useRef } from "react";
+import { ThreeDots } from "react-loader-spinner";
 
 function ChatMessages() {
   const { messages } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
   const endRef = useRef<HTMLDivElement>(null);
+
+  const typing = useSelector((state) => state.typing);
 
   useEffect(() => {
     if (endRef.current) {
@@ -24,6 +27,7 @@ function ChatMessages() {
             me={user._id === message.sender._id}
           />
         ))}
+
       <div className="mt-2" ref={endRef}></div>
     </div>
   );

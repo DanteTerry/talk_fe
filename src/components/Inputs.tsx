@@ -25,6 +25,7 @@ function Inputs({
     (state: any) => state.chat,
   );
   const { token } = useSelector((state: any) => state.user.user);
+  const [typing, setTyping] = useState(false);
   const [filesSender, setFilesSender] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -45,6 +46,25 @@ function Inputs({
     setEmojiPicker(false);
     setSendMessage("");
     setLoading(false);
+  };
+
+  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSendMessage(e.target.value);
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", activeConversation._id);
+    }
+    const lastTypingTime = new Date().getTime();
+    const timer = 2000;
+
+    setTimeout(() => {
+      const timeNow = new Date().getTime();
+      const timeDiff = timeNow - lastTypingTime;
+      if (timeDiff >= timer && typing) {
+        socket.emit("stop typing", activeConversation._id);
+        setTyping(false);
+      }
+    }, timer);
   };
 
   return (
@@ -102,7 +122,7 @@ function Inputs({
           className="w-full rounded-md bg-[#f0f2f5] px-4 py-2 pr-24 text-green-500 focus:outline-none dark:bg-[#202124]"
           placeholder="Type a message..."
           value={sendMessage}
-          onChange={(e) => setSendMessage(e.target.value)}
+          onChange={onChangeHandler}
         />
         <div>
           <div className="flex cursor-pointer">
@@ -134,9 +154,10 @@ function Inputs({
   );
 }
 
-const InputsWithSocket = (props) => (
+const InputsWithContext = (props) => (
   <SocketContext.Consumer>
     {(socket) => <Inputs {...props} socket={socket} />}
   </SocketContext.Consumer>
 );
-export default InputsWithSocket;
+
+export default InputsWithContext;

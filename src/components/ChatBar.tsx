@@ -11,7 +11,7 @@ function ChatBar({
   online,
 }: {
   conversation: Conversation;
-  online: boolean;
+  online: boolean | undefined;
 }) {
   const user = useSelector((state: any) => state.user.user);
   return (

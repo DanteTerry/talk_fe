@@ -6,6 +6,7 @@ import userSlice from "../features/userSlice";
 import darkModeReducer from "../features/darkmodeSlice";
 import chatSlice from "../features/chatSlice";
 import onlineUserSlice from "../features/onlineUserSlice";
+import typingSlice from "../features/typingSlice";
 
 const saveUserAndDarkModeFilter = createFilter("root", ["user", "darkMode"]);
 const rootReducer = combineReducers({
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   darkMode: darkModeReducer,
   chat: chatSlice,
   onlineUsers: onlineUserSlice,
+  typing: typingSlice,
 });
 
 // persisting the user and darkMode state in the local storage
