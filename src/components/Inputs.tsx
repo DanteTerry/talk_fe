@@ -24,6 +24,8 @@ function Inputs({
   const { token } = useSelector((state: any) => state.user.user);
   const [filesSender, setFilesSender] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+
   const values = {
     sendMessage,
     conversation_id: activeConversation._id,
@@ -33,9 +35,11 @@ function Inputs({
 
   const sendMessageHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     if (!sendMessage) return;
     dispatch(sendMessages(values));
     setSendMessage("");
+    setLoading(false);
     setEmojiPicker(false);
   };
 
@@ -104,7 +108,7 @@ function Inputs({
               className="course-pointer absolute right-14 top-2 text-green-500"
             />
             <button type="submit">
-              {status === "loading" ? (
+              {status === "loading" && loading ? (
                 <Loader
                   size={25}
                   strokeWidth={1.5}
