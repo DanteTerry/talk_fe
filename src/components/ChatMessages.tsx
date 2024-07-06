@@ -8,7 +8,6 @@ function ChatMessages() {
   const { messages } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
   const endRef = useRef<HTMLDivElement>(null);
-
   const typing = useSelector((state) => state.typing);
 
   useEffect(() => {
@@ -28,6 +27,7 @@ function ChatMessages() {
           />
         ))}
 
+      {typing ? "Typing..." : ""}
       <div className="mt-2" ref={endRef}></div>
     </div>
   );

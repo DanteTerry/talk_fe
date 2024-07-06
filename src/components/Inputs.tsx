@@ -1,5 +1,5 @@
 import { Loader, Mic, Paperclip, SendHorizonal, Smile, X } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { sendMessages } from "../features/chatSlice";
 import { useSelector } from "react-redux";
@@ -27,6 +27,7 @@ function Inputs({
   const { token } = useSelector((state: any) => state.user.user);
   const [typing, setTyping] = useState(false);
   const [filesSender, setFilesSender] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
 
@@ -40,7 +41,6 @@ function Inputs({
   const sendMessageHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    if (!sendMessage) return;
     const newMessage = await dispatch(sendMessages(values));
     socket.emit("send message", newMessage.payload);
     setEmojiPicker(false);
@@ -49,7 +49,9 @@ function Inputs({
   };
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     setSendMessage(e.target.value);
+
     if (!typing) {
       setTyping(true);
       socket.emit("typing", activeConversation._id);
@@ -75,7 +77,7 @@ function Inputs({
       <div className="relative flex gap-4">
         {/* //Todo: Fix emoji picker bug*/}
         <button
-          onClick={() => {
+          onClick={(e) => {
             setEmojiPicker((state) => !state);
             setFilesSender(false);
           }}
@@ -95,7 +97,8 @@ function Inputs({
           )}
         </button>
         <button
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
             setFilesSender((state) => !state);
             setEmojiPicker(false);
           }}
@@ -123,6 +126,7 @@ function Inputs({
           placeholder="Type a message..."
           value={sendMessage}
           onChange={onChangeHandler}
+          ref={inputRef}
         />
         <div>
           <div className="flex cursor-pointer">

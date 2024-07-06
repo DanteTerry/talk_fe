@@ -4,7 +4,7 @@ import Chat from "../components/Chat";
 import { useSelector } from "react-redux";
 import HomeInfo from "../components/HomeInfo";
 import SocketContext from "../context/SocketContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { updateMessagesAndConversation } from "../features/chatSlice";
 import { setOnlineUsers } from "../features/onlineUserSlice";
