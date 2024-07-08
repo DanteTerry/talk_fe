@@ -1,4 +1,5 @@
-import { Camera, FileText, Images, Sparkles, User } from "lucide-react";
+import { Camera, FileText, Sparkles, User } from "lucide-react";
+import PhotoAndVideo from "./fileUploader/PhotoAndVideo";
 
 function FileSender() {
   return (
@@ -12,14 +13,7 @@ function FileSender() {
             <span className="font-semibold dark:text-black/75">Document</span>
           </button>
         </li>
-        <li className="h-full w-full rounded-md px-2 py-1 transition-all duration-300 hover:bg-gray-300">
-          <button className="flex items-center gap-3 text-base">
-            <Images color="#007bfc" />
-            <span className="font-semibold dark:text-black/75">
-              Photos & videos
-            </span>
-          </button>
-        </li>
+        <PhotoAndVideo />
         <li className="h-full w-full rounded-md px-2 py-1 transition-all duration-300 hover:bg-gray-300">
           <button className="flex items-center gap-3 text-base">
             <Camera color="#ff2e74" />
