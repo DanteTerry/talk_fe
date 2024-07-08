@@ -11,6 +11,7 @@ const initialState = {
   messages: [],
   activeConversation: {},
   notifications: [],
+  files: [],
 };
 
 // function to get all conversations
@@ -105,6 +106,10 @@ export const chatSlice = createSlice({
       newConversation.unshift(conversation);
       state.conversations = newConversation;
     },
+
+    addFiles: (state, action) => {
+      state.files = [...state.files, action.payload];
+    },
   },
   extraReducers(builder) {
     builder
@@ -153,7 +158,10 @@ export const chatSlice = createSlice({
   },
 });
 
-export const { setActiveConversation, updateMessagesAndConversation } =
-  chatSlice.actions;
+export const {
+  setActiveConversation,
+  updateMessagesAndConversation,
+  addFiles,
+} = chatSlice.actions;
 
 export default chatSlice.reducer;
