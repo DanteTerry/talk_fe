@@ -2,6 +2,7 @@ import { FileText } from "lucide-react";
 import React, { useRef } from "react";
 import { addFiles } from "../../features/chatSlice";
 import { useDispatch } from "react-redux";
+import { getFileType } from "../../lib/utils/file";
 
 function DocumentAttachment() {
   const inputRef = useRef(null);
@@ -44,7 +45,7 @@ function DocumentAttachment() {
           dispatch(
             addFiles({
               file: file,
-              type: file.type.split("/")[1],
+              type: getFileType(file.type),
             }),
           );
         };
@@ -69,6 +70,7 @@ function DocumentAttachment() {
         ref={inputRef}
         accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,application/zip,application/x-rar-compressed,application/x-7z-compressed,application/x-tar,application/x-gzip,audio/mpeg,audio/wav"
         onChange={documentHandler}
+        multiple
       />
     </li>
   );

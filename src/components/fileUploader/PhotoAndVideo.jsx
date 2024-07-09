@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { addFiles } from "../../features/chatSlice";
 import { useSelector } from "react-redux";
+import { getFileType } from "../../lib/utils/file";
 
 function PhotoAndVideo() {
   const inputRef = useRef(null);
@@ -35,7 +36,7 @@ function PhotoAndVideo() {
             addFiles({
               file: file,
               fileData: e.target.result,
-              type: file.type.split("/")[0],
+              type: getFileType(file.type),
             }),
           );
         };
@@ -63,6 +64,7 @@ function PhotoAndVideo() {
         ref={inputRef}
         accept="image/png,image/jpeg,image/gif,image/webp,video/mp4,video/mpeg,video/webm"
         onChange={imageHandler}
+        multiple
       />
     </li>
   );
