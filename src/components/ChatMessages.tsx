@@ -2,13 +2,13 @@ import { useSelector } from "react-redux";
 import Message from "./Message";
 import { Message as IMessage } from "../types/types";
 import { useEffect, useRef } from "react";
-import { ThreeDots } from "react-loader-spinner";
 
 function ChatMessages() {
   const { messages } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
   const endRef = useRef<HTMLDivElement>(null);
   const typing = useSelector((state) => state.typing);
+  const { files } = useSelector((state) => state.chat);
 
   useEffect(() => {
     if (endRef.current) {

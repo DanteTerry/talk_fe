@@ -1,5 +1,5 @@
 import { Loader, Mic, Paperclip, SendHorizonal, Smile, X } from "lucide-react";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { sendMessages } from "../features/chatSlice";
 import { useSelector } from "react-redux";
@@ -25,6 +25,7 @@ function Inputs({
     (state: any) => state.chat,
   );
   const { token } = useSelector((state: any) => state.user.user);
+  const { files } = useSelector((state: any) => state.chat);
   const [typing, setTyping] = useState(false);
   const [filesSender, setFilesSender] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -47,6 +48,12 @@ function Inputs({
     setSendMessage("");
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (files.length > 0) {
+      setFilesSender(false);
+    }
+  }, [files]);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();

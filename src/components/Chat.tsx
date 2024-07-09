@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { getConversationMessages } from "../features/chatSlice";
 import EmojiPicker from "emoji-picker-react";
 import { checkOnlineStatus } from "../lib/utils/utils";
+import FilePreview from "./fileUploader/FilePreview";
 
 function Chat() {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ function Chat() {
   const { token } = useSelector((state: any) => state.user.user);
   const onlineUsers = useSelector((state: any) => state.onlineUsers);
   const { user } = useSelector((state: any) => state.user);
+  const { files } = useSelector((state: any) => state.chat);
 
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [sendMessage, setSendMessage] = useState("");
@@ -50,13 +52,16 @@ function Chat() {
   return (
     <div className="relative grid grid-rows-12">
       <ChatBar conversation={conversation} online={online} />
-      <ChatMessages />
-      <Inputs
-        sendMessage={sendMessage}
-        setSendMessage={setSendMessage}
-        setEmojiPicker={setEmojiPicker}
-        emojiPicker={emojiPicker}
-      />
+      {files.length > 0 ? <FilePreview /> : <ChatMessages />}
+
+      {!files.length ? (
+        <Inputs
+          sendMessage={sendMessage}
+          setSendMessage={setSendMessage}
+          setEmojiPicker={setEmojiPicker}
+          emojiPicker={emojiPicker}
+        />
+      ) : null}
 
       <div className="absolute bottom-36 left-2">
         {emojiPicker && (

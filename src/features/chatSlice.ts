@@ -88,6 +88,7 @@ export const chatSlice = createSlice({
   reducers: {
     setActiveConversation: (state, action) => {
       state.activeConversation = action.payload;
+      state.files = [];
     },
     updateMessagesAndConversation: (state, action) => {
       // update the messages
