@@ -50,7 +50,9 @@ function Chat() {
   }, [activeConversation]);
 
   return (
-    <div className="relative grid grid-rows-12">
+    <div
+      className={`relative grid ${files.length ? "grid-rows-11" : "grid-rows-12"}`}
+    >
       <ChatBar conversation={conversation} online={online} />
       {files.length > 0 ? <FilePreview /> : <ChatMessages />}
 
