@@ -16,16 +16,6 @@ export const getFileType = (file: string) => {
       return "PPTX";
     case "application/vnd.ms-powerpoint":
       return "PPTX";
-    case "image/jpeg":
-      return "JPEG";
-    case "image/png":
-      return "PNG";
-    case "image/gif":
-      return "GIF";
-    case "image/bmp":
-      return "BMP";
-    case "image/webp":
-      return "WEBP";
     case "video/mp4":
       return "MP4";
     case "video/mpeg":
@@ -49,6 +39,6 @@ export const getFileType = (file: string) => {
     case "application/x-gzip":
       return "ARCHIVE";
     default:
-      return "FILE";
+      return "IMAGE";
   }
 };

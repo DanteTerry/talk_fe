@@ -40,11 +40,16 @@ function DocumentAttachment() {
         return;
       } else {
         const reader = new FileReader();
-        reader.readAsDataURL(file);
+        try {
+          reader.readAsDataURL(file);
+        } catch (error) {
+          console.error(error);
+        }
         reader.onload = (e) => {
           dispatch(
             addFiles({
               file: file,
+              fileData: e.target.result,
               type: getFileType(file.type),
             }),
           );

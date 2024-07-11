@@ -51,3 +51,16 @@ export const checkOnlineStatus = (onlineUsers, user, users) => {
 
   return check?.userId ? true : false;
 };
+
+export const trimFileName = (fileName: string, length: number = 20) => {
+  const extensionIndex = fileName.lastIndexOf(".");
+  const nameWithoutExtension = fileName.substring(0, extensionIndex);
+  return nameWithoutExtension?.length > length
+    ? nameWithoutExtension?.substring(0, length)
+    : nameWithoutExtension;
+};
+
+export const formatKbSize = (size: number) => {
+  const formattedSize = (size / 1024).toFixed(2);
+  return formattedSize + " KB";
+};
