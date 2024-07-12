@@ -1,66 +1,79 @@
-import { Plus, SendHorizontal, X } from "lucide-react";
+import { SendHorizontal, X } from "lucide-react";
 import { useSelector } from "react-redux";
-import { formatKbSize, trimFileName } from "../../lib/utils/utils";
+import { formatKbSize } from "../../lib/utils/utils";
+import FileUploaderInput from "./FileUploaderInput";
+import { useState } from "react";
+import AddFilesButton from "./AddFilesButton";
+import { uploadFiles } from "../../lib/utils/upload";
 
 function FileViewer() {
   const { files } = useSelector((state) => state.chat);
 
-  console.log(files[0].type);
-  const fileType = `../../assets/uploader/${files[0].type}.svg`;
-  console.log(fileType);
+  const [caption, setCaption] = useState("");
+  const [selectedFile, setSelectedFile] = useState(0);
+
+  const sendMessageHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    // upload file to cloudinary
+    const uploadedFiles = await uploadFiles(files);
+    console.log(uploadedFiles);
+  };
 
   return (
+    // header of the file viewer
     <div className="h-full w-full px-10">
       <div className="flex h-full w-full flex-col items-center justify-center gap-4">
         <div className="flex h-[380px] w-[319px] flex-col items-center justify-end gap-2 overflow-hidden rounded-xl">
-          {files[0].type === "IMAGE" ? (
+          {files[selectedFile].type === "IMAGE" ? (
             <img
               className="w-full rounded-xl object-cover"
-              src={files[0].fileData}
-              alt={files[0].file.name}
+              src={files[selectedFile]?.fileData}
+              alt={files[selectedFile]?.file?.name}
             />
           ) : (
             <img
               className="w-3/4 rounded-xl object-cover"
-              src={`../../../public/uploader/${files[0].type}.svg`}
-              alt={files[0].file.name}
+              src={`../../../public/uploader/${files[selectedFile].type}.svg`}
+              alt={files[selectedFile]?.file?.name}
             />
           )}
 
           <div className="flex flex-col">
             <h2 className="text-center text-lg font-semibold text-gray-700 dark:text-green-500">
-              {`${trimFileName(files[0].file.name)}.${files[0].file.name.split(".")[1]}`}
+              {`${files[selectedFile]?.file?.name}`}
             </h2>
 
             <h3 className="text-center font-semibold text-gray-700 dark:text-white">
-              Size : {formatKbSize(files[0].file.size)}
+              Size : {formatKbSize(files[selectedFile].file.size)}
             </h3>
           </div>
         </div>
-        <input
-          type="text"
-          className="w-3/4 rounded-lg px-5 py-3 text-lg text-green-500 placeholder:text-gray-500 focus:outline-none dark:bg-[#202124]"
-          placeholder="Add a caption..."
-        />
 
+        {/* file caption */}
+        <FileUploaderInput setCaption={setCaption} caption={caption} />
+
+        {/* selected images array */}
         <div className="mt-2 flex w-full items-center justify-center gap-3">
           <div className="flex w-full justify-center gap-2">
-            {files.map((file, index) => (
+            {files.map((file, index: number) => (
               <div
                 key={index}
-                className="group relative h-16 w-16 cursor-pointer overflow-hidden rounded-xl"
+                className={`group relative h-16 w-16 cursor-pointer overflow-hidden rounded-xl border-2 ${index === selectedFile ? "border-green-500" : "border-transparent"}`}
               >
-                {files[0].type === "IMAGE" ? (
+                {file.type === "IMAGE" ? (
                   <img
+                    onClick={() => setSelectedFile(index)}
                     className="h-full w-full rounded-xl object-cover"
-                    src={files[0].fileData}
-                    alt={files[0].file.name}
+                    src={file.fileData}
+                    alt={file.file.name}
                   />
                 ) : (
                   <img
+                    onClick={() => setSelectedFile(index)}
                     className="h-full w-full rounded-xl object-cover"
-                    src={`../../../public/uploader/${files[0].type}.svg`}
-                    alt={files[0].file.name}
+                    src={`../../../public/uploader/${file.type}.svg`}
+                    alt={file.file.name}
                   />
                 )}
 
@@ -72,11 +85,15 @@ function FileViewer() {
               </div>
             ))}
 
-            <div className="group relative grid h-16 w-16 cursor-pointer place-items-center rounded-xl dark:bg-[#202124]">
-              <Plus strokeWidth={2.5} size={30} />
-            </div>
+            {/* add files button */}
+            <AddFilesButton />
           </div>
-          <button className="w-[64px]!important h-[64px]!important rounded-full bg-green-500 p-3">
+
+          {/* send button */}
+          <button
+            className="w-[64px]!important h-[64px]!important rounded-full bg-green-500 p-3"
+            onClick={sendMessageHandler}
+          >
             <SendHorizontal strokeWidth={2} size={35} />
           </button>
         </div>
