@@ -1,4 +1,4 @@
-import { SendHorizontal, X } from "lucide-react";
+import { Loader, SendHorizontal, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { formatKbSize } from "../../lib/utils/utils";
 import FileUploaderInput from "./FileUploaderInput";
@@ -6,7 +6,7 @@ import { useState } from "react";
 import AddFilesButton from "./AddFilesButton";
 import { uploadFiles } from "../../lib/utils/upload";
 import { useDispatch } from "react-redux";
-import { sendMessages } from "../../features/chatSlice";
+import { emptyFile, sendMessages } from "../../features/chatSlice";
 import SocketContext from "../../context/SocketContext";
 
 function FileViewer({ socket }) {
@@ -36,7 +36,13 @@ function FileViewer({ socket }) {
     // dispatch action to send message
     const newMessage = await dispatch(sendMessages(values));
     socket.emit("send message", newMessage.payload);
+    console.log(newMessage);
+
     setLoading(false);
+
+    if (newMessage?.payload?._id) {
+      dispatch(emptyFile());
+    }
   };
 
   return (
@@ -112,8 +118,17 @@ function FileViewer({ socket }) {
           <button
             className="w-[64px]!important h-[64px]!important rounded-full bg-green-500 p-3"
             onClick={sendMessageHandler}
+            disabled={loading}
           >
-            <SendHorizontal strokeWidth={2} size={35} />
+            {loading ? (
+              <Loader
+                strokeWidth={2}
+                size={35}
+                className="animate-spin cursor-none text-white"
+              />
+            ) : (
+              <SendHorizontal strokeWidth={2} size={35} />
+            )}
           </button>
         </div>
       </div>

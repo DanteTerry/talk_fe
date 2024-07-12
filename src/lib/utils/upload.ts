@@ -31,8 +31,6 @@ const uploadToCloudinary = async (formData) => {
       formData,
     );
 
-    console.log(data);
-
     return data;
   } catch (error) {
     console.error("Error uploading to Cloudinary:", error);
