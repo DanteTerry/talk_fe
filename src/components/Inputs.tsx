@@ -5,6 +5,7 @@ import { sendMessages } from "../features/chatSlice";
 import { useSelector } from "react-redux";
 import FileSender from "./FileSender";
 import SocketContext from "../context/SocketContext";
+import { ClipLoader } from "react-spinners";
 
 function Inputs({
   sendMessage,
@@ -144,11 +145,7 @@ function Inputs({
             />
             <button type="submit">
               {status === "loading" && loading ? (
-                <Loader
-                  size={25}
-                  strokeWidth={1.5}
-                  className="animate-spin absolute right-4 top-2 cursor-none text-green-500"
-                />
+                <ClipLoader size={25} color="#22c55e" />
               ) : (
                 <SendHorizonal
                   size={25}

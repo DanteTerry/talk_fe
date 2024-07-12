@@ -1,4 +1,4 @@
-import { Loader, SendHorizontal, X } from "lucide-react";
+import { SendHorizontal, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { formatKbSize } from "../../lib/utils/utils";
 import FileUploaderInput from "./FileUploaderInput";
@@ -6,8 +6,10 @@ import { useState } from "react";
 import AddFilesButton from "./AddFilesButton";
 import { uploadFiles } from "../../lib/utils/upload";
 import { useDispatch } from "react-redux";
-import { emptyFile, sendMessages } from "../../features/chatSlice";
+import { emptyFile, removeFile, sendMessages } from "../../features/chatSlice";
 import SocketContext from "../../context/SocketContext";
+import { ClipLoader } from "react-spinners";
+import VideoThumbnail from "react-video-thumbnail";
 
 function FileViewer({ socket }) {
   const { files, activeConversation } = useSelector((state) => state.chat);
@@ -36,9 +38,9 @@ function FileViewer({ socket }) {
     // dispatch action to send message
     const newMessage = await dispatch(sendMessages(values));
     socket.emit("send message", newMessage.payload);
-    console.log(newMessage);
 
     setLoading(false);
+    console.log(newMessage.payload);
 
     if (newMessage?.payload?._id) {
       dispatch(emptyFile());
@@ -50,16 +52,18 @@ function FileViewer({ socket }) {
     <div className="h-full w-full px-10">
       <div className="flex h-full w-full flex-col items-center justify-center gap-4">
         <div className="flex h-[380px] w-[319px] flex-col items-center justify-end gap-2 overflow-hidden rounded-xl">
-          {files[selectedFile].type === "IMAGE" ? (
+          {files[selectedFile]?.type === "IMAGE" ? (
             <img
-              className="w-full rounded-xl object-cover"
+              className="w-3/4 rounded-xl object-contain"
               src={files[selectedFile]?.fileData}
               alt={files[selectedFile]?.file?.name}
             />
+          ) : files[selectedFile]?.type === "VIDEO" ? (
+            <video src={files[selectedFile]?.fileData} controls />
           ) : (
             <img
               className="w-3/4 rounded-xl object-cover"
-              src={`../../../public/uploader/${files[selectedFile].type}.svg`}
+              src={`../../../public/uploader/${files[selectedFile]?.type}.svg`}
               alt={files[selectedFile]?.file?.name}
             />
           )}
@@ -70,7 +74,7 @@ function FileViewer({ socket }) {
             </h2>
 
             <h3 className="text-center font-semibold text-gray-700 dark:text-white">
-              Size : {formatKbSize(files[selectedFile].file.size)}
+              Size : {formatKbSize(files[selectedFile]?.file?.size)}
             </h3>
           </div>
         </div>
@@ -84,25 +88,30 @@ function FileViewer({ socket }) {
             {files.map((file, index: number) => (
               <div
                 key={index}
+                onClick={() => setSelectedFile(index)}
                 className={`group relative h-16 w-16 cursor-pointer overflow-hidden rounded-xl border-2 ${index === selectedFile ? "border-green-500" : "border-transparent"}`}
               >
                 {file.type === "IMAGE" ? (
                   <img
-                    onClick={() => setSelectedFile(index)}
                     className="h-full w-full rounded-xl object-cover"
                     src={file.fileData}
                     alt={file.file.name}
                   />
+                ) : file.type === "VIDEO" ? (
+                  <VideoThumbnail
+                    videoUrl={file?.fileData}
+                    className={"h-full w-full object-contain"}
+                  />
                 ) : (
                   <img
-                    onClick={() => setSelectedFile(index)}
                     className="h-full w-full rounded-xl object-cover"
-                    src={`../../../public/uploader/${file.type}.svg`}
-                    alt={file.file.name}
+                    src={`../../../public/uploader/${file?.type}.svg`}
+                    alt={file?.file?.name}
                   />
                 )}
 
                 <X
+                  onClick={() => dispatch(removeFile(index))}
                   className="absolute right-1 top-1 cursor-none opacity-0 transition-opacity duration-150 group-hover:opacity-100 hover:cursor-pointer"
                   size={20}
                   strokeWidth={2}
@@ -116,16 +125,12 @@ function FileViewer({ socket }) {
 
           {/* send button */}
           <button
-            className="w-[64px]!important h-[64px]!important rounded-full bg-green-500 p-3"
+            className="w-[64px]!important h-[64px]!important flex items-center justify-center rounded-full bg-green-500 p-3"
             onClick={sendMessageHandler}
             disabled={loading}
           >
             {loading ? (
-              <Loader
-                strokeWidth={2}
-                size={35}
-                className="animate-spin cursor-none text-white"
-              />
+              <ClipLoader size={35} color="#fff" />
             ) : (
               <SendHorizontal strokeWidth={2} size={35} />
             )}

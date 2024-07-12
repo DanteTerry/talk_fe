@@ -17,15 +17,15 @@ export const getFileType = (file: string) => {
     case "application/vnd.ms-powerpoint":
       return "PPTX";
     case "video/mp4":
-      return "MP4";
+      return "VIDEO";
     case "video/mpeg":
-      return "MPEG";
+      return "VIDEO";
     case "video/ogg":
-      return "OGG";
+      return "VIDEO";
     case "video/quicktime":
-      return "MOV";
+      return "VIDEO";
     case "video/webm":
-      return "WEBM";
+      return "VIDEO";
     case "audio/mpeg":
       return "MP3";
     case "audio/ogg":
