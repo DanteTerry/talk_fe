@@ -5,19 +5,38 @@ import FileUploaderInput from "./FileUploaderInput";
 import { useState } from "react";
 import AddFilesButton from "./AddFilesButton";
 import { uploadFiles } from "../../lib/utils/upload";
+import { useDispatch } from "react-redux";
+import { sendMessages } from "../../features/chatSlice";
+import SocketContext from "../../context/SocketContext";
 
-function FileViewer() {
-  const { files } = useSelector((state) => state.chat);
+function FileViewer({ socket }) {
+  const { files, activeConversation } = useSelector((state) => state.chat);
+  const dispatch = useDispatch();
 
   const [caption, setCaption] = useState("");
   const [selectedFile, setSelectedFile] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const { token } = useSelector((state) => state.user.user);
 
   const sendMessageHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     // upload file to cloudinary
     const uploadedFiles = await uploadFiles(files);
-    console.log(uploadedFiles);
+
+    // send message to the server
+    const values = {
+      token,
+      sendMessage: caption,
+      conversation_id: activeConversation._id,
+      files: uploadedFiles?.length > 0 ? uploadedFiles : [],
+    };
+
+    // dispatch action to send message
+    const newMessage = await dispatch(sendMessages(values));
+    socket.emit("send message", newMessage.payload);
+    setLoading(false);
   };
 
   return (
@@ -102,4 +121,10 @@ function FileViewer() {
   );
 }
 
-export default FileViewer;
+const FileViewerWithContext = (props) => (
+  <SocketContext.Consumer>
+    {(socket) => <FileViewer {...props} socket={socket} />}
+  </SocketContext.Consumer>
+);
+
+export default FileViewerWithContext;
