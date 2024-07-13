@@ -17,7 +17,7 @@ function ChatMessages() {
   }, [messages]);
 
   return (
-    <div className="no-scrollbar row-span-9 flex h-[82vh] flex-col gap-1 overflow-y-scroll px-5 py-3 text-white scrollbar-track-white scrollbar-thumb-green-500 dark:scrollbar-track-black">
+    <div className="no-scrollbar row-span-9 flex h-[82vh] flex-col gap-1 overflow-y-scroll bg-gray-300 px-5 py-3 text-white scrollbar-track-white scrollbar-thumb-green-500 dark:bg-[#202124] dark:scrollbar-track-black">
       {messages.length &&
         messages.map((message: IMessage, index: number) => (
           <>
