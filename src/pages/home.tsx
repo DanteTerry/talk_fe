@@ -13,7 +13,7 @@ import Call from "../components/call/Call";
 
 function Home({ socket }) {
   const callData = {
-    receivingCall: true,
+    receivingCall: false,
     callEnded: false,
   };
 

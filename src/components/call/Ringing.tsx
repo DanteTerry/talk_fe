@@ -4,6 +4,7 @@ import { MdCallEnd } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { CallData } from "../../types/types";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import AudioRing from "../../../public/ringing.mp3";
 
 function Ringing({
   call,
@@ -36,7 +37,7 @@ function Ringing({
   }, [timer]);
 
   return (
-    <div className="absolute left-1/2 top-1/2 col-span-9 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-black/85">
+    <div className="absolute left-1/2 top-1/2 col-span-9 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-[#202c33]/85">
       <div className="flex h-full items-center justify-center rounded-lg">
         <div className="rounded-xl bg-[#202c33]">
           <div className="flex items-center justify-between rounded-t-xl bg-green-500 text-white">
@@ -71,7 +72,7 @@ function Ringing({
           </div>
         </div>
       </div>
-      <audio src="../../../public/ringing.mp3" autoPlay loop></audio>
+      <audio src={AudioRing} autoPlay loop></audio>
     </div>
   );
 }
