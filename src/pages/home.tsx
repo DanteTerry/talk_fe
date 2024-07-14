@@ -6,16 +6,25 @@ import HomeInfo from "../components/HomeInfo";
 import SocketContext from "../context/SocketContext";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { Peer } from "peerjs";
 import { updateMessagesAndConversation } from "../features/chatSlice";
 import { setOnlineUsers } from "../features/onlineUserSlice";
 import { setTyping } from "../features/typingSlice";
 import Call from "../components/call/Call";
+import {
+  getConversationId,
+  getConversationName,
+  getConversationPicture,
+} from "../lib/utils/utils";
 
 function Home({ socket }) {
   const callData = {
     receivingCall: false,
     callEnded: false,
     socketId: "",
+    name: "",
+    picture: "",
+    signal: "",
   };
 
   const { activeConversation } = useSelector((state) => state.chat);
@@ -53,25 +62,58 @@ function Home({ socket }) {
     socket.on("stop typing", () => dispatch(setTyping(false)));
   }, [dispatch, socket]);
 
-  const setUpMedia = async () => {
+  // call function
+  const callUser = () => {
+    if (myVideo.current) {
+      myVideo.current.srcObject = stream;
+    }
+    setCall({
+      ...call,
+      name: getConversationName(user, activeConversation.users),
+      picture: getConversationPicture(user, activeConversation.users),
+    });
+
+    const peer = new Peer();
+
+    peer.on("open", (id) => {
+      socket.emit("call user", {
+        userToCall: getConversationId(user, activeConversation.users),
+        name: user.name,
+        picture: user.picture,
+        signal: id,
+        stream: stream,
+      });
+    });
+  };
+
+  const setUpMedia = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
         setStream(stream);
-        if (userVideo.current) {
-          //userVideo.current.srcObject = stream;
-        }
       });
   };
+
   // call
   useEffect(() => {
     setUpMedia();
 
-    socket.on("setup socket", (id) => {
+    socket.on("setup socket", (id: string) => {
       setCall({ ...call, socketId: id });
     });
+
+    // on call user
+    socket.on("call user", (data) => {
+      setCall({
+        ...call,
+        receivingCall: true,
+        name: data.name,
+        picture: data.picture,
+        socketId: data.from,
+        signal: data.signal,
+      });
+    });
   }, []);
-  console.log(socketId);
 
   return (
     <div className="h-screen overflow-hidden dark:bg-[#17181B]">
@@ -82,15 +124,21 @@ function Home({ socket }) {
             <Outlet />
           </div>
           <div className="relative col-span-9 w-full">
-            {activeConversation.name ? <Chat /> : <HomeInfo />}
-            <Call
-              call={call}
-              userVideo={userVideo}
-              myVideo={myVideo}
-              setCall={setCall}
-              callAccepted={callAccepted}
-              stream={stream}
-            />
+            {activeConversation.name ? (
+              <Chat callUser={callUser} />
+            ) : (
+              <HomeInfo />
+            )}
+            {receivingCall && (
+              <Call
+                call={call}
+                userVideo={userVideo}
+                myVideo={myVideo}
+                setCall={setCall}
+                callAccepted={callAccepted}
+                stream={stream}
+              />
+            )}
           </div>
           {/* <div className="col-span-3 bg-blue-600">options</div */}
         </div>
