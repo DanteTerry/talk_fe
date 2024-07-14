@@ -1,4 +1,4 @@
-import { ArrowDownFromLine } from "lucide-react";
+import { MoveDown } from "lucide-react";
 import { timeHandler } from "../../lib/utils/utils";
 
 function FileOther({ file, type, message }) {
@@ -19,7 +19,7 @@ function FileOther({ file, type, message }) {
           target="_blank"
           className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300"
         >
-          <ArrowDownFromLine size={25} />
+          <MoveDown size={20} />
         </a>
       </div>
       <span className="self-end px-1 text-xs">

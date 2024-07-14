@@ -52,3 +52,9 @@ export interface Message {
   updatedAt: string;
   __v: number;
 }
+
+
+export interface CallData {
+  receivingCall: boolean;
+  callEnded: boolean;
+}
