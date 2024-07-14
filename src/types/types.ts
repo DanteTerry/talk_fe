@@ -53,8 +53,8 @@ export interface Message {
   __v: number;
 }
 
-
 export interface CallData {
   receivingCall: boolean;
   callEnded: boolean;
+  socketId: string;
 }

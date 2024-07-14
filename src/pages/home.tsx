@@ -4,7 +4,7 @@ import Chat from "../components/Chat";
 import { useSelector } from "react-redux";
 import HomeInfo from "../components/HomeInfo";
 import SocketContext from "../context/SocketContext";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateMessagesAndConversation } from "../features/chatSlice";
 import { setOnlineUsers } from "../features/onlineUserSlice";
@@ -15,15 +15,20 @@ function Home({ socket }) {
   const callData = {
     receivingCall: false,
     callEnded: false,
+    socketId: "",
   };
 
   const { activeConversation } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [call, setCall] = useState(callData);
+  const [stream, setStream] = useState({});
   const [callAccepted, setCallAccepted] = useState(false);
 
-  const { receivingCall, callEnded } = call;
+  const myVideo = useRef();
+  const userVideo = useRef();
+
+  const { receivingCall, callEnded, socketId } = call;
 
   // Join the user to the socket room
   useEffect(() => {
@@ -48,6 +53,26 @@ function Home({ socket }) {
     socket.on("stop typing", () => dispatch(setTyping(false)));
   }, [dispatch, socket]);
 
+  const setUpMedia = async () => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((stream) => {
+        setStream(stream);
+        if (userVideo.current) {
+          //userVideo.current.srcObject = stream;
+        }
+      });
+  };
+  // call
+  useEffect(() => {
+    setUpMedia();
+
+    socket.on("setup socket", (id) => {
+      setCall({ ...call, socketId: id });
+    });
+  }, []);
+  console.log(socketId);
+
   return (
     <div className="h-screen overflow-hidden dark:bg-[#17181B]">
       <div className="flex h-full">
@@ -58,7 +83,14 @@ function Home({ socket }) {
           </div>
           <div className="relative col-span-9 w-full">
             {activeConversation.name ? <Chat /> : <HomeInfo />}
-            <Call call={call} setCall={setCall} callAccepted={callAccepted} />
+            <Call
+              call={call}
+              userVideo={userVideo}
+              myVideo={myVideo}
+              setCall={setCall}
+              callAccepted={callAccepted}
+              stream={stream}
+            />
           </div>
           {/* <div className="col-span-3 bg-blue-600">options</div */}
         </div>

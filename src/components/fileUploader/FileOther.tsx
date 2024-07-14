@@ -1,4 +1,4 @@
-import { MoveDown } from "lucide-react";
+import { TbFileDownload } from "react-icons/tb";
 import { timeHandler } from "../../lib/utils/utils";
 
 function FileOther({ file, type, message }) {
@@ -17,9 +17,9 @@ function FileOther({ file, type, message }) {
         <a
           href={file.file.secure_url}
           target="_blank"
-          className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300"
+          className="flex h-10 w-10 items-center justify-center border-gray-300"
         >
-          <MoveDown size={20} />
+          <TbFileDownload size={25} />
         </a>
       </div>
       <span className="self-end px-1 text-xs">
