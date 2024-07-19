@@ -57,4 +57,7 @@ export interface CallData {
   receivingCall: boolean;
   callEnded: boolean;
   socketId: string;
+  name: string;
+  picture: string;
+  signal: null;
 }

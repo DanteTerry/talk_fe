@@ -10,25 +10,37 @@ import { updateMessagesAndConversation } from "../features/chatSlice";
 import { setOnlineUsers } from "../features/onlineUserSlice";
 import { setTyping } from "../features/typingSlice";
 import Call from "../components/call/Call";
+import Peer from "simple-peer";
+import {
+  getConversationId,
+  getConversationName,
+  getConversationPicture,
+} from "../lib/utils/utils";
+import { Socket } from "socket.io-client";
+import { CallData } from "../types/types";
+import Ringing from "../components/call/Ringing";
 
-function Home({ socket }) {
+function Home({ socket }: { socket: Socket }) {
   const callData = {
+    socketId: "",
     receivingCall: false,
     callEnded: false,
-    socketId: "",
+    name: "",
+    picture: "",
+    signal: null,
   };
 
   const { activeConversation } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const [call, setCall] = useState(callData);
-  const [stream, setStream] = useState({});
+  const [call, setCall] = useState<CallData>(callData);
+  const [stream, setStream] = useState<MediaStream | undefined>();
   const [callAccepted, setCallAccepted] = useState(false);
 
   const myVideo = useRef();
   const userVideo = useRef();
 
-  const { receivingCall, callEnded, socketId } = call;
+  const { receivingCall, callEnded } = call;
 
   // Join the user to the socket room
   useEffect(() => {
@@ -58,11 +70,44 @@ function Home({ socket }) {
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
         setStream(stream);
-        if (userVideo.current) {
-          //userVideo.current.srcObject = stream;
+        if (myVideo.current) {
+          myVideo.current.srcObject = stream;
+        }
+
+        if (myVideo.current) {
+          myVideo.current.srcObject = stream;
         }
       });
   };
+
+  // call user
+  const callUser = () => {
+    if (myVideo.current) {
+      myVideo.current.srcObject = stream;
+    }
+
+    setCall({
+      ...call,
+      name: getConversationName(user, activeConversation.users),
+      picture: getConversationPicture(user, activeConversation.users),
+    });
+
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream: stream,
+    });
+
+    peer.on("signal", (data) => {
+      socket.emit("call user", {
+        userToCall: getConversationId(user, activeConversation.users),
+        signalData: data,
+        from: user._id,
+        name: user.name,
+      });
+    });
+  };
+
   // call
   useEffect(() => {
     setUpMedia();
@@ -70,8 +115,18 @@ function Home({ socket }) {
     socket.on("setup socket", (id) => {
       setCall({ ...call, socketId: id });
     });
+
+    socket.on("call user", (data) => {
+      setCall({
+        ...call,
+        socketId: data.from,
+        name: data.name,
+        picture: data.picture,
+        receivingCall: true,
+        signal: data.signal,
+      });
+    });
   }, []);
-  console.log(socketId);
 
   return (
     <div className="h-screen overflow-hidden dark:bg-[#17181B]">
@@ -82,15 +137,24 @@ function Home({ socket }) {
             <Outlet />
           </div>
           <div className="relative col-span-9 w-full">
-            {activeConversation.name ? <Chat /> : <HomeInfo />}
-            <Call
-              call={call}
-              userVideo={userVideo}
-              myVideo={myVideo}
-              setCall={setCall}
-              callAccepted={callAccepted}
-              stream={stream}
-            />
+            {activeConversation.name ? (
+              <Chat callUser={callUser} />
+            ) : (
+              <HomeInfo />
+            )}
+            {!receivingCall && callEnded && (
+              <Call
+                call={call}
+                userVideo={userVideo}
+                myVideo={myVideo}
+                setCall={setCall}
+                callAccepted={callAccepted}
+                stream={stream}
+              />
+            )}
+            {receivingCall && !callEnded && (
+              <Ringing call={call} setCall={setCall} />
+            )}
           </div>
           {/* <div className="col-span-3 bg-blue-600">options</div */}
         </div>

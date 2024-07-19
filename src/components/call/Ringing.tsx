@@ -50,10 +50,10 @@ function Ringing({
           <div className="flex flex-col justify-between gap-6 px-4 py-3">
             <div className="flex w-full flex-col items-center justify-center gap-2 pt-6">
               <div className="h-24 w-24 overflow-hidden rounded-full bg-green-400">
-                <img src={user.picture} className="h-full w-full" />
+                <img src={call.picture} className="h-full w-full" />
               </div>
               <div className="flex flex-col items-center text-white">
-                <p className="text-lg">{user.name}</p>
+                <p className="text-lg">{call.name}</p>
                 <p className="text-sm">Video call</p>
               </div>
             </div>

@@ -9,6 +9,7 @@ import { checkOnlineStatus } from "../lib/utils/utils";
 function Conversations({ searchText }: { searchText: string }) {
   const onlineUsers = useSelector((state) => state.onlineUsers);
 
+  console.log(onlineUsers);
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.user);

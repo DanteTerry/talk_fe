@@ -9,9 +9,11 @@ import { useSelector } from "react-redux";
 function ChatBar({
   conversation,
   online,
+  callUser,
 }: {
   conversation: Conversation;
   online: boolean | undefined;
+  callUser: () => void;
 }) {
   const user = useSelector((state: any) => state.user.user);
   return (
@@ -33,28 +35,28 @@ function ChatBar({
       </div>
 
       <div className="flex items-center gap-10">
-        <div className="cursor-pointer">
+        <button>
           <Phone
             size={24}
             strokeWidth={1.5}
             className="course-pointer text-green-500 dark:text-white"
           />
-        </div>
-        <div className="cursor-pointer">
+        </button>
+        <button onClick={() => callUser()}>
           <Video
             size={30}
             strokeWidth={1.5}
             className="text-green-500 dark:text-white"
           />
-        </div>
+        </button>
 
-        <div className="cursor-pointer">
+        <button>
           <Info
             size={30}
             strokeWidth={1.5}
             className="text-green-500 dark:text-white"
           />
-        </div>
+        </button>
       </div>
     </div>
   );
