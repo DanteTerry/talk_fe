@@ -15,7 +15,7 @@ function ChatBar({
   conversation: Conversation;
   online: boolean | undefined;
   callUser: (callType: "video" | "audio") => void;
-  setCallType: "video" | "audio" | null;
+  setCallType: any;
 }) {
   const user = useSelector((state: any) => state.user.user);
   return (

@@ -1,8 +1,9 @@
 import { CallData } from "../../types/types";
 import CallAction from "./CallAction";
 import Ringing from "./Ringing";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import VoiceCallContainer from "./VoiceCallContainer";
+import AudioRing from "../../../public/ringing.mp3";
 
 function Call({
   call,
@@ -10,7 +11,7 @@ function Call({
   callAccepted,
   userVideo,
   myVideo,
-  stream,
+
   callType,
   answerCall,
 }: {
@@ -24,6 +25,7 @@ function Call({
   answerCall: () => void;
 }) {
   const { receivingCall, callEnded } = call;
+  const [toggle, setToggle] = useState(false);
   return (
     <div
       className={`absolute left-1/2 top-1/2 col-span-9 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-slate-800`}
@@ -42,7 +44,9 @@ function Call({
         {callType === "video" && (
           <div className="absolute flex h-[90vh] w-full items-center justify-center bg-slate-800">
             {/* user video */}
-            <div className="relative h-[91%] w-[98%] overflow-hidden rounded-xl bg-black">
+            <div
+              className={`relative h-[91%] w-[98%] overflow-hidden rounded-xl bg-black`}
+            >
               {callAccepted && !callEnded && (
                 <video
                   ref={userVideo}
@@ -53,17 +57,20 @@ function Call({
                 />
               )}
               {/* my video */}
-
-              <div className="absolute bottom-6 right-10 flex h-36 w-[230px] items-center justify-center overflow-hidden rounded-xl bg-black bg-green-400 text-white shadow-md">
-                <video
-                  ref={myVideo}
-                  className="z-50 w-full"
-                  playsInline
-                  muted
-                  autoPlay
-                />
-              </div>
             </div>
+            <div
+              onClick={() => setToggle((prev) => !prev)}
+              className="absolute bottom-14 right-10 flex h-36 w-[230px] items-center justify-center overflow-hidden rounded-xl text-white shadow-md"
+            >
+              <video
+                ref={myVideo}
+                className="w-full"
+                playsInline
+                muted
+                autoPlay
+              />
+            </div>
+            {!callAccepted && <audio src={AudioRing} autoPlay loop></audio>}
           </div>
         )}
       </div>
