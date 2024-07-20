@@ -2,9 +2,11 @@ import { Mic, UserPlus, Video } from "lucide-react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdCallEnd } from "react-icons/md";
 
-function CallAction() {
+function CallAction({ callType }: { callType: "video" | "audio" | null }) {
   return (
-    <div className="absolute bottom-0 z-50 flex w-full justify-center">
+    <div
+      className={`absolute z-50 flex w-full justify-center ${callType === "video" || callType === "audio" ? "bottom-16" : "bottom-0"}`}
+    >
       <div className="flex w-full justify-center gap-3 rounded-t-3xl bg-gray-900 px-3 py-4 text-white">
         {/* add user button */}
         <button className="grid h-12 w-12 place-items-center rounded-full bg-slate-800 p-1">

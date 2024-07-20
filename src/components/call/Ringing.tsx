@@ -9,16 +9,15 @@ import AudioRing from "../../../public/ringing.mp3";
 function Ringing({
   call,
   setCall,
+  callType,
 }: {
   call: CallData;
   setCall: Dispatch<SetStateAction<CallData>>;
+  callType: "video" | "audio" | null;
 }) {
-  const { user } = useSelector((state: any) => state.user);
-  const { receivingCall, callEnded } = call;
-
   const [timer, setTimer] = useState(0);
 
-  let interval;
+  let interval: any;
 
   const handleTimer = () => {
     interval = setInterval(() => {
@@ -54,7 +53,7 @@ function Ringing({
               </div>
               <div className="flex flex-col items-center text-white">
                 <p className="text-lg">{call.name}</p>
-                <p className="text-sm">Video call</p>
+                <p className="text-sm">{callType} call</p>
               </div>
             </div>
             <div className="flex items-center gap-3 rounded-b-xl pb-2 text-white">

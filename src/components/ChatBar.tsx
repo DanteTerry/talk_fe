@@ -10,10 +10,12 @@ function ChatBar({
   conversation,
   online,
   callUser,
+  setCallType,
 }: {
   conversation: Conversation;
   online: boolean | undefined;
-  callUser: () => void;
+  callUser: (callType: string) => void;
+  setCallType: "video" | "audio" | null;
 }) {
   const user = useSelector((state: any) => state.user.user);
   return (
@@ -35,14 +37,24 @@ function ChatBar({
       </div>
 
       <div className="flex items-center gap-10">
-        <button>
+        <button
+          onClick={() => {
+            setCallType("audio");
+            callUser("audio");
+          }}
+        >
           <Phone
             size={24}
             strokeWidth={1.5}
             className="course-pointer text-green-500 dark:text-white"
           />
         </button>
-        <button onClick={() => callUser()}>
+        <button
+          onClick={() => {
+            setCallType("video");
+            callUser("video");
+          }}
+        >
           <Video
             size={30}
             strokeWidth={1.5}

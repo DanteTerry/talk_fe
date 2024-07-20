@@ -11,6 +11,7 @@ function Call({
   userVideo,
   myVideo,
   stream,
+  callType,
 }: {
   call: CallData;
   setCall: Dispatch<SetStateAction<CallData>>;
@@ -18,25 +19,25 @@ function Call({
   userVideo: any;
   myVideo: any;
   stream: any;
+  callType: "video" | "audio" | null;
 }) {
-  const { receivingCall, callEnded } = call;
-  const isVideoCall = true;
-
   return (
     <div
-      className={`absolute left-1/2 top-1/2 col-span-9 h-full w-1/2 -translate-x-1/2 -translate-y-1/2 ${receivingCall && !callEnded ? "hidden" : ""}`}
+      className={`absolute left-1/2 top-1/2 col-span-9 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-slate-800`}
     >
       <div className="relative flex h-full w-full flex-col justify-between">
         {/* container */}
-        {<VoiceCallContainer name={"arpit Yadav"} />}
+        {callType === "audio" && <VoiceCallContainer name={"arpit Yadav"} />}
 
         {/* actions */}
-        <CallAction />
+        {(callType === "video" || callType === "audio") && (
+          <CallAction callType={callType} />
+        )}
 
         {/* video streams */}
 
-        {receivingCall && !callEnded && (
-          <div className="absolute flex h-[91vh] w-full items-center justify-center bg-slate-800">
+        {callType === "video" && (
+          <div className="absolute flex h-[90vh] w-full items-center justify-center bg-slate-800">
             {/* user video */}
             <div className="relative h-[91%] w-[98%] overflow-hidden rounded-xl bg-green-500">
               <video

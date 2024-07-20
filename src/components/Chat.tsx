@@ -9,7 +9,13 @@ import EmojiPicker from "emoji-picker-react";
 import { checkOnlineStatus } from "../lib/utils/utils";
 import FilePreview from "./fileUploader/FilePreview";
 
-function Chat({ callUser }: { callUser: () => void }) {
+function Chat({
+  callUser,
+  setCallType,
+}: {
+  callUser: (callType: string) => void;
+  setCallType: "video" | "audio" | null;
+}) {
   const dispatch = useDispatch();
 
   const { activeConversation } = useSelector((state: any) => state.chat);
@@ -57,6 +63,7 @@ function Chat({ callUser }: { callUser: () => void }) {
         conversation={conversation}
         callUser={callUser}
         online={online}
+        setCallType={setCallType}
       />
       {files.length > 0 ? <FilePreview /> : <ChatMessages />}
 

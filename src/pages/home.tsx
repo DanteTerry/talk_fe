@@ -19,6 +19,7 @@ import {
 import { Socket } from "socket.io-client";
 import { CallData } from "../types/types";
 import Ringing from "../components/call/Ringing";
+import { set } from "react-hook-form";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -36,6 +37,8 @@ function Home({ socket }: { socket: Socket }) {
   const [call, setCall] = useState<CallData>(callData);
   const [stream, setStream] = useState<MediaStream | undefined>();
   const [callAccepted, setCallAccepted] = useState(false);
+
+  const [callType, setCallType] = useState<"video" | "audio" | null>(null);
 
   const myVideo = useRef();
   const userVideo = useRef();
@@ -81,7 +84,7 @@ function Home({ socket }: { socket: Socket }) {
   };
 
   // call user
-  const callUser = () => {
+  const callUser = (callType) => {
     if (myVideo.current) {
       myVideo.current.srcObject = stream;
     }
@@ -98,12 +101,15 @@ function Home({ socket }: { socket: Socket }) {
       stream: stream,
     });
 
+    setCallType(callType);
     peer.on("signal", (data) => {
       socket.emit("call user", {
         userToCall: getConversationId(user, activeConversation.users),
         signalData: data,
         from: user._id,
         name: user.name,
+        picture: user.picture,
+        callType: callType,
       });
     });
   };
@@ -117,6 +123,7 @@ function Home({ socket }: { socket: Socket }) {
     });
 
     socket.on("call user", (data) => {
+      console.log(data);
       setCall({
         ...call,
         socketId: data.from,
@@ -125,8 +132,9 @@ function Home({ socket }: { socket: Socket }) {
         receivingCall: true,
         signal: data.signal,
       });
+      setCallType(data.callType);
     });
-  }, []);
+  }, [call, socket]);
 
   return (
     <div className="h-screen overflow-hidden dark:bg-[#17181B]">
@@ -138,11 +146,12 @@ function Home({ socket }: { socket: Socket }) {
           </div>
           <div className="relative col-span-9 w-full">
             {activeConversation.name ? (
-              <Chat callUser={callUser} />
+              <Chat callUser={callUser} setCallType={setCallType} />
             ) : (
               <HomeInfo />
             )}
-            {!receivingCall && callEnded && (
+
+            {(callType === "video" || callType === "audio") && (
               <Call
                 call={call}
                 userVideo={userVideo}
@@ -150,10 +159,12 @@ function Home({ socket }: { socket: Socket }) {
                 setCall={setCall}
                 callAccepted={callAccepted}
                 stream={stream}
+                callType={callType}
               />
             )}
+
             {receivingCall && !callEnded && (
-              <Ringing call={call} setCall={setCall} />
+              <Ringing call={call} setCall={setCall} callType={callType} />
             )}
           </div>
           {/* <div className="col-span-3 bg-blue-600">options</div */}

@@ -1,4 +1,4 @@
-import { Loader, Mic, Paperclip, SendHorizonal, Smile, X } from "lucide-react";
+import { Mic, Paperclip, SendHorizonal, Smile, X } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { sendMessages } from "../features/chatSlice";

@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 function VoiceCallContainer({ name }: { name: string }) {
   const { user } = useSelector((state: RootState) => state.user);
   return (
-    <div className="callBackground flex h-[90vh] w-full items-center justify-center">
+    <div className="callBackground flex h-[92vh] w-full items-center justify-center">
       <div className="flex w-full flex-col items-center justify-center gap-4">
         <div className="h-48 w-48 overflow-hidden rounded-full bg-green-400">
           <img src={user.picture} className="h-full w-full" />
