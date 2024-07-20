@@ -59,5 +59,5 @@ export interface CallData {
   socketId: string;
   name: string;
   picture: string;
-  signal: null;
+  signal: string;
 }

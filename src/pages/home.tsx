@@ -18,8 +18,6 @@ import {
 } from "../lib/utils/utils";
 import { Socket } from "socket.io-client";
 import { CallData } from "../types/types";
-import Ringing from "../components/call/Ringing";
-import { set } from "react-hook-form";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -28,66 +26,64 @@ function Home({ socket }: { socket: Socket }) {
     callEnded: false,
     name: "",
     picture: "",
-    signal: null,
+    signal: "",
   };
 
   const { activeConversation } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [call, setCall] = useState<CallData>(callData);
-  const [stream, setStream] = useState<MediaStream | undefined>();
+  const [stream, setStream] = useState<MediaStream | undefined>(undefined);
   const [callAccepted, setCallAccepted] = useState(false);
-
   const [callType, setCallType] = useState<"video" | "audio" | null>(null);
 
-  const myVideo = useRef();
-  const userVideo = useRef();
-
-  const { receivingCall, callEnded } = call;
+  const myVideo = useRef<HTMLVideoElement>(null);
+  const userVideo = useRef<HTMLVideoElement>(null);
+  const connectionRef = useRef<Peer.Instance | null>(null);
 
   // Join the user to the socket room
   useEffect(() => {
     socket.emit("join", user._id);
-    // get all user online
+
+    // Listen for online users
     socket.on("get-online-users", async (users) => {
       await dispatch(setOnlineUsers(users));
     });
-  }, [user, socket, dispatch]);
+  }, [dispatch, user._id, socket]);
 
-  //listing for new messages
+  // Listen for new messages and typing events
   useEffect(() => {
-    // receive message
     socket.on("receive message", (message) => {
       dispatch(updateMessagesAndConversation(message));
     });
 
-    // set typing
     socket.on("typing", () => dispatch(setTyping(true)));
 
-    // remove typing
     socket.on("stop typing", () => dispatch(setTyping(false)));
   }, [dispatch, socket]);
 
-  const setUpMedia = async () => {
+  // Set up media devices (video and audio)
+  const setUpMedia = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
         setStream(stream);
         if (myVideo.current) {
-          myVideo.current.srcObject = stream;
-        }
-
-        if (myVideo.current) {
-          myVideo.current.srcObject = stream;
+          myVideo.current.srcObject = stream; // Set video stream to myVideo element
         }
       });
   };
 
-  // call user
-  const callUser = (callType) => {
-    if (myVideo.current) {
+  // Enable media on the video element
+  const enableMedia = () => {
+    if (myVideo.current && stream) {
       myVideo.current.srcObject = stream;
     }
+  };
+
+  // Function to call a user
+  const callUser = (callType: "video" | "audio") => {
+    enableMedia();
 
     setCall({
       ...call,
@@ -102,19 +98,60 @@ function Home({ socket }: { socket: Socket }) {
     });
 
     setCallType(callType);
+
     peer.on("signal", (data) => {
       socket.emit("call user", {
         userToCall: getConversationId(user, activeConversation.users),
-        signalData: data,
-        from: user._id,
+        signal: data,
+        from: socket.id,
         name: user.name,
         picture: user.picture,
         callType: callType,
       });
     });
+
+    peer.on("stream", (stream) => {
+      if (userVideo.current) {
+        userVideo.current.srcObject = stream; // Set received stream to userVideo element
+      }
+    });
+
+    socket.on("call accepted", (signal) => {
+      setCallAccepted(true);
+      peer.signal(signal); // Signal the peer with the received signal
+    });
+
+    connectionRef.current = peer; // Save the peer connection
   };
 
-  // call
+  // Function to answer a call
+  const answerCall = () => {
+    enableMedia();
+
+    setCallAccepted(true);
+
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      stream: stream,
+    });
+
+    peer.on("signal", (data) => {
+      socket.emit("answer call", { signal: data, to: call.socketId });
+    });
+
+    peer.on("stream", (stream) => {
+      if (userVideo.current) {
+        userVideo.current.srcObject = stream; // Set received stream to userVideo element
+      }
+    });
+
+    peer.signal(call.signal); // Signal the peer with the received signal
+
+    connectionRef.current = peer; // Save the peer connection
+  };
+
+  // Set up socket listeners for call events
   useEffect(() => {
     setUpMedia();
 
@@ -123,7 +160,6 @@ function Home({ socket }: { socket: Socket }) {
     });
 
     socket.on("call user", (data) => {
-      console.log(data);
       setCall({
         ...call,
         socketId: data.from,
@@ -132,6 +168,7 @@ function Home({ socket }: { socket: Socket }) {
         receivingCall: true,
         signal: data.signal,
       });
+
       setCallType(data.callType);
     });
   }, [call, socket]);
@@ -160,14 +197,10 @@ function Home({ socket }: { socket: Socket }) {
                 callAccepted={callAccepted}
                 stream={stream}
                 callType={callType}
+                answerCall={answerCall}
               />
             )}
-
-            {receivingCall && !callEnded && (
-              <Ringing call={call} setCall={setCall} callType={callType} />
-            )}
           </div>
-          {/* <div className="col-span-3 bg-blue-600">options</div */}
         </div>
       </div>
     </div>

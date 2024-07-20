@@ -1,7 +1,7 @@
 import { Video, X } from "lucide-react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdCallEnd } from "react-icons/md";
-import { useSelector } from "react-redux";
+
 import { CallData } from "../../types/types";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import AudioRing from "../../../public/ringing.mp3";
@@ -10,10 +10,12 @@ function Ringing({
   call,
   setCall,
   callType,
+  answerCall,
 }: {
   call: CallData;
   setCall: Dispatch<SetStateAction<CallData>>;
   callType: "video" | "audio" | null;
+  answerCall: () => void;
 }) {
   const [timer, setTimer] = useState(0);
 
@@ -60,7 +62,10 @@ function Ringing({
               <button className="rounded-full bg-gray-700 px-4 py-2">
                 <BsThreeDots size={25} />
               </button>
-              <button className="flex items-center gap-3 rounded-full bg-green-500 px-4 py-2">
+              <button
+                className="flex items-center gap-3 rounded-full bg-green-500 px-4 py-2"
+                onClick={answerCall}
+              >
                 <Video strokeWidth={1.4} />
                 <span className="text-sm">Accept</span>
               </button>

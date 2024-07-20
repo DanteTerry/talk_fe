@@ -1,11 +1,14 @@
 import { Mic, UserPlus, Video } from "lucide-react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdCallEnd } from "react-icons/md";
+import { useSelector } from "react-redux";
 
 function CallAction({ callType }: { callType: "video" | "audio" | null }) {
+  const { activeConversation } = useSelector((state) => state.chat);
+
   return (
     <div
-      className={`absolute z-50 flex w-full justify-center ${callType === "video" || callType === "audio" ? "bottom-16" : "bottom-0"}`}
+      className={`absolute z-50 flex w-full justify-center ${activeConversation._id ? "bottom-16" : "bottom-0"}`}
     >
       <div className="flex w-full justify-center gap-3 rounded-t-3xl bg-gray-900 px-3 py-4 text-white">
         {/* add user button */}

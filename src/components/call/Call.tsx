@@ -12,6 +12,7 @@ function Call({
   myVideo,
   stream,
   callType,
+  answerCall,
 }: {
   call: CallData;
   setCall: Dispatch<SetStateAction<CallData>>;
@@ -20,7 +21,9 @@ function Call({
   myVideo: any;
   stream: any;
   callType: "video" | "audio" | null;
+  answerCall: () => void;
 }) {
+  const { receivingCall, callEnded } = call;
   return (
     <div
       className={`absolute left-1/2 top-1/2 col-span-9 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-slate-800`}
@@ -39,28 +42,39 @@ function Call({
         {callType === "video" && (
           <div className="absolute flex h-[90vh] w-full items-center justify-center bg-slate-800">
             {/* user video */}
-            <div className="relative h-[91%] w-[98%] overflow-hidden rounded-xl bg-green-500">
-              <video
-                ref={myVideo}
-                className="w-full"
-                playsInline
-                muted
-                autoPlay
-              />
-              {/* my video */}
-              <div className="absolute bottom-6 right-10 flex h-36 w-[230px] items-center justify-center overflow-hidden rounded-xl bg-black text-white shadow-md">
+            <div className="relative h-[91%] w-[98%] overflow-hidden rounded-xl bg-black">
+              {callAccepted && !callEnded && (
                 <video
-                  ref={myVideo}
+                  ref={userVideo}
+                  className="w-full"
                   playsInline
                   muted
                   autoPlay
-                  className="w-full"
+                />
+              )}
+              {/* my video */}
+
+              <div className="absolute bottom-6 right-10 flex h-36 w-[230px] items-center justify-center overflow-hidden rounded-xl bg-black bg-green-400 text-white shadow-md">
+                <video
+                  ref={myVideo}
+                  className="z-50 w-full"
+                  playsInline
+                  muted
+                  autoPlay
                 />
               </div>
             </div>
           </div>
         )}
       </div>
+      {receivingCall && !callEnded && !callAccepted && (
+        <Ringing
+          call={call}
+          setCall={setCall}
+          callType={callType}
+          answerCall={answerCall}
+        />
+      )}
     </div>
   );
 }
