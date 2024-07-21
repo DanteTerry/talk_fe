@@ -11,9 +11,9 @@ function Call({
   callAccepted,
   userVideo,
   myVideo,
-
   callType,
   answerCall,
+  endCall,
 }: {
   call: CallData;
   setCall: Dispatch<SetStateAction<CallData>>;
@@ -23,6 +23,7 @@ function Call({
   stream: any;
   callType: "video" | "audio" | null;
   answerCall: () => void;
+  endCall: () => void;
 }) {
   const { receivingCall, callEnded } = call;
   const [toggle, setToggle] = useState(false);
@@ -36,7 +37,7 @@ function Call({
 
         {/* actions */}
         {(callType === "video" || callType === "audio") && (
-          <CallAction callType={callType} />
+          <CallAction callType={callType} endCall={endCall} />
         )}
 
         {/* video streams */}
@@ -50,7 +51,7 @@ function Call({
               {callAccepted && !callEnded && (
                 <video
                   ref={userVideo}
-                  className="w-full"
+                  className="z-50 w-full"
                   playsInline
                   muted
                   autoPlay
@@ -60,11 +61,11 @@ function Call({
             </div>
             <div
               onClick={() => setToggle((prev) => !prev)}
-              className="absolute bottom-14 right-10 flex h-36 w-[230px] items-center justify-center overflow-hidden rounded-xl text-white shadow-md"
+              className="absolute bottom-14 right-10 flex h-36 w-[230px] items-center justify-center overflow-hidden rounded-xl bg-green-500 text-white shadow-md"
             >
               <video
                 ref={myVideo}
-                className="w-full"
+                className="z-50 w-full"
                 playsInline
                 muted
                 autoPlay
@@ -74,12 +75,13 @@ function Call({
           </div>
         )}
       </div>
-      {receivingCall && !callEnded && !callAccepted && (
+      {receivingCall && !callAccepted && !callAccepted && (
         <Ringing
           call={call}
           setCall={setCall}
           callType={callType}
           answerCall={answerCall}
+          endCall={endCall}
         />
       )}
     </div>

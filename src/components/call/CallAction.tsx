@@ -3,7 +3,13 @@ import { BsThreeDots } from "react-icons/bs";
 import { MdCallEnd } from "react-icons/md";
 import { useSelector } from "react-redux";
 
-function CallAction({ callType }: { callType: "video" | "audio" | null }) {
+function CallAction({
+  callType,
+  endCall,
+}: {
+  callType: "video" | "audio" | null;
+  endCall: () => void;
+}) {
   const { activeConversation } = useSelector((state) => state.chat);
 
   return (
@@ -32,7 +38,10 @@ function CallAction({ callType }: { callType: "video" | "audio" | null }) {
         </button>
 
         {/* end call button */}
-        <button className="grid place-items-center rounded-full bg-red-700 px-7 py-1">
+        <button
+          className="grid place-items-center rounded-full bg-red-700 px-7 py-1"
+          onClick={endCall}
+        >
           <MdCallEnd size={25} />
         </button>
       </div>

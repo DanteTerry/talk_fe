@@ -11,11 +11,13 @@ function Ringing({
   setCall,
   callType,
   answerCall,
+  endCall,
 }: {
   call: CallData;
   setCall: Dispatch<SetStateAction<CallData>>;
   callType: "video" | "audio" | null;
   answerCall: () => void;
+  endCall: () => void;
 }) {
   const [timer, setTimer] = useState(0);
 
@@ -38,7 +40,7 @@ function Ringing({
   }, [timer]);
 
   return (
-    <div className="absolute left-1/2 top-1/2 col-span-9 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-[#202c33]/85">
+    <div className="absolute left-1/2 top-1/2 z-50 col-span-9 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-[#202c33]/85">
       <div className="flex h-full items-center justify-center rounded-lg">
         <div className="rounded-xl bg-[#202c33]">
           <div className="flex items-center justify-between rounded-t-xl bg-green-500 text-white">
@@ -69,7 +71,10 @@ function Ringing({
                 <Video strokeWidth={1.4} />
                 <span className="text-sm">Accept</span>
               </button>
-              <button className="rounded-full bg-red-700 px-4 py-2">
+              <button
+                className="rounded-full bg-red-700 px-4 py-2"
+                onClick={endCall}
+              >
                 <MdCallEnd size={25} />
               </button>
             </div>

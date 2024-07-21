@@ -37,6 +37,8 @@ function Home({ socket }: { socket: Socket }) {
   const [callAccepted, setCallAccepted] = useState(false);
   const [callType, setCallType] = useState<"video" | "audio" | null>(null);
 
+  const { callEnded } = call;
+
   const myVideo = useRef<HTMLVideoElement>(null);
   const userVideo = useRef<HTMLVideoElement>(null);
   const connectionRef = useRef<Peer.Instance | null>(null);
@@ -77,7 +79,7 @@ function Home({ socket }: { socket: Socket }) {
   // Enable media on the video element
   const enableMedia = () => {
     if (myVideo.current && stream) {
-      myVideo.current.srcObject = stream;
+      myVideo.current.srcObject = stream; // Set video stream to myVideo element
     }
   };
 
@@ -151,6 +153,12 @@ function Home({ socket }: { socket: Socket }) {
     connectionRef.current = peer; // Save the peer connection
   };
 
+  const endCall = () => {
+    setCall({ ...call, callEnded: true, receivingCall: false });
+    socket.emit("end call", call.socketId); // Emit end call event
+    connectionRef?.current?.destroy(); // Destroy the peer
+  };
+
   // Set up socket listeners for call events
   useEffect(() => {
     setUpMedia();
@@ -171,7 +179,16 @@ function Home({ socket }: { socket: Socket }) {
 
       setCallType(data.callType);
     });
-  }, [call, socket]);
+
+    socket.on("end call", () => {
+      setCall({ ...call, callEnded: true, receivingCall: false });
+      myVideo.current.srcObject = null; // Set my video stream to null
+
+      if (callAccepted) {
+        connectionRef?.current?.destroy(); // Destroy the peer
+      }
+    });
+  }, []);
 
   return (
     <div className="h-screen overflow-hidden dark:bg-[#17181B]">
@@ -188,7 +205,7 @@ function Home({ socket }: { socket: Socket }) {
               <HomeInfo />
             )}
 
-            {(callType === "video" || callType === "audio") && (
+            {(callType === "video" || callType === "audio") && !callEnded && (
               <Call
                 call={call}
                 userVideo={userVideo}
@@ -198,6 +215,7 @@ function Home({ socket }: { socket: Socket }) {
                 stream={stream}
                 callType={callType}
                 answerCall={answerCall}
+                endCall={endCall}
               />
             )}
           </div>
