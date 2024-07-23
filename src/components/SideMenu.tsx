@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toggleDarkMode } from "../features/darkmodeSlice";
 import { useSelector } from "react-redux";
+import { setActiveConversation } from "../features/chatSlice";
 
 function SideMenu() {
   const location = useLocation();
@@ -14,7 +15,9 @@ function SideMenu() {
 
   return (
     <aside className="flex h-full w-[130px] flex-col items-center justify-between pb-10 dark:bg-[#17181B]">
-      <img src={chatDarkLogo} className="w-[100px]" />
+      <button onClick={() => dispatch(setActiveConversation({}))}>
+        <img src={chatDarkLogo} className="w-[100px]" />
+      </button>
 
       <div className="flex w-full flex-col items-center gap-8">
         {sidebarItems.map((items, index) => {

@@ -204,8 +204,6 @@ function Home({ socket }: { socket: Socket }) {
     });
   }, [call, callAccepted, socket]);
 
-  console.log(receivingCall, callEnded, callType);
-
   return (
     <div className="h-screen overflow-hidden dark:bg-[#17181B]">
       <div className="flex h-full">

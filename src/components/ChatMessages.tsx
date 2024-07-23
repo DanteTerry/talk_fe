@@ -14,13 +14,15 @@ function ChatMessages() {
     if (endRef.current) {
       endRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }
-  }, [messages]);
+  }, [messages, typing]); // Add typing as dependency to scroll when typing state changes
 
   return (
     <div className="no-scrollbar chatDarkBg row-span-9 flex h-[82vh] flex-col gap-1 overflow-y-scroll px-5 py-3 text-white scrollbar-track-white scrollbar-thumb-green-500 dark:scrollbar-track-black">
-      {messages.length &&
-        messages.map((message: IMessage, index: number) => (
+      {messages.length > 0 &&
+        messages.map((message: IMessage, index) => (
           <>
+            {" "}
+            {/* Add a unique key to the parent element */}
             {message?.files?.length > 0 &&
               message?.files.map((file) => (
                 <FileMessage
@@ -31,19 +33,21 @@ function ChatMessages() {
                   type={file?.type}
                 />
               ))}
-
             {message?.message?.length > 0 && message?.files?.length === 0 && (
               <Message
                 message={message}
                 key={message._id}
                 me={user._id === message.sender._id}
+                messages={messages}
+                index={index}
               />
             )}
           </>
         ))}
-
-      {typing ? "Typing..." : ""}
-      <div className="mt-2" ref={endRef}></div>
+      {typing && <div>Typing...</div>}{" "}
+      {/* Render typing indicator only when typing */}
+      <div className="mt-2" ref={endRef}></div>{" "}
+      {/* Render the endRef element only once */}
     </div>
   );
 }
