@@ -29,3 +29,7 @@
     url("/src/assets/darkChatBg.png");
   background-size: contain;
 }
+
+.css-1u9des2-indicatorSeparator {
+  display: none !important;
+}
