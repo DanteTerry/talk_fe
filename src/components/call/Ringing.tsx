@@ -15,7 +15,7 @@ function Ringing({
 }: {
   call: CallData;
   setCall: Dispatch<SetStateAction<CallData>>;
-  callType: "video" | "audio" | null;
+  callType: "video" | "audio" | "";
   answerCall: () => void;
   endCall: () => void;
 }) {

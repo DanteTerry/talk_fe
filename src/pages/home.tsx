@@ -18,6 +18,7 @@ import {
 } from "../lib/utils/utils";
 import { Socket } from "socket.io-client";
 import { CallData } from "../types/types";
+import Ringing from "../components/call/Ringing";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -35,9 +36,9 @@ function Home({ socket }: { socket: Socket }) {
   const [call, setCall] = useState<CallData>(callData);
   const [stream, setStream] = useState<MediaStream | undefined>(undefined);
   const [callAccepted, setCallAccepted] = useState(false);
-  const [callType, setCallType] = useState<"video" | "audio" | null>(null);
+  const [callType, setCallType] = useState<"video" | "audio" | "">("");
 
-  const { callEnded } = call;
+  const { callEnded, receivingCall } = call;
 
   const myVideo = useRef<HTMLVideoElement>(null);
   const userVideo = useRef<HTMLVideoElement>(null);
@@ -89,6 +90,7 @@ function Home({ socket }: { socket: Socket }) {
 
     setCall({
       ...call,
+      callEnded: false,
       name: getConversationName(user, activeConversation.users),
       picture: getConversationPicture(user, activeConversation.users),
     });
@@ -120,10 +122,16 @@ function Home({ socket }: { socket: Socket }) {
 
     socket.on("call accepted", (signal) => {
       setCallAccepted(true);
+      setCall({ ...call, receivingCall: false, callEnded: false });
       peer.signal(signal); // Signal the peer with the received signal
     });
 
     connectionRef.current = peer; // Save the peer connection
+
+    peer.on("close", () => {
+      console.log("peer closed");
+      socket.off("call accepted");
+    });
   };
 
   // Function to answer a call
@@ -131,6 +139,7 @@ function Home({ socket }: { socket: Socket }) {
     enableMedia();
 
     setCallAccepted(true);
+    setCall({ ...call, receivingCall: false, callEnded: false });
 
     const peer = new Peer({
       initiator: false,
@@ -151,9 +160,11 @@ function Home({ socket }: { socket: Socket }) {
     peer.signal(call.signal); // Signal the peer with the received signal
 
     connectionRef.current = peer; // Save the peer connection
+    setCallType("video");
   };
 
   const endCall = () => {
+    setCallType("");
     setCall({ ...call, callEnded: true, receivingCall: false });
     socket.emit("end call", call.socketId); // Emit end call event
     connectionRef?.current?.destroy(); // Destroy the peer
@@ -168,27 +179,32 @@ function Home({ socket }: { socket: Socket }) {
     });
 
     socket.on("call user", (data) => {
+      setCallType("");
       setCall({
         ...call,
+        callEnded: false,
         socketId: data.from,
         name: data.name,
         picture: data.picture,
         receivingCall: true,
         signal: data.signal,
       });
-
-      setCallType(data.callType);
     });
 
     socket.on("end call", () => {
+      setCallType("");
       setCall({ ...call, callEnded: true, receivingCall: false });
-      myVideo.current.srcObject = null; // Set my video stream to null
+      if (myVideo.current) {
+        myVideo.current.srcObject = null; // Set my video stream to null
+      }
 
       if (callAccepted) {
         connectionRef?.current?.destroy(); // Destroy the peer
       }
     });
-  }, []);
+  }, [call, callAccepted, socket]);
+
+  console.log(receivingCall, callEnded, callType);
 
   return (
     <div className="h-screen overflow-hidden dark:bg-[#17181B]">
@@ -205,7 +221,7 @@ function Home({ socket }: { socket: Socket }) {
               <HomeInfo />
             )}
 
-            {(callType === "video" || callType === "audio") && !callEnded && (
+            {(callType === "video" || callType === "audio") && (
               <Call
                 call={call}
                 userVideo={userVideo}
@@ -213,6 +229,16 @@ function Home({ socket }: { socket: Socket }) {
                 setCall={setCall}
                 callAccepted={callAccepted}
                 stream={stream}
+                callType={callType}
+                answerCall={answerCall}
+                endCall={endCall}
+              />
+            )}
+
+            {receivingCall && (
+              <Ringing
+                call={call}
+                setCall={setCall}
                 callType={callType}
                 answerCall={answerCall}
                 endCall={endCall}

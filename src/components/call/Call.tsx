@@ -1,18 +1,18 @@
 import { CallData } from "../../types/types";
 import CallAction from "./CallAction";
-import Ringing from "./Ringing";
+
 import { Dispatch, SetStateAction, useState } from "react";
 import VoiceCallContainer from "./VoiceCallContainer";
 import AudioRing from "../../../public/ringing.mp3";
 
 function Call({
   call,
-  setCall,
+
   callAccepted,
   userVideo,
   myVideo,
   callType,
-  answerCall,
+
   endCall,
 }: {
   call: CallData;
@@ -25,7 +25,7 @@ function Call({
   answerCall: () => void;
   endCall: () => void;
 }) {
-  const { receivingCall, callEnded } = call;
+  const { callEnded } = call;
   const [toggle, setToggle] = useState(false);
   return (
     <div
@@ -59,10 +59,7 @@ function Call({
               )}
               {/* my video */}
             </div>
-            <div
-              onClick={() => setToggle((prev) => !prev)}
-              className="absolute bottom-14 right-10 flex h-36 w-[230px] items-center justify-center overflow-hidden rounded-xl bg-green-500 text-white shadow-md"
-            >
+            <div className="absolute bottom-14 right-10 flex h-36 w-[230px] items-center justify-center overflow-hidden rounded-xl bg-green-500 text-white shadow-md">
               <video
                 ref={myVideo}
                 className="z-50 w-full"
@@ -75,15 +72,6 @@ function Call({
           </div>
         )}
       </div>
-      {receivingCall && !callAccepted && !callAccepted && (
-        <Ringing
-          call={call}
-          setCall={setCall}
-          callType={callType}
-          answerCall={answerCall}
-          endCall={endCall}
-        />
-      )}
     </div>
   );
 }
