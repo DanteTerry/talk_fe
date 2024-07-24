@@ -4,6 +4,8 @@ import { Dispatch, SetStateAction, useState } from "react";
 import axios from "axios";
 import { User } from "../../types/types";
 import { ClipLoader } from "react-spinners";
+import { useDispatch } from "react-redux";
+import { createGroupConversation } from "../../features/chatSlice";
 
 const SEARCH_USER_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/user`;
 
@@ -14,9 +16,11 @@ function NewChatInput({
 }) {
   const { user } = useSelector((state) => state.user);
   const { status } = useSelector((state) => state.chat);
+  const dispatch = useDispatch();
 
   const [searchResults, setSearchResults] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [name, setName] = useState("");
 
   const handleSearch = async (e: any) => {
     if (e.target.value && e.key === "Enter") {
@@ -54,6 +58,22 @@ function NewChatInput({
     }
   };
 
+  const createGroupHandler = async (e: any) => {
+    if (status !== "loading") {
+      const users = [];
+      selectedUsers.forEach((user) => {
+        users.push(user.value);
+      });
+      const values = {
+        name,
+        users,
+        token: user.token,
+      };
+
+      const newConversation = dispatch(createGroupConversation(values));
+    }
+  };
+
   return (
     <div className="z-50 h-full w-full">
       <div className="flex flex-col items-center gap-5">
@@ -61,6 +81,8 @@ function NewChatInput({
           type="text"
           className="relative w-full rounded-md bg-[#f0f2f5] px-4 py-2 text-green-500 focus:outline-none dark:bg-[#202124]"
           placeholder="Group name"
+          onChange={(e) => setName(e.target.value)}
+          value={name}
         />
 
         {/* multiple select */}
@@ -75,7 +97,7 @@ function NewChatInput({
 
         <button
           className="flex w-full items-center justify-center gap-1 rounded-md bg-green-500 p-2 text-center font-bold text-white hover:bg-green-600 hover:transition-all hover:duration-300"
-          onClick={() => setShow((prev) => !prev)}
+          onClick={(e) => createGroupHandler(e)}
         >
           {status === "loading" ? (
             <ClipLoader size={22} color="white" />

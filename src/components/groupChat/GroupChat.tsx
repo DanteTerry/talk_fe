@@ -2,11 +2,12 @@ import { MoveRight, Plus, Search } from "lucide-react";
 import { useState } from "react";
 
 import NewChatInput from "./NewChatInput";
+import GroupConversation from "./GroupConversation";
 
 function GroupChat() {
   const [isFocused, setIsFocused] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
 
   return (
     <div className="h-full w-full px-6 py-5">
@@ -39,6 +40,8 @@ function GroupChat() {
       </div>
 
       {show && <NewChatInput setShow={setShow} />}
+
+      <GroupConversation searchText={searchText} />
     </div>
   );
 }
