@@ -5,7 +5,10 @@ import axios from "axios";
 import { User } from "../../types/types";
 import { ClipLoader } from "react-spinners";
 import { useDispatch } from "react-redux";
-import { createGroupConversation } from "../../features/chatSlice";
+import {
+  createGroupConversation,
+  getConversation,
+} from "../../features/chatSlice";
 
 const SEARCH_USER_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/user`;
 
@@ -21,6 +24,7 @@ function NewChatInput({
   const [searchResults, setSearchResults] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = async (e: any) => {
     if (e.target.value && e.key === "Enter") {
@@ -60,6 +64,7 @@ function NewChatInput({
 
   const createGroupHandler = async (e: any) => {
     if (status !== "loading") {
+      setLoading(true);
       const users = [];
       selectedUsers.forEach((user) => {
         users.push(user.value);
@@ -70,7 +75,12 @@ function NewChatInput({
         token: user.token,
       };
 
-      const newConversation = dispatch(createGroupConversation(values));
+      const newConversation = await dispatch(createGroupConversation(values));
+      if (newConversation?.payload?._id) {
+        setLoading(false);
+        setShow(false);
+        dispatch(getConversation(user.token));
+      }
     }
   };
 
@@ -99,11 +109,7 @@ function NewChatInput({
           className="flex w-full items-center justify-center gap-1 rounded-md bg-green-500 p-2 text-center font-bold text-white hover:bg-green-600 hover:transition-all hover:duration-300"
           onClick={(e) => createGroupHandler(e)}
         >
-          {status === "loading" ? (
-            <ClipLoader size={22} color="white" />
-          ) : (
-            "Create Group"
-          )}
+          {loading ? <ClipLoader size={22} color="white" /> : "Create Group"}
         </button>
       </div>
     </div>
