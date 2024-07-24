@@ -45,42 +45,44 @@ function ChatBar({
         </div>
       </div>
 
-      {!activeConversation.isGroup && (
-        <div className="flex items-center gap-10">
-          <button
-            onClick={() => {
-              setCallType("audio");
-              callUser("audio");
-            }}
-          >
-            <Phone
-              size={24}
-              strokeWidth={1.5}
-              className="course-pointer text-green-500 dark:text-white"
-            />
-          </button>
-          <button
-            onClick={() => {
-              setCallType("video");
-              callUser("video");
-            }}
-          >
-            <Video
+      <div className="flex items-center justify-between gap-10">
+        {!activeConversation.isGroup && (
+          <div className="flex items-center gap-10">
+            <button
+              onClick={() => {
+                setCallType("audio");
+                callUser("audio");
+              }}
+            >
+              <Phone
+                size={24}
+                strokeWidth={1.5}
+                className="course-pointer text-green-500 dark:text-white"
+              />
+            </button>
+            <button
+              onClick={() => {
+                setCallType("video");
+                callUser("video");
+              }}
+            >
+              <Video
+                size={30}
+                strokeWidth={1.5}
+                className="text-green-500 dark:text-white"
+              />
+            </button>
+          </div>
+        )}
+        <div className="flex items-center justify-center">
+          <button>
+            <Info
               size={30}
               strokeWidth={1.5}
               className="text-green-500 dark:text-white"
             />
           </button>
         </div>
-      )}
-      <div className="flex items-center justify-center">
-        <button>
-          <Info
-            size={30}
-            strokeWidth={1.5}
-            className="text-green-500 dark:text-white"
-          />
-        </button>
       </div>
     </div>
   );
