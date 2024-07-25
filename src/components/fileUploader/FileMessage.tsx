@@ -19,7 +19,7 @@ function FileMessage({
       {me ? (
         <div className="flex justify-end gap-3">
           <div className="flex flex-col gap-1">
-            <div className="w-max rounded-lg bg-green-500 px-1 py-1 text-lg text-white dark:text-white">
+            <div className="w-max rounded-lg bg-green-500 text-lg text-white dark:text-white">
               <div className="relative flex flex-col">
                 {type === "IMAGE" || type === "VIDEO" ? (
                   <PhotoAndVideoView
@@ -64,7 +64,7 @@ function FileMessage({
             />
           </div>
           <div className="flex flex-col gap-1">
-            <div className="bg-white-500 w-max rounded-lg bg-black/90 px-3 py-1 text-lg dark:bg-white dark:text-black">
+            <div className="bg-white-500 w-max rounded-lg bg-black/90 text-lg dark:bg-white dark:text-black">
               <div className="relative">
                 {type === "IMAGE" || type === "VIDEO" ? (
                   <PhotoAndVideoView
@@ -76,7 +76,7 @@ function FileMessage({
                 ) : (
                   <FileOther file={file} message={message} type={file?.type} />
                 )}
-                <span className="absolute bottom-1 right-2 self-end text-xs">
+                <span className="absolute bottom-1 right-2 self-end text-xs text-white dark:text-white">
                   {timeHandler(message.createdAt)}
                 </span>
               </div>

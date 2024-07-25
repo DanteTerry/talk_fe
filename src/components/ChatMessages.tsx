@@ -9,6 +9,7 @@ function ChatMessages() {
   const { user } = useSelector((state) => state.user);
   const endRef = useRef<HTMLDivElement>(null);
   const typing = useSelector((state) => state.typing);
+  const { isDarkMode } = useSelector((state) => state.darkMode);
 
   useEffect(() => {
     if (endRef.current) {
@@ -17,11 +18,12 @@ function ChatMessages() {
   }, [messages, typing]); // Add typing as dependency to scroll when typing state changes
 
   return (
-    <div className="no-scrollbar chatDarkBg row-span-9 flex h-[82vh] flex-col gap-1 overflow-y-scroll px-5 py-3 text-white scrollbar-track-white scrollbar-thumb-green-500 dark:scrollbar-track-black">
+    <div
+      className={`no-scrollbar row-span-9 flex h-[82vh] flex-col gap-1 overflow-y-scroll px-5 py-3 text-white scrollbar-track-white scrollbar-thumb-green-500 dark:scrollbar-track-black ${isDarkMode ? "chatDarkBg" : "chatDarkLight"}`}
+    >
       {messages.length > 0 &&
         messages.map((message: IMessage, index) => (
           <>
-            {" "}
             {/* Add a unique key to the parent element */}
             {message?.files?.length > 0 &&
               message?.files.map((file) => (

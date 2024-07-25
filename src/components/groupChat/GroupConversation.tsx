@@ -1,15 +1,11 @@
 import { useEffect } from "react";
-import SingleConversation from "../SingleConversation";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { getConversation } from "../../features/chatSlice";
 import { Conversation, UserProfile } from "../../types/types";
-import { checkOnlineStatus } from "../../lib/utils/utils";
 import SingleGroupConversation from "./SingleGroupConversation";
 
 function GroupConversation({ searchText }: { searchText: string }) {
-  const onlineUsers = useSelector((state) => state.onlineUsers);
-
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.user);

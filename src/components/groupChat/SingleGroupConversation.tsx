@@ -29,7 +29,7 @@ function SingleGroupConversation({
         <img
           src={conversation.picture}
           alt="user avatar"
-          className="h-full w-full rounded-full object-cover"
+          className="h-[52px]!important h-full w-[52px] rounded-full object-cover"
         />
       </div>
       <div className="flex w-full justify-between">

@@ -130,7 +130,7 @@ function Inputs({
       <div className="relative w-full">
         <input
           type="text"
-          className="w-full rounded-md bg-[#f0f2f5] px-4 py-2 pr-24 text-green-500 focus:outline-none dark:bg-[#202124]"
+          className="w-full rounded-md border-2 border-green-500 bg-[#f0f2f5] px-4 py-2 pr-24 text-green-500 focus:outline-none dark:border-none dark:bg-[#202124]"
           placeholder="Type a message..."
           value={sendMessage}
           onChange={onChangeHandler}

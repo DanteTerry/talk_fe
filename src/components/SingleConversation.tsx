@@ -33,12 +33,12 @@ function SingleConversation({
       className="mb-3 flex w-full cursor-pointer items-center gap-3 rounded-md bg-green-500 px-2 py-3 dark:bg-white"
     >
       <div
-        className={`h-[52px]!important w-[52px] rounded-full ${online ? "border-2 border-green-500" : "border-2 border-white"} `}
+        className={`h-[52px]!important w-[52px] rounded-full ${online ? "border-2 dark:border-green-500" : "border-2 border-green-500 dark:border-white"} `}
       >
         <img
           src={getConversationPicture(user, conversation.users)}
           alt="user avatar"
-          className="h-full w-full rounded-full object-cover"
+          className="h-[52px]!important h-full w-[52px] rounded-full object-cover"
         />
       </div>
       <div className="flex w-full justify-between">
