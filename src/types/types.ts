@@ -60,5 +60,4 @@ export interface CallData {
   name: string;
   picture: string;
   signal: string;
-  usersInCall: [];
 }

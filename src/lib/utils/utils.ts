@@ -40,7 +40,7 @@ export const getConversationPicture = (user, users) => {
 };
 
 export const getConversationId = (user, users) => {
-  return users[0]?._id === user?._id ? users[1]?._id : users[0]?._id;
+  return users[0]._id === user._id ? users[1]._id : users[0]._id;
 };
 
 export const checkOnlineStatus = (onlineUsers, user, users) => {
@@ -63,20 +63,4 @@ export const trimFileName = (fileName: string, length: number = 20) => {
 export const formatKbSize = (size: number) => {
   const formattedSize = (size / 1024).toFixed(2);
   return formattedSize + " KB";
-};
-
-export const getUsersInConversation = (users, onlineUsers) => {
-  const onlineUsersInConversation = onlineUsers?.filter((onlineUser) =>
-    users.includes(onlineUser.userId),
-  );
-  return onlineUsersInConversation;
-};
-
-export const getOtherSocketUser = (user: [], users: []) => {
-  const socketId = users?.filter(
-    (socketUser: { userId: string; socketId: string }) =>
-      socketUser?.userId !== user?._id,
-  )[0]?.socketId;
-
-  return socketId;
 };
