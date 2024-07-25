@@ -15,6 +15,8 @@ import {
   getConversationId,
   getConversationName,
   getConversationPicture,
+  getOtherSocketUser,
+  getUsersInConversation,
 } from "../lib/utils/utils";
 import { Socket } from "socket.io-client";
 import { CallData } from "../types/types";
@@ -28,6 +30,7 @@ function Home({ socket }: { socket: Socket }) {
     name: "",
     picture: "",
     signal: "",
+    usersInCall: [],
   };
 
   const { activeConversation } = useSelector((state) => state.chat);
@@ -38,7 +41,16 @@ function Home({ socket }: { socket: Socket }) {
   const [callAccepted, setCallAccepted] = useState(false);
   const [callType, setCallType] = useState<"video" | "audio" | "">("");
 
-  const { callEnded, receivingCall } = call;
+  const onlineUsers = useSelector((state) => state.onlineUsers);
+
+  const [videoAndAudio, setVideoAndAudio] = useState({
+    video: true,
+    audio: true,
+  });
+
+  const [remoteUserVideo, setRemoteUserVideo] = useState(true);
+
+  const { receivingCall } = call;
 
   const myVideo = useRef<HTMLVideoElement>(null);
   const userVideo = useRef<HTMLVideoElement>(null);
@@ -47,7 +59,6 @@ function Home({ socket }: { socket: Socket }) {
   // Join the user to the socket room
   useEffect(() => {
     socket.emit("join", user._id);
-
     // Listen for online users
     socket.on("get-online-users", async (users) => {
       await dispatch(setOnlineUsers(users));
@@ -68,7 +79,7 @@ function Home({ socket }: { socket: Socket }) {
   // Set up media devices (video and audio)
   const setUpMedia = () => {
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
+      .getUserMedia({ video: videoAndAudio.video, audio: videoAndAudio.audio })
       .then((stream) => {
         setStream(stream);
         if (myVideo.current) {
@@ -87,10 +98,16 @@ function Home({ socket }: { socket: Socket }) {
   // Function to call a user
   const callUser = (callType: "video" | "audio") => {
     enableMedia();
+    const usersInConversation = getUsersInConversation(
+      [user._id, getConversationId(user, activeConversation.users)],
+      onlineUsers,
+    );
 
     setCall({
       ...call,
       callEnded: false,
+      receivingCall: false,
+      usersInCall: usersInConversation,
       name: getConversationName(user, activeConversation.users),
       picture: getConversationPicture(user, activeConversation.users),
     });
@@ -111,6 +128,7 @@ function Home({ socket }: { socket: Socket }) {
         name: user.name,
         picture: user.picture,
         callType: callType,
+        usersInCall: usersInConversation,
       });
     });
 
@@ -122,8 +140,13 @@ function Home({ socket }: { socket: Socket }) {
 
     socket.on("call accepted", (signal) => {
       setCallAccepted(true);
-      setCall({ ...call, receivingCall: false, callEnded: false });
-      peer.signal(signal); // Signal the peer with the received signal
+      setCall({
+        ...call,
+        receivingCall: false,
+        callEnded: false,
+        usersInCall: signal.usersInCall,
+      });
+      peer.signal(signal.data); // Signal the peer with the received signal
     });
 
     connectionRef.current = peer; // Save the peer connection
@@ -134,12 +157,87 @@ function Home({ socket }: { socket: Socket }) {
     });
   };
 
+  const socketId = getOtherSocketUser(user, call?.usersInCall);
+
+  // Toggle video
+  const toggleVideo = () => {
+    if (stream) {
+      stream.getVideoTracks().forEach((track) => {
+        console.log(track);
+        track.enabled = !track.enabled;
+      });
+
+      setVideoAndAudio((prevState) => ({
+        ...prevState,
+        video: !prevState.video,
+      }));
+
+      // Notify the other user
+      socket.emit("toggle-video", {
+        userId: socketId,
+        enabled: !videoAndAudio.video,
+      });
+    }
+  };
+
+  // Toggle audio
+  const toggleAudio = () => {
+    if (stream) {
+      stream.getAudioTracks().forEach((track) => {
+        console.log(track);
+        track.enabled = !track.enabled;
+      });
+      setVideoAndAudio((prevState) => ({
+        ...prevState,
+        audio: !prevState.audio,
+      }));
+
+      // Notify the other user
+      socket.emit("toggle-audio", {
+        userId: socketId,
+        enabled: !videoAndAudio.audio,
+      });
+    }
+  };
+
+  useEffect(() => {
+    socket.on("toggle-video", ({ userId, enabled }) => {
+      if (userVideo.current) {
+        // Mute or unmute the video element based on the `enabled` value
+        userVideo?.current?.srcObject
+          ?.getVideoTracks()
+          .forEach((track) => (track.enabled = enabled));
+      }
+
+      setRemoteUserVideo(enabled);
+    });
+
+    socket.on("toggle-audio", ({ userId, enabled }) => {
+      if (userVideo.current) {
+        // Mute or unmute the audio element based on the `enabled` value
+        userVideo.current?.srcObject
+          ?.getAudioTracks()
+          .forEach((track) => (track.enabled = enabled));
+      }
+    });
+
+    return () => {
+      socket.off("toggle-video");
+      socket.off("toggle-audio");
+    };
+  }, [socket, socketId]);
+
   // Function to answer a call
   const answerCall = () => {
     enableMedia();
 
     setCallAccepted(true);
-    setCall({ ...call, receivingCall: false, callEnded: false });
+    setCall({
+      ...call,
+      receivingCall: false,
+      callEnded: false,
+      usersInCall: call.usersInCall,
+    });
 
     const peer = new Peer({
       initiator: false,
@@ -148,7 +246,11 @@ function Home({ socket }: { socket: Socket }) {
     });
 
     peer.on("signal", (data) => {
-      socket.emit("answer call", { signal: data, to: call.socketId });
+      socket.emit("answer call", {
+        signal: data,
+        to: call.socketId,
+        usersInCall: call.usersInCall,
+      });
     });
 
     peer.on("stream", (stream) => {
@@ -165,8 +267,16 @@ function Home({ socket }: { socket: Socket }) {
 
   const endCall = () => {
     setCallType("");
-    setCall({ ...call, callEnded: true, receivingCall: false });
-    socket.emit("end call", call.socketId); // Emit end call event
+    setCall({
+      ...call,
+      callEnded: true,
+      receivingCall: false,
+      usersInCall: [],
+    });
+    socket.emit("end call", {
+      userId: call.socketId,
+      usersInCall: call.usersInCall,
+    }); // Emit end call event
     connectionRef?.current?.destroy(); // Destroy the peer
   };
 
@@ -188,12 +298,18 @@ function Home({ socket }: { socket: Socket }) {
         picture: data.picture,
         receivingCall: true,
         signal: data.signal,
+        usersInCall: data.usersInCall,
       });
     });
 
-    socket.on("end call", () => {
+    socket.on("end call", (data) => {
       setCallType("");
-      setCall({ ...call, callEnded: true, receivingCall: false });
+      setCall({
+        ...call,
+        callEnded: true,
+        receivingCall: false,
+        usersInCall: data,
+      });
       if (myVideo.current) {
         myVideo.current.srcObject = null; // Set my video stream to null
       }
@@ -202,7 +318,7 @@ function Home({ socket }: { socket: Socket }) {
         connectionRef?.current?.destroy(); // Destroy the peer
       }
     });
-  }, [call, callAccepted, socket]);
+  }, [call, callAccepted, socket, videoAndAudio]);
 
   return (
     <div className="h-screen overflow-hidden dark:bg-[#17181B]">
@@ -230,6 +346,11 @@ function Home({ socket }: { socket: Socket }) {
                 callType={callType}
                 answerCall={answerCall}
                 endCall={endCall}
+                setVideoAndAudio={setVideoAndAudio}
+                videoAndAudio={videoAndAudio}
+                toggleVideo={toggleVideo}
+                toggleAudio={toggleAudio}
+                remoteUserVideo={remoteUserVideo}
               />
             )}
 
