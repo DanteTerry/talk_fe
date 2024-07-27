@@ -1,10 +1,8 @@
-import { CallData } from "../../types/types";
 import CallAction from "./CallAction";
-
-import { Dispatch, SetStateAction } from "react";
 import VoiceCallContainer from "./VoiceCallContainer";
 import AudioRing from "../../../public/ringing.mp3";
-import { Video, VideoOff } from "lucide-react";
+import { MicOff, VideoOff } from "lucide-react";
+import { useState } from "react";
 
 function Call({
   call,
@@ -18,9 +16,10 @@ function Call({
   toggleVideo,
   toggleAudio,
   remoteUserVideo,
+  remoteUserAudio,
 }: {
-  call: CallData;
-  setCall: Dispatch<SetStateAction<CallData>>;
+  call: any;
+  setCall: any;
   callAccepted: boolean;
   userVideo: any;
   myVideo: any;
@@ -32,9 +31,11 @@ function Call({
   videoAndAudio: { video: boolean; audio: boolean };
   toggleVideo: () => void;
   toggleAudio: () => void;
+  remoteUserAudio: boolean;
   remoteUserVideo: boolean;
 }) {
   const { callEnded } = call;
+  const [isMuted, setIsMuted] = useState(false);
 
   return (
     <div
@@ -53,6 +54,7 @@ function Call({
             videoAndAudio={videoAndAudio}
             toggleVideo={toggleVideo}
             toggleAudio={toggleAudio}
+            setIsMuted={setIsMuted}
           />
         )}
 
@@ -62,15 +64,21 @@ function Call({
           <div className="absolute flex h-[90vh] w-full items-center justify-center bg-slate-800">
             {/* user video */}
             <div
-              className={`relative h-[91%] w-[98%] overflow-hidden rounded-xl bg-black`}
+              className={`relative h-[91%] w-[98%] overflow-hidden rounded-xl`}
             >
-              {callAccepted && !callEnded && (
+              {callAccepted && !callEnded && remoteUserVideo && (
                 <video
                   ref={userVideo}
-                  className="z-50 w-full"
+                  className="w-full"
                   playsInline
                   autoPlay
                 />
+              )}
+
+              {callAccepted && !callEnded && !remoteUserAudio && (
+                <div className="absolute right-5 top-5 flex flex-col items-center justify-center gap-2">
+                  <MicOff size={25} color="white" />
+                </div>
               )}
 
               {!remoteUserVideo && (
@@ -81,6 +89,8 @@ function Call({
                   </p>
                 </div>
               )}
+
+              {/* remote user video */}
 
               {/* my video */}
             </div>
@@ -100,6 +110,12 @@ function Call({
                   <p className="text-xs font-semibold text-gray-500">
                     Your camera is turned off
                   </p>
+                </div>
+              )}
+
+              {isMuted && (
+                <div className="absolute bottom-3 right-3 z-50">
+                  <MicOff size={25} />
                 </div>
               )}
             </div>

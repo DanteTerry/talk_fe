@@ -19,8 +19,8 @@ import {
   getUsersInConversation,
 } from "../lib/utils/utils";
 import { Socket } from "socket.io-client";
-import { CallData } from "../types/types";
 import Ringing from "../components/call/Ringing";
+import { set } from "react-hook-form";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -36,7 +36,7 @@ function Home({ socket }: { socket: Socket }) {
   const { activeConversation } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const [call, setCall] = useState<CallData>(callData);
+  const [call, setCall] = useState(callData);
   const [stream, setStream] = useState<MediaStream | undefined>(undefined);
   const [callAccepted, setCallAccepted] = useState(false);
   const [callType, setCallType] = useState<"video" | "audio" | "">("");
@@ -49,6 +49,7 @@ function Home({ socket }: { socket: Socket }) {
   });
 
   const [remoteUserVideo, setRemoteUserVideo] = useState(true);
+  const [remoteUserAudio, setRemoteUserAudio] = useState(true);
 
   const { receivingCall } = call;
 
@@ -219,6 +220,8 @@ function Home({ socket }: { socket: Socket }) {
           ?.getAudioTracks()
           .forEach((track) => (track.enabled = enabled));
       }
+
+      setRemoteUserAudio(enabled);
     });
 
     return () => {
@@ -351,6 +354,7 @@ function Home({ socket }: { socket: Socket }) {
                 toggleVideo={toggleVideo}
                 toggleAudio={toggleAudio}
                 remoteUserVideo={remoteUserVideo}
+                remoteUserAudio={remoteUserAudio}
               />
             )}
 

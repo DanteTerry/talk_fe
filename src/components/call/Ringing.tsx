@@ -2,8 +2,7 @@ import { Video, X } from "lucide-react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdCallEnd } from "react-icons/md";
 
-import { CallData } from "../../types/types";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AudioRing from "../../../public/ringing.mp3";
 
 function Ringing({
@@ -13,8 +12,8 @@ function Ringing({
   answerCall,
   endCall,
 }: {
-  call: CallData;
-  setCall: Dispatch<SetStateAction<CallData>>;
+  call: any;
+  setCall: any;
   callType: "video" | "audio" | "";
   answerCall: () => void;
   endCall: () => void;

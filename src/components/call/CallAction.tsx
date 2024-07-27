@@ -1,4 +1,5 @@
 import { Mic, MicOff, UserPlus, Video, VideoOff } from "lucide-react";
+import { Dispatch, SetStateAction } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdCallEnd } from "react-icons/md";
 import { useSelector } from "react-redux";
@@ -10,6 +11,7 @@ function CallAction({
   videoAndAudio,
   toggleVideo,
   toggleAudio,
+  setIsMuted,
 }: {
   callType: "video" | "audio" | null;
   endCall: () => void;
@@ -17,6 +19,7 @@ function CallAction({
   videoAndAudio: { video: boolean; audio: boolean };
   toggleVideo: () => void;
   toggleAudio: () => void;
+  setIsMuted: Dispatch<SetStateAction<boolean>>;
 }) {
   const { activeConversation } = useSelector((state) => state.chat);
 
@@ -41,7 +44,10 @@ function CallAction({
         {/* microphone button */}
         <button
           className="grid h-12 w-12 place-items-center rounded-full bg-slate-800 p-1"
-          onClick={toggleAudio}
+          onClick={() => {
+            toggleAudio();
+            setIsMuted((prev) => !prev);
+          }}
         >
           {videoAndAudio.audio ? <Mic size={25} /> : <MicOff size={25} />}
         </button>
