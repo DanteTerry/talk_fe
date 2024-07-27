@@ -1,11 +1,13 @@
-import { useState } from "react";
 import { MoveRight, Plus, Search } from "lucide-react";
-import { Link } from "react-router-dom";
-import Conversations from "./Conversations";
+import { useState } from "react";
 
-function MessageBar() {
+import NewChatInput from "./NewChatInput";
+import GroupConversation from "./GroupConversation";
+
+function GroupChat() {
   const [isFocused, setIsFocused] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [show, setShow] = useState(false);
 
   return (
     <div className="h-full w-full px-6 py-5">
@@ -28,17 +30,20 @@ function MessageBar() {
           className={`absolute left-3 top-[10px] text-gray-400 ${isFocused === true || searchText.length > 0 ? "rotate-180 animate-rotate180 text-green-500 opacity-100" : "animate-reverse180 opacity-0"}`}
         />
 
-        <Link to="/search" className="w-full">
-          <button className="flex w-full items-center justify-center gap-1 rounded-md bg-green-500 p-2 text-center font-bold text-white hover:bg-green-600 hover:transition-all hover:duration-300">
-            <Plus size={20} strokeWidth={2.5} />
-            New Chat
-          </button>
-        </Link>
+        <button
+          className="flex w-full items-center justify-center gap-1 rounded-md bg-green-500 p-2 text-center font-bold text-white hover:bg-green-600 hover:transition-all hover:duration-300"
+          onClick={() => setShow((prev) => !prev)}
+        >
+          <Plus size={20} strokeWidth={2.5} />
+          New Group chat
+        </button>
       </div>
 
-      <Conversations searchText={searchText} />
+      {show && <NewChatInput setShow={setShow} />}
+
+      <GroupConversation searchText={searchText} />
     </div>
   );
 }
 
-export default MessageBar;
+export default GroupChat;

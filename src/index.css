@@ -9,3 +9,37 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+.chatDarkBg {
+  background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.7) 100%
+    ),
+    url("/src/assets/darkChatBg.png");
+  background-size: contain;
+}
+
+.chatDarkLight {
+  background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0.1) 100%
+    ),
+    url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png");
+  background-size: contain;
+}
+
+.callBackground {
+  background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.7) 100%
+    ),
+    url("/src/assets/darkChatBg.png");
+  background-size: contain;
+}
+
+.css-1u9des2-indicatorSeparator {
+  display: none !important;
+}

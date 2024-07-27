@@ -1,51 +1,54 @@
 import { timeHandler } from "../lib/utils/utils";
 import { Message as IMessage } from "../types/types";
 
-function Message({ message, me }: { message: IMessage; me: boolean }) {
+function Message({
+  message,
+  me,
+  messages,
+  index,
+}: {
+  message: IMessage;
+  me: boolean;
+  messages: IMessage[];
+  index: number;
+}) {
   return (
-    <>
-      {me ? (
-        <div className="flex justify-end gap-3">
-          <div className="flex flex-col gap-1">
-            <div className="w-max rounded-md bg-green-500 px-3 py-1 text-lg text-white dark:text-white">
-              <p className="flex gap-2">
-                {message.message}{" "}
-                <span className="self-end text-xs">
-                  {timeHandler(message.createdAt)}
-                </span>
-              </p>
-            </div>
-          </div>
-          <div className="h-5!important w-5 self-end rounded-full">
-            <img
-              src={message.sender.picture}
-              alt="user avatar"
-              className="h-full w-full rounded-full object-cover"
-            />
-          </div>
+    <div className={`flex ${me ? "justify-end" : "items-center"} gap-3`}>
+      {!me && message?.sender?.name !== messages[index + 1]?.sender?.name ? (
+        <div className="h-5 w-5 self-end rounded-full">
+          <img
+            src={message.sender.picture}
+            alt="user avatar"
+            className="h-full w-full rounded-full object-cover"
+          />
         </div>
       ) : (
-        <div className="flex items-center gap-3">
-          <div className="h-5!important w-5 self-end rounded-full">
-            <img
-              src={message.sender.picture}
-              alt="user avatar"
-              className="h-full w-full rounded-full object-cover"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <div className="bg-white-500 w-max rounded-md bg-black/90 px-3 py-1 text-lg dark:bg-white dark:text-black">
-              <p className="flex gap-2">
-                {message?.message}{" "}
-                <span className="self-end text-xs">
-                  {timeHandler(message.createdAt)}
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
+        <div className="h-5 w-5 self-end rounded-full"></div>
       )}
-    </>
+      <div className="flex flex-col gap-1">
+        <div
+          className={`w-max rounded-md px-3 py-1 text-lg ${me ? "bg-green-500 text-white" : "bg-black/90 text-white dark:bg-white dark:text-black"}`}
+        >
+          <p className="flex gap-2">
+            {message.message}
+            <span className="self-end text-xs">
+              {timeHandler(message.createdAt)}
+            </span>
+          </p>
+        </div>
+      </div>
+      {me && message?.sender?.name !== messages[index + 1]?.sender?.name ? (
+        <div className="h-5 w-5 self-end rounded-full">
+          <img
+            src={message.sender.picture}
+            alt="user avatar"
+            className="h-full w-full rounded-full object-cover"
+          />
+        </div>
+      ) : (
+        <div className="h-5 w-5 self-end rounded-full"></div>
+      )}
+    </div>
   );
 }
 

@@ -11,7 +11,7 @@ import Register from "./pages/register";
 import Message from "./components/MessageBar";
 import Search from "./components/SearchUser";
 import Friends from "./components/Friends";
-import AddFriend from "./components/AddFriend";
+import GroupChat from "./components/groupChat/GroupChat";
 import Profile from "./components/Profile";
 import { io } from "socket.io-client";
 import SocketContext from "./context/SocketContext";
@@ -37,7 +37,7 @@ function App() {
               <Route path="messages" element={<Message />} />
               <Route path="search" element={<Search />} />
               <Route path="friends" element={<Friends />} />
-              <Route path="add-friends" element={<AddFriend />} />
+              <Route path="group-chat" element={<GroupChat />} />
               <Route path="profile" element={<Profile />} />
             </Route>
             <Route

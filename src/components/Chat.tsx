@@ -9,7 +9,13 @@ import EmojiPicker from "emoji-picker-react";
 import { checkOnlineStatus } from "../lib/utils/utils";
 import FilePreview from "./fileUploader/FilePreview";
 
-function Chat() {
+function Chat({
+  callUser,
+  setCallType,
+}: {
+  callUser: (callType: "video" | "audio") => void;
+  setCallType: any;
+}) {
   const dispatch = useDispatch();
 
   const { activeConversation } = useSelector((state: any) => state.chat);
@@ -47,13 +53,18 @@ function Chat() {
     if (activeConversation._id) {
       dispatch(getConversationMessages(values));
     }
-  }, [activeConversation]);
+  }, [activeConversation, dispatch]);
 
   return (
     <div
       className={`relative grid ${files.length ? "grid-rows-11" : "grid-rows-12"}`}
     >
-      <ChatBar conversation={conversation} online={online} />
+      <ChatBar
+        conversation={conversation}
+        callUser={callUser}
+        online={online}
+        setCallType={setCallType}
+      />
       {files.length > 0 ? <FilePreview /> : <ChatMessages />}
 
       {!files.length ? (

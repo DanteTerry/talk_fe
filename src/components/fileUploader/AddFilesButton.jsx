@@ -1,14 +1,14 @@
-import { FileText } from "lucide-react";
+import { Plus } from "lucide-react";
 import React, { useRef } from "react";
-import { addFiles } from "../../features/chatSlice";
 import { useDispatch } from "react-redux";
+import { addFiles } from "../../features/chatSlice";
 import { getFileType } from "../../lib/utils/file";
 
-function DocumentAttachment() {
+function AddFilesButton() {
   const inputRef = useRef(null);
   const dispatch = useDispatch();
 
-  const documentHandler = (e) => {
+  const filesHandler = (e) => {
     e.preventDefault();
     let files = Array.from(e.target.files);
     files.forEach((file) => {
@@ -30,7 +30,14 @@ function DocumentAttachment() {
         file.type !== "application/x-tar" &&
         file.type !== "application/x-gzip" &&
         file.type !== "audio/mpeg" &&
-        file.type !== "audio/wav"
+        file.type !== "audio/wav" &&
+        file.type !== "image/png" &&
+        file.type !== "image/jpeg" &&
+        file.type !== "image/gif" &&
+        file.type !== "image/webp" &&
+        file.type !== "video/mp4" &&
+        file.type !== "video/mpeg" &&
+        file.type !== "video/webm"
       ) {
         files = files.filter((file) => file.name !== file.name);
         return;
@@ -57,28 +64,25 @@ function DocumentAttachment() {
       }
     });
   };
+
   return (
-    <li className="h-full w-full rounded-md px-2 py-1 transition-all duration-300 hover:bg-gray-300">
-      <button
-        className="flex items-center gap-3 text-base"
-        onClick={(e) => {
-          e.preventDefault();
-          inputRef.current.click();
-        }}
+    <>
+      <div
+        className="group relative grid h-16 w-16 cursor-pointer place-items-center rounded-xl dark:bg-[#202124]"
+        onClick={() => inputRef.current.click()}
       >
-        <FileText color="#7f66ff" />
-        <span className="font-semibold dark:text-black/75">Document</span>
-      </button>
+        <Plus strokeWidth={2.5} size={30} />
+      </div>
       <input
         type="file"
         hidden
         ref={inputRef}
-        accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,application/zip,application/x-rar-compressed,application/x-7z-compressed,application/x-tar,application/x-gzip,audio/mpeg,audio/wav"
-        onChange={documentHandler}
+        accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,application/zip,application/x-rar-compressed,application/x-7z-compressed,application/x-tar,application/x-gzip,audio/mpeg,audio/wav,image/png,image/jpeg,image/gif,image/webp,video/mp4,video/mpeg,video/webm"
+        onChange={filesHandler}
         multiple
       />
-    </li>
+    </>
   );
 }
 
-export default DocumentAttachment;
+export default AddFilesButton;

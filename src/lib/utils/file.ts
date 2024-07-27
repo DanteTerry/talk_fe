@@ -16,26 +16,16 @@ export const getFileType = (file: string) => {
       return "PPTX";
     case "application/vnd.ms-powerpoint":
       return "PPTX";
-    case "image/jpeg":
-      return "JPEG";
-    case "image/png":
-      return "PNG";
-    case "image/gif":
-      return "GIF";
-    case "image/bmp":
-      return "BMP";
-    case "image/webp":
-      return "WEBP";
     case "video/mp4":
-      return "MP4";
+      return "VIDEO";
     case "video/mpeg":
-      return "MPEG";
+      return "VIDEO";
     case "video/ogg":
-      return "OGG";
+      return "VIDEO";
     case "video/quicktime":
-      return "MOV";
+      return "VIDEO";
     case "video/webm":
-      return "WEBM";
+      return "VIDEO";
     case "audio/mpeg":
       return "MP3";
     case "audio/ogg":
@@ -49,6 +39,6 @@ export const getFileType = (file: string) => {
     case "application/x-gzip":
       return "ARCHIVE";
     default:
-      return "FILE";
+      return "IMAGE";
   }
 };

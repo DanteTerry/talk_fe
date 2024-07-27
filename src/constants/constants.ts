@@ -1,4 +1,4 @@
-import { MessageCircleMore, Search, UserPlus, Users } from "lucide-react";
+import { MessageCircleMore, Search, User, UserPlus, Users } from "lucide-react";
 
 export const sidebarItems = [
   {
@@ -13,13 +13,13 @@ export const sidebarItems = [
   },
   {
     name: "friends",
-    icon: Users,
+    icon: User,
     url: "friends",
   },
   {
-    name: "add-friends",
-    icon: UserPlus,
-    url: "add-friends",
+    name: "group-chat",
+    icon: Users,
+    url: "group-chat",
   },
 ];
 

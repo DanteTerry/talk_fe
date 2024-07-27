@@ -14,7 +14,9 @@ export default {
         registerImageDark: "url('/src/assets/registerDark.svg')",
         loginImageLight: "url('/src/assets/loginLight.svg')",
         loginImageDark: "url('/src/assets/loginDark.svg')",
-        pattern: "url('/src/assets/pattern2.png')",
+        chatBackgroundLight:
+          "url(https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png)",
+        chatBackgroundDark: "url('/src/assets/darkChatBg.png')",
       },
     },
     keyframes: {

@@ -1,10 +1,11 @@
-import { Loader, Mic, Paperclip, SendHorizonal, Smile, X } from "lucide-react";
+import { Mic, Paperclip, SendHorizonal, Smile, X } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { sendMessages } from "../features/chatSlice";
 import { useSelector } from "react-redux";
 import FileSender from "./FileSender";
 import SocketContext from "../context/SocketContext";
+import { ClipLoader } from "react-spinners";
 
 function Inputs({
   sendMessage,
@@ -129,7 +130,7 @@ function Inputs({
       <div className="relative w-full">
         <input
           type="text"
-          className="w-full rounded-md bg-[#f0f2f5] px-4 py-2 pr-24 text-green-500 focus:outline-none dark:bg-[#202124]"
+          className="w-full rounded-md border-2 border-green-500 bg-[#f0f2f5] px-4 py-2 pr-24 text-green-500 focus:outline-none dark:border-none dark:bg-[#202124]"
           placeholder="Type a message..."
           value={sendMessage}
           onChange={onChangeHandler}
@@ -144,11 +145,7 @@ function Inputs({
             />
             <button type="submit">
               {status === "loading" && loading ? (
-                <Loader
-                  size={25}
-                  strokeWidth={1.5}
-                  className="animate-spin absolute right-4 top-2 cursor-none text-green-500"
-                />
+                <ClipLoader size={25} color="#22c55e" />
               ) : (
                 <SendHorizonal
                   size={25}

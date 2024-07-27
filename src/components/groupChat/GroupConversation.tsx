@@ -1,14 +1,11 @@
 import { useEffect } from "react";
-import SingleConversation from "./SingleConversation";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { getConversation } from "../features/chatSlice";
-import { Conversation, UserProfile } from "../types/types";
-import { checkOnlineStatus } from "../lib/utils/utils";
+import { getConversation } from "../../features/chatSlice";
+import { Conversation, UserProfile } from "../../types/types";
+import SingleGroupConversation from "./SingleGroupConversation";
 
-function Conversations({ searchText }: { searchText: string }) {
-  const onlineUsers = useSelector((state) => state.onlineUsers);
-
+function GroupConversation({ searchText }: { searchText: string }) {
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.user);
@@ -24,24 +21,21 @@ function Conversations({ searchText }: { searchText: string }) {
     return <div>Loading...</div>;
   }
 
-  const filteredConversations = conversations.filter(
-    (conversation: UserProfile) =>
-      conversation.name.toLowerCase().includes(searchText.toLowerCase()) &&
-      !conversation.isGroup,
+  const groupConversations = conversations.filter(
+    (conversation: Conversation) => conversation.isGroup === true,
   );
 
   if (searchText) {
-    const filteredConversations = conversations.filter(
+    const filteredConversations = groupConversations.filter(
       (conversation: UserProfile) =>
-        conversation.name.toLowerCase().includes(searchText.toLowerCase()) &&
-        !conversation.isGroup,
+        conversation.name.toLowerCase().includes(searchText.toLowerCase()),
     );
 
     return (
       <div className="no-scrollbar h-screen overflow-y-scroll">
         {filteredConversations.map((conversation: UserProfile) => {
           return (
-            <SingleConversation
+            <SingleGroupConversation
               key={conversation._id}
               conversation={conversation}
             />
@@ -54,12 +48,11 @@ function Conversations({ searchText }: { searchText: string }) {
   return (
     <div className="no-scrollbar h-screen overflow-y-scroll">
       {conversations &&
-        filteredConversations.map((conversation: Conversation) => {
+        groupConversations.map((conversation: Conversation) => {
           return (
-            <SingleConversation
+            <SingleGroupConversation
               key={conversation._id}
               conversation={conversation}
-              online={checkOnlineStatus(onlineUsers, user, conversation.users)}
             />
           );
         })}
@@ -67,4 +60,4 @@ function Conversations({ searchText }: { searchText: string }) {
   );
 }
 
-export default Conversations;
+export default GroupConversation;

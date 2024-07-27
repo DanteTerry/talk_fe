@@ -1,11 +1,11 @@
-import FilePreviewBody from "./FilePreviewBody";
 import FilePreviewHeader from "./FilePreviewHeader";
+import FileViewer from "./FileViewer";
 
 function FilePreview() {
   return (
-    <div className="row-span-9 flex h-[90vh] flex-col overflow-hidden text-white">
+    <div className="dark: row-span-9 flex h-[90vh] flex-col overflow-hidden bg-[#e9edef] text-white dark:bg-[#17181B]">
       <FilePreviewHeader />
-      <FilePreviewBody />
+      <FileViewer />
     </div>
   );
 }

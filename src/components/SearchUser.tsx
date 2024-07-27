@@ -1,5 +1,5 @@
 import { MoveRight, Search } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import SingleUser from "./SingleUser";
 import { useSelector } from "react-redux";
 import axios from "axios";

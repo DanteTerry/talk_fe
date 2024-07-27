@@ -33,6 +33,29 @@ export const getConversation = createAsyncThunk(
   },
 );
 
+export const createGroupConversation = createAsyncThunk(
+  "conversation/create_group",
+  async (values, { rejectWithValue }) => {
+    const { token, name, users } = values;
+    try {
+      const { data } = await axios.post(
+        `${`${CONVERSATION_ENDPOINT}/group`}`,
+        { name, users },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      return data;
+    } catch (error: unknown) {
+      console.log(error);
+      return rejectWithValue(error.response.data.error.message);
+    }
+  },
+);
+
 export const getConversationMessages = createAsyncThunk(
   "conversation/messages",
   async (values, { rejectWithValue }) => {
@@ -114,6 +137,9 @@ export const chatSlice = createSlice({
     emptyFile: (state) => {
       state.files = [];
     },
+    removeFile: (state, action) => {
+      state.files = state.files.filter((_, index) => index !== action.payload);
+    },
   },
   extraReducers(builder) {
     builder
@@ -166,6 +192,7 @@ export const {
   setActiveConversation,
   updateMessagesAndConversation,
   addFiles,
+  removeFile,
   emptyFile,
 } = chatSlice.actions;
 
