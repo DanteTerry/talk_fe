@@ -162,7 +162,6 @@ function Home({ socket }: { socket: Socket }) {
     connectionRef.current = peer; // Save the peer connection
 
     peer.on("close", () => {
-      console.log("peer closed");
       socket.off("call accepted");
     });
   };
@@ -211,10 +210,12 @@ function Home({ socket }: { socket: Socket }) {
   useEffect(() => {
     socket.on("toggle-video", ({ userId, enabled }) => {
       if (userVideo.current) {
-        // Mute or unmute the video element based on the `enabled` value
-        userVideo?.current?.srcObject
-          ?.getVideoTracks()
-          .forEach((track) => (track.enabled = enabled));
+        userVideo.current.srcObject?.getVideoTracks().forEach((track) => {
+          track.enabled = enabled;
+        });
+        if (enabled) {
+          userVideo.current.srcObject = stream; // Set received stream to userVideo element
+        }
       }
 
       setRemoteUserVideo(enabled);
@@ -277,25 +278,31 @@ function Home({ socket }: { socket: Socket }) {
   };
 
   const endCall = () => {
+    if (connectionRef.current) {
+      connectionRef.current.destroy(); // Destroy the peer connection
+      connectionRef.current = null;
+    }
+
+    if (myVideo.current) {
+      myVideo.current.srcObject = null; // Clear my video stream
+    }
+
     socket.emit("end call", {
       userId: call.socketId,
       usersInCall: call.usersInCall,
-    }); // Emit end call event
+    });
 
-    connectionRef?.current?.destroy(); // Destroy the peer
-
+    // Reset state variables
     setCall({
       ...call,
       callEnded: true,
       receivingCall: false,
       usersInCall: [],
     });
-
     setVideoAndAudio({
       video: true,
       audio: true,
     });
-
     setCallAccepted(false);
     setCallType("");
   };
@@ -358,6 +365,20 @@ function Home({ socket }: { socket: Socket }) {
         usersInCall: call.usersInCall,
       });
     });
+
+    return () => {
+      socket.off("setup socket");
+      socket.off("call user");
+      socket.off("end call");
+      window.removeEventListener("beforeunload", () => {
+        endCall();
+
+        socket.emit("end call", {
+          userId: call.socketId,
+          usersInCall: call.usersInCall,
+        });
+      });
+    };
   }, [call, callAccepted, socket, videoAndAudio]);
 
   return (

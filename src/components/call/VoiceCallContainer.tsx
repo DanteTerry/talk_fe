@@ -15,15 +15,21 @@ function VoiceCallContainer({
   stream,
   isMuted,
   remoteUserAudio,
+  myVideo,
+  userVideo,
 }: {
   audioCallTo: { name: string; picture: string };
   call: any;
   callAccepted: boolean;
-  stream: MediaStream | null;
+  stream: any;
   isMuted: boolean;
   remoteUserAudio: boolean;
+  myVideo: any;
+  userVideo: any;
 }) {
   const canvasRef = useRef(null);
+  const myAudioRef = useRef(null);
+  const userAudioRef = useRef(null);
 
   useEffect(() => {
     let startVisualizer;
@@ -37,8 +43,11 @@ function VoiceCallContainer({
         slices: 100,
       };
 
-      // Check if the MediaStream has audio tracks
+      // Log stream information for debugging
+      console.log("MediaStream:", stream);
       const audioTracks = stream.getAudioTracks();
+      console.log("Audio tracks:", audioTracks);
+
       if (audioTracks.length > 0 && (!isMuted || !remoteUserAudio)) {
         ({ start: startVisualizer, stop: stopVisualizer } =
           continuousVisualizer(stream, canvas, options));
@@ -51,7 +60,6 @@ function VoiceCallContainer({
     };
   }, [stream, callAccepted, isMuted, remoteUserAudio]);
 
-  // Start the timer only when callAccepted is true
   useEffect(() => {
     if (callAccepted) {
       timer.start();
@@ -60,13 +68,12 @@ function VoiceCallContainer({
     }
 
     return () => {
-      timer.reset(); // Stop the timer when the component unmounts
+      timer.reset();
     };
   }, [callAccepted]);
 
   const useTimer = useTimeModel(timer);
 
-  // Format the time to display as MM:SS
   const formatTime = (time) => {
     const minutes = time?.m ?? 0;
     const seconds = time?.s ?? 0;
@@ -76,6 +83,16 @@ function VoiceCallContainer({
 
     return `${formattedMinutes}:${formattedSeconds}`;
   };
+
+  // Attach the MediaStream to the audio elements for playback
+  useEffect(() => {
+    if (myAudioRef.current && stream instanceof MediaStream) {
+      myAudioRef.current.srcObject = stream;
+    }
+    if (userAudioRef.current && stream instanceof MediaStream) {
+      userAudioRef.current.srcObject = stream;
+    }
+  }, [stream]);
 
   return (
     <div className="callBackground flex h-[92vh] w-full items-center justify-center">
@@ -103,6 +120,9 @@ function VoiceCallContainer({
               {formatTime(useTimer?.value)}
             </p>
           )}
+
+          <audio ref={myVideo} autoPlay muted={isMuted} />
+          <audio ref={userVideo} autoPlay muted={!remoteUserAudio} />
         </div>
       </div>
     </div>

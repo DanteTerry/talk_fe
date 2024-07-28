@@ -18,7 +18,10 @@ import SocketContext from "./context/SocketContext";
 
 // socket.io-client
 const localhost = import.meta.env.VITE_APP_LOCALHOST;
-const socket = io(localhost, { autoConnect: true });
+const socket = io(localhost, {
+  autoConnect: true,
+  reconnection: true,
+});
 
 function App() {
   const { token } = useSelector((state) => state.user.user);

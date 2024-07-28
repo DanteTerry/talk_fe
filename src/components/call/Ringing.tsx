@@ -43,7 +43,7 @@ function Ringing({
       <div className="flex h-full items-center justify-center rounded-lg">
         <div className="rounded-xl bg-[#202c33]">
           <div className="flex items-center justify-between rounded-t-xl bg-green-500 text-white">
-            <p className="px-4">Video call - Talk</p>
+            <p className="px-4">{callType} call - Talk</p>
             <button className="rounded-tr-xl bg-red-600 px-4 py-2">
               <X size={24} strokeWidth={1.8} className="course-pointer" />
             </button>
