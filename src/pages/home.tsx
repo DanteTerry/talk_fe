@@ -20,7 +20,6 @@ import {
 } from "../lib/utils/utils";
 import { Socket } from "socket.io-client";
 import Ringing from "../components/call/Ringing";
-import { set } from "react-hook-form";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -48,6 +47,10 @@ function Home({ socket }: { socket: Socket }) {
     audio: true,
   });
 
+  const [audioCallTo, setAudioCallTo] = useState({
+    name: "",
+    picture: "",
+  });
   const [remoteUserVideo, setRemoteUserVideo] = useState(true);
   const [remoteUserAudio, setRemoteUserAudio] = useState(true);
 
@@ -147,6 +150,12 @@ function Home({ socket }: { socket: Socket }) {
         callEnded: false,
         usersInCall: signal.usersInCall,
       });
+
+      setAudioCallTo({
+        name: signal.userName,
+        picture: signal.userPicture,
+      });
+
       peer.signal(signal.data); // Signal the peer with the received signal
     });
 
@@ -185,7 +194,6 @@ function Home({ socket }: { socket: Socket }) {
   const toggleAudio = () => {
     if (stream) {
       stream.getAudioTracks().forEach((track) => {
-        console.log(track);
         track.enabled = !track.enabled;
       });
       setVideoAndAudio((prevState) => ({
@@ -253,6 +261,8 @@ function Home({ socket }: { socket: Socket }) {
         signal: data,
         to: call.socketId,
         usersInCall: call.usersInCall,
+        userName: user.name,
+        userPicture: user.picture,
       });
     });
 
@@ -265,7 +275,6 @@ function Home({ socket }: { socket: Socket }) {
     peer.signal(call.signal); // Signal the peer with the received signal
 
     connectionRef.current = peer; // Save the peer connection
-    setCallType("video");
   };
 
   const endCall = () => {
@@ -292,7 +301,6 @@ function Home({ socket }: { socket: Socket }) {
     });
 
     socket.on("call user", (data) => {
-      setCallType("");
       setCall({
         ...call,
         callEnded: false,
@@ -303,6 +311,12 @@ function Home({ socket }: { socket: Socket }) {
         signal: data.signal,
         usersInCall: data.usersInCall,
       });
+
+      setAudioCallTo({
+        name: data.to,
+        picture: data.toPicture,
+      });
+      setCallType(data.callType);
     });
 
     socket.on("end call", (data) => {
@@ -313,6 +327,7 @@ function Home({ socket }: { socket: Socket }) {
         receivingCall: false,
         usersInCall: data,
       });
+
       if (myVideo.current) {
         myVideo.current.srcObject = null; // Set my video stream to null
       }
@@ -338,25 +353,27 @@ function Home({ socket }: { socket: Socket }) {
               <HomeInfo />
             )}
 
-            {(callType === "video" || callType === "audio") && (
-              <Call
-                call={call}
-                userVideo={userVideo}
-                myVideo={myVideo}
-                setCall={setCall}
-                callAccepted={callAccepted}
-                stream={stream}
-                callType={callType}
-                answerCall={answerCall}
-                endCall={endCall}
-                setVideoAndAudio={setVideoAndAudio}
-                videoAndAudio={videoAndAudio}
-                toggleVideo={toggleVideo}
-                toggleAudio={toggleAudio}
-                remoteUserVideo={remoteUserVideo}
-                remoteUserAudio={remoteUserAudio}
-              />
-            )}
+            {(callType === "video" || callType === "audio") &&
+              !receivingCall && (
+                <Call
+                  call={call}
+                  userVideo={userVideo}
+                  myVideo={myVideo}
+                  setCall={setCall}
+                  callAccepted={callAccepted}
+                  stream={stream}
+                  callType={callType}
+                  answerCall={answerCall}
+                  endCall={endCall}
+                  setVideoAndAudio={setVideoAndAudio}
+                  videoAndAudio={videoAndAudio}
+                  toggleVideo={toggleVideo}
+                  toggleAudio={toggleAudio}
+                  remoteUserVideo={remoteUserVideo}
+                  remoteUserAudio={remoteUserAudio}
+                  audioCallTo={audioCallTo}
+                />
+              )}
 
             {receivingCall && (
               <Ringing

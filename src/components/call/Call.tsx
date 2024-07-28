@@ -17,6 +17,8 @@ function Call({
   toggleAudio,
   remoteUserVideo,
   remoteUserAudio,
+  audioCallTo,
+  stream,
 }: {
   call: any;
   setCall: any;
@@ -33,6 +35,7 @@ function Call({
   toggleAudio: () => void;
   remoteUserAudio: boolean;
   remoteUserVideo: boolean;
+  audioCallTo: { name: string; picture: string };
 }) {
   const { callEnded } = call;
   const [isMuted, setIsMuted] = useState(false);
@@ -43,7 +46,14 @@ function Call({
     >
       <div className="relative flex h-full w-full flex-col justify-between">
         {/* container */}
-        {callType === "audio" && <VoiceCallContainer name={"arpit Yadav"} />}
+        {callType === "audio" && (
+          <VoiceCallContainer
+            audioCallTo={audioCallTo}
+            call={call}
+            callAccepted={callAccepted}
+            stream={stream}
+          />
+        )}
 
         {/* actions */}
         {(callType === "video" || callType === "audio") && (
@@ -64,7 +74,7 @@ function Call({
           <div className="absolute flex h-[90vh] w-full items-center justify-center bg-slate-800">
             {/* user video */}
             <div
-              className={`relative h-[91%] w-[98%] overflow-hidden rounded-xl`}
+              className={`relative h-[91%] w-[98%] overflow-hidden rounded-xl bg-black`}
             >
               {callAccepted && !callEnded && remoteUserVideo && (
                 <video
