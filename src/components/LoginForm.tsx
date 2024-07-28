@@ -49,7 +49,7 @@ function LoginForm() {
 
   return (
     <>
-      <h3 className="text-center text-3xl font-semibold text-[#1D33C0] dark:text-white">
+      <h3 className="text-center text-2xl font-semibold text-[#1D33C0] dark:text-white md:text-3xl">
         Join our chat revolution
       </h3>
       <h4 className="mb-3 text-center text-[#80868B] dark:text-[#DADCE0]">
