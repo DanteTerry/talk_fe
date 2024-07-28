@@ -20,7 +20,6 @@ import {
 } from "../lib/utils/utils";
 import { Socket } from "socket.io-client";
 import Ringing from "../components/call/Ringing";
-import { set } from "react-hook-form";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -282,6 +281,7 @@ function Home({ socket }: { socket: Socket }) {
       userId: call.socketId,
       usersInCall: call.usersInCall,
     }); // Emit end call event
+
     connectionRef?.current?.destroy(); // Destroy the peer
 
     setCall({
@@ -348,6 +348,15 @@ function Home({ socket }: { socket: Socket }) {
         audio: true,
       });
       setCallType("");
+    });
+
+    window.addEventListener("beforeunload", () => {
+      endCall();
+
+      socket.emit("end call", {
+        userId: call.socketId,
+        usersInCall: call.usersInCall,
+      });
     });
   }, [call, callAccepted, socket, videoAndAudio]);
 

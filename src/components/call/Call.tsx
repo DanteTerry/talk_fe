@@ -52,6 +52,8 @@ function Call({
             call={call}
             callAccepted={callAccepted}
             stream={stream}
+            remoteUserAudio={remoteUserAudio}
+            isMuted={isMuted}
           />
         )}
 

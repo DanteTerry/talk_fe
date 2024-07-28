@@ -8,10 +8,27 @@ const timer = createTimeModel({
   direction: "forward",
 });
 
-function VoiceCallContainer({ audioCallTo, call, callAccepted, stream }) {
+function VoiceCallContainer({
+  audioCallTo,
+  call,
+  callAccepted,
+  stream,
+  isMuted,
+  remoteUserAudio,
+}: {
+  audioCallTo: { name: string; picture: string };
+  call: any;
+  callAccepted: boolean;
+  stream: MediaStream | null;
+  isMuted: boolean;
+  remoteUserAudio: boolean;
+}) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    let startVisualizer;
+    let stopVisualizer;
+
     if (canvasRef.current && stream instanceof MediaStream && callAccepted) {
       const canvas = canvasRef.current;
       const options = {
@@ -19,24 +36,31 @@ function VoiceCallContainer({ audioCallTo, call, callAccepted, stream }) {
         lineWidth: "thick",
         slices: 100,
       };
-      const { start, stop } = continuousVisualizer(stream, canvas, options);
 
-      start();
-
-      return () => stop();
+      // Check if the MediaStream has audio tracks
+      const audioTracks = stream.getAudioTracks();
+      if (audioTracks.length > 0 && (!isMuted || !remoteUserAudio)) {
+        ({ start: startVisualizer, stop: stopVisualizer } =
+          continuousVisualizer(stream, canvas, options));
+        startVisualizer();
+      }
     }
-  }, [stream, callAccepted]);
+
+    return () => {
+      if (stopVisualizer) stopVisualizer();
+    };
+  }, [stream, callAccepted, isMuted, remoteUserAudio]);
 
   // Start the timer only when callAccepted is true
   useEffect(() => {
     if (callAccepted) {
       timer.start();
     } else {
-      timer.stop();
+      timer.reset();
     }
 
     return () => {
-      timer.stop(); // Stop the timer when the component unmounts
+      timer.reset(); // Stop the timer when the component unmounts
     };
   }, [callAccepted]);
 
@@ -63,14 +87,21 @@ function VoiceCallContainer({ audioCallTo, call, callAccepted, stream }) {
           />
         </div>
         <div className="flex flex-col items-center text-white">
-          <p className="text-3xl capitalize">{call.name || audioCallTo.name}</p>
-          {!callAccepted && <p className="text-xl">Ringing</p>}
+          <p className="text-3xl capitalize leading-tight">
+            {call.name || audioCallTo.name}
+          </p>
+          {!callAccepted && <p className="text-xl leading-tight">Ringing</p>}
           {callAccepted && (
-            <canvas ref={canvasRef} className="h-max w-32"></canvas>
+            <canvas
+              ref={canvasRef}
+              className="h-16 w-32 leading-tight"
+            ></canvas>
           )}
 
           {callAccepted && (
-            <p className="text-xl">{formatTime(useTimer?.value)}</p>
+            <p className="text-xl leading-tight">
+              {formatTime(useTimer?.value)}
+            </p>
           )}
         </div>
       </div>
