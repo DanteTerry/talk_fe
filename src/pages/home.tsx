@@ -20,6 +20,7 @@ import {
 } from "../lib/utils/utils";
 import { Socket } from "socket.io-client";
 import Ringing from "../components/call/Ringing";
+import { set } from "react-hook-form";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -173,7 +174,6 @@ function Home({ socket }: { socket: Socket }) {
   const toggleVideo = () => {
     if (stream) {
       stream.getVideoTracks().forEach((track) => {
-        console.log(track);
         track.enabled = !track.enabled;
       });
 
@@ -278,18 +278,26 @@ function Home({ socket }: { socket: Socket }) {
   };
 
   const endCall = () => {
-    setCallType("");
+    socket.emit("end call", {
+      userId: call.socketId,
+      usersInCall: call.usersInCall,
+    }); // Emit end call event
+    connectionRef?.current?.destroy(); // Destroy the peer
+
     setCall({
       ...call,
       callEnded: true,
       receivingCall: false,
       usersInCall: [],
     });
-    socket.emit("end call", {
-      userId: call.socketId,
-      usersInCall: call.usersInCall,
-    }); // Emit end call event
-    connectionRef?.current?.destroy(); // Destroy the peer
+
+    setVideoAndAudio({
+      video: true,
+      audio: true,
+    });
+
+    setCallAccepted(false);
+    setCallType("");
   };
 
   // Set up socket listeners for call events
@@ -320,14 +328,6 @@ function Home({ socket }: { socket: Socket }) {
     });
 
     socket.on("end call", (data) => {
-      setCallType("");
-      setCall({
-        ...call,
-        callEnded: true,
-        receivingCall: false,
-        usersInCall: data,
-      });
-
       if (myVideo.current) {
         myVideo.current.srcObject = null; // Set my video stream to null
       }
@@ -335,6 +335,19 @@ function Home({ socket }: { socket: Socket }) {
       if (callAccepted) {
         connectionRef?.current?.destroy(); // Destroy the peer
       }
+      setCallAccepted(false);
+      setCall({
+        ...call,
+        callEnded: true,
+        receivingCall: false,
+        usersInCall: data,
+      });
+
+      setVideoAndAudio({
+        video: true,
+        audio: true,
+      });
+      setCallType("");
     });
   }, [call, callAccepted, socket, videoAndAudio]);
 
