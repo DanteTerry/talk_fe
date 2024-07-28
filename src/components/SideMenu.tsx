@@ -1,7 +1,7 @@
 import chatDarkLogo from "../assets/chatGreen.svg";
 import { Sun, SunMoon } from "lucide-react";
 import { sidebarItems } from "../constants/constants";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toggleDarkMode } from "../features/darkmodeSlice";
 import { useSelector } from "react-redux";
@@ -12,14 +12,20 @@ function SideMenu() {
   const dispatch = useDispatch();
   const darkMode = useSelector((state) => state.darkMode.isDarkMode);
   const { user } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
   return (
     <aside className="flex h-full w-[130px] flex-col items-center justify-between pb-10 dark:bg-[#17181B]">
-      <button onClick={() => dispatch(setActiveConversation({}))}>
+      <button
+        onClick={() => {
+          dispatch(setActiveConversation({}));
+          navigate("/messages");
+        }}
+      >
         <img src={chatDarkLogo} className="w-[100px]" />
       </button>
 
-      <div className="flex w-full flex-col items-center gap-8">
+      <div className="flex w-full flex-col items-center gap-5">
         {sidebarItems.map((items, index) => {
           return (
             <Link to={`${items.url}`} key={items.name}>

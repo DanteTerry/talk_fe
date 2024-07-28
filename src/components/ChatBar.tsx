@@ -46,7 +46,7 @@ function ChatBar({
       </div>
 
       <div className="flex items-center justify-between gap-10">
-        {!activeConversation.isGroup && (
+        {!activeConversation.isGroup && online && (
           <div className="flex items-center gap-10">
             <button
               onClick={() => {

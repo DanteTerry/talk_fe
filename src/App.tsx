@@ -15,6 +15,7 @@ import GroupChat from "./components/groupChat/GroupChat";
 import Profile from "./components/Profile";
 import { io } from "socket.io-client";
 import SocketContext from "./context/SocketContext";
+import Notification from "./components/Notification";
 
 // socket.io-client
 const localhost = import.meta.env.VITE_APP_LOCALHOST;
@@ -42,6 +43,7 @@ function App() {
               <Route path="friends" element={<Friends />} />
               <Route path="group-chat" element={<GroupChat />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="notifications" element={<Notification />} />
             </Route>
             <Route
               path="/login"
