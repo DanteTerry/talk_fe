@@ -26,17 +26,21 @@ function CallAction({
     <div
       className={`fixed z-50 flex w-full justify-center ${activeConversation._id ? "bottom-0" : "bottom-0"}`}
     >
-      <div className="flex w-full justify-center gap-3 rounded-t-3xl bg-gray-900 px-3 py-4 text-white">
+      <div
+        className={`flex w-full justify-center gap-3 rounded-t-3xl px-3 py-4 ${callType === "video" ? "bg-gray-900" : "bg-transparent"} text-white`}
+      >
         {/* add user button */}
 
         {/* video button */}
 
-        <button
-          className="grid h-12 w-12 place-items-center rounded-full bg-slate-800 p-1"
-          onClick={toggleVideo}
-        >
-          {videoAndAudio.video ? <Video size={25} /> : <VideoOff size={25} />}
-        </button>
+        {callType === "video" && (
+          <button
+            className="grid h-12 w-12 place-items-center rounded-full bg-slate-800 p-1"
+            onClick={toggleVideo}
+          >
+            {videoAndAudio.video ? <Video size={25} /> : <VideoOff size={25} />}
+          </button>
+        )}
 
         {/* microphone button */}
 

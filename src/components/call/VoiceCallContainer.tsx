@@ -44,7 +44,7 @@ function VoiceCallContainer({
       };
 
       // Log stream information for debugging
-      console.log("MediaStream:", stream);
+
       const audioTracks = stream.getAudioTracks();
       console.log("Audio tracks:", audioTracks);
 

@@ -1,9 +1,10 @@
 import { Video, X } from "lucide-react";
-import { BsThreeDots } from "react-icons/bs";
+
 import { MdCallEnd } from "react-icons/md";
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AudioRing from "../../../public/ringing.mp3";
+import { FaPhoneAlt } from "react-icons/fa";
 
 function Ringing({
   call,
@@ -29,7 +30,7 @@ function Ringing({
   };
 
   useEffect(() => {
-    if (timer <= 10) {
+    if (timer <= 30) {
       handleTimer();
     } else {
       setCall({ ...call, receivingCall: false });
@@ -61,21 +62,20 @@ function Ringing({
               </div>
             </div>
             <div className="flex items-center gap-3 rounded-b-xl pb-2 text-white">
-              <button className="rounded-full bg-gray-700 px-4 py-2">
-                <BsThreeDots size={25} />
-              </button>
               <button
                 className="flex items-center gap-3 rounded-full bg-green-500 px-4 py-2"
                 onClick={answerCall}
               >
-                <Video strokeWidth={1.4} />
-                <span className="text-sm">Accept</span>
+                {callType === "voice" && <FaPhoneAlt size={17} />}
+                {callType === "video" && <Video />}
+                <span className="">Accept</span>
               </button>
               <button
-                className="rounded-full bg-red-700 px-4 py-2"
+                className="flex items-center gap-3 rounded-full bg-red-700 px-4 py-2"
                 onClick={endCall}
               >
                 <MdCallEnd size={25} />
+                <span className="">Reject</span>
               </button>
             </div>
           </div>
