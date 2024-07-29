@@ -1,14 +1,14 @@
 import { useSelector } from "react-redux";
 import Message from "./Message";
 import { Message as IMessage } from "../types/types";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import FileMessage from "./fileUploader/FileMessage";
 import { SyncLoader } from "react-spinners";
 
-function ChatMessages() {
+function ChatMessages({ endRef }: { endRef: React.RefObject<HTMLDivElement> }) {
   const { messages } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
-  const endRef = useRef<HTMLDivElement>(null);
+
   const typing = useSelector((state) => state.typing);
   const { isDarkMode } = useSelector((state) => state.darkMode);
 
@@ -16,7 +16,7 @@ function ChatMessages() {
     if (endRef.current) {
       endRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }
-  }, [messages, typing]); // Add typing as dependency to scroll when typing state changes
+  }, [messages, typing, endRef]); // Add typing as dependency to scroll when typing state changes
 
   return (
     <div

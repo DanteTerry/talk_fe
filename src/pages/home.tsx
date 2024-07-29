@@ -21,6 +21,7 @@ import {
 import { Socket } from "socket.io-client";
 import Ringing from "../components/call/Ringing";
 import BottomMenu from "../components/BottomMenu";
+import Inputs from "../components/Inputs";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -33,6 +34,9 @@ function Home({ socket }: { socket: Socket }) {
     usersInCall: [],
   };
 
+  const [emojiPicker, setEmojiPicker] = useState(false);
+  const [sendMessage, setSendMessage] = useState("");
+
   const { activeConversation } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -42,6 +46,7 @@ function Home({ socket }: { socket: Socket }) {
   const [callType, setCallType] = useState<"video" | "voice" | "">("");
 
   const onlineUsers = useSelector((state) => state.onlineUsers);
+  const { files } = useSelector((state: any) => state.chat);
 
   const [videoAndAudio, setVideoAndAudio] = useState({
     video: true,
@@ -79,7 +84,7 @@ function Home({ socket }: { socket: Socket }) {
     socket.on("typing", () => dispatch(setTyping(true)));
 
     socket.on("stop typing", () => dispatch(setTyping(false)));
-  }, [dispatch, socket]);
+  }, []);
 
   // Set up media devices (video and audio)
   const setUpMedia = () => {
@@ -101,7 +106,7 @@ function Home({ socket }: { socket: Socket }) {
   };
 
   // Function to call a user
-  const callUser = (callType: "video" | "audio") => {
+  const callUser = (callType: "video" | "voice") => {
     enableMedia();
     const usersInConversation = getUsersInConversation(
       [user._id, getConversationId(user, activeConversation.users)],
@@ -397,7 +402,24 @@ function Home({ socket }: { socket: Socket }) {
             className={`relative w-full ${activeConversation._id ? "col-span-12 lg:col-span-9" : "sm:col-span-9"}`}
           >
             {activeConversation.name ? (
-              <Chat callUser={callUser} setCallType={setCallType} />
+              <>
+                <Chat
+                  callUser={callUser}
+                  setCallType={setCallType}
+                  sendMessage={sendMessage}
+                  setSendMessage={setSendMessage}
+                  setEmojiPicker={setEmojiPicker}
+                  emojiPicker={emojiPicker}
+                />
+                {!files.length ? (
+                  <Inputs
+                    sendMessage={sendMessage}
+                    setSendMessage={setSendMessage}
+                    setEmojiPicker={setEmojiPicker}
+                    emojiPicker={emojiPicker}
+                  />
+                ) : null}
+              </>
             ) : (
               <HomeInfo />
             )}

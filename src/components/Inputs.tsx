@@ -1,22 +1,20 @@
 import { Mic, Paperclip, SendHorizonal, Smile, X } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { sendMessages } from "../features/chatSlice";
-import { useSelector } from "react-redux";
 import FileSender from "./FileSender";
 import SocketContext from "../context/SocketContext";
 import { ClipLoader } from "react-spinners";
 
 function Inputs({
   sendMessage,
-  emojiPicker,
   setSendMessage,
+  emojiPicker,
   setEmojiPicker,
   socket,
 }: {
   setEmojiPicker: Dispatch<SetStateAction<boolean>>;
   emojiPicker: boolean;
-  textRef: React.RefObject<HTMLInputElement>;
   sendMessage: string;
   setSendMessage: Dispatch<SetStateAction<string>>;
   socket: any;
@@ -29,9 +27,14 @@ function Inputs({
   const { files } = useSelector((state: any) => state.chat);
   const [typing, setTyping] = useState(false);
   const [filesSender, setFilesSender] = useState(false);
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (files.length > 0) {
+      setFilesSender(false);
+    }
+  }, [files]);
 
   const values = {
     sendMessage,
@@ -42,26 +45,20 @@ function Inputs({
 
   const sendMessageHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!sendMessage.trim()) return;
+
     setLoading(true);
     const newMessage = await dispatch(sendMessages(values));
     socket.emit("send message", newMessage.payload);
-    setEmojiPicker(false);
     setSendMessage("");
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (files.length > 0) {
-      setFilesSender(false);
-    }
-  }, [files]);
-
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
     const value = e.target.value;
     setSendMessage(value);
 
-    if (value === "") {
+    if (value.trim() === "") {
       if (typing) {
         socket.emit("stop typing", activeConversation._id);
         setTyping(false);
@@ -87,14 +84,14 @@ function Inputs({
 
   return (
     <form
-      className="relative row-span-1 flex items-center justify-between gap-5 border-t-2 px-5 dark:border-gray-700"
-      onSubmit={(e) => sendMessageHandler(e)}
+      className="fixed bottom-0 row-span-1 flex w-full items-center justify-between gap-5 border-t-2 px-5 py-3 dark:border-gray-700"
+      onSubmit={sendMessageHandler}
     >
       <div className="relative flex gap-4">
-        {/* //Todo: Fix emoji picker bug*/}
         <button
-          onClick={(e) => {
-            setEmojiPicker((state) => !state);
+          type="button"
+          onClick={() => {
+            setEmojiPicker(!emojiPicker);
             setFilesSender(false);
           }}
         >
@@ -113,9 +110,9 @@ function Inputs({
           )}
         </button>
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            setFilesSender((state) => !state);
+          type="button"
+          onClick={() => {
+            setFilesSender(!filesSender);
             setEmojiPicker(false);
           }}
         >
@@ -144,25 +141,27 @@ function Inputs({
           onChange={onChangeHandler}
           ref={inputRef}
         />
-        <div>
-          <div className="flex cursor-pointer">
-            <Mic
-              size={25}
-              strokeWidth={1.5}
-              className="course-pointer absolute right-14 top-2 text-green-500"
-            />
-            <button type="submit">
-              {status === "loading" && loading ? (
-                <ClipLoader size={25} color="#22c55e" />
-              ) : (
-                <SendHorizonal
-                  size={25}
-                  strokeWidth={1.5}
-                  className="absolute right-4 top-2 text-green-500"
-                />
-              )}
-            </button>
-          </div>
+        <div className="flex cursor-pointer">
+          <Mic
+            size={25}
+            strokeWidth={1.5}
+            className="course-pointer absolute right-14 top-2 text-green-500"
+          />
+          <button type="submit">
+            {status === "loading" && loading ? (
+              <ClipLoader
+                className="absolute right-4 top-2 text-green-500"
+                size={25}
+                color="#22c55e"
+              />
+            ) : (
+              <SendHorizonal
+                size={25}
+                strokeWidth={1.5}
+                className="absolute right-4 top-2 text-green-500"
+              />
+            )}
+          </button>
         </div>
       </div>
       {filesSender && <FileSender filesSender={filesSender} />}
