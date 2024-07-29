@@ -20,6 +20,7 @@ import {
 } from "../lib/utils/utils";
 import { Socket } from "socket.io-client";
 import Ringing from "../components/call/Ringing";
+import BottomMenu from "../components/BottomMenu";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -38,7 +39,7 @@ function Home({ socket }: { socket: Socket }) {
   const [call, setCall] = useState(callData);
   const [stream, setStream] = useState<MediaStream | undefined>(undefined);
   const [callAccepted, setCallAccepted] = useState(false);
-  const [callType, setCallType] = useState<"video" | "audio" | "">("");
+  const [callType, setCallType] = useState<"video" | "voice" | "">("");
 
   const onlineUsers = useSelector((state) => state.onlineUsers);
 
@@ -236,7 +237,7 @@ function Home({ socket }: { socket: Socket }) {
       socket.off("toggle-video");
       socket.off("toggle-audio");
     };
-  }, [socket, socketId]);
+  }, [socket, socketId, stream]);
 
   // Function to answer a call
   const answerCall = () => {
@@ -347,7 +348,7 @@ function Home({ socket }: { socket: Socket }) {
         ...call,
         callEnded: true,
         receivingCall: false,
-        usersInCall: data,
+        usersInCall: [],
       });
 
       setVideoAndAudio({
@@ -386,48 +387,51 @@ function Home({ socket }: { socket: Socket }) {
       <div className="flex h-full">
         <SideMenu />
         <div className="grid h-full w-full grid-cols-12">
-          <div className="col-span-3 h-[99.5vh] w-full overflow-hidden border-l-2 border-r-2 py-5 dark:border-gray-700 dark:bg-[#17181B]">
+          <div
+            className={`h-[99.5vh] w-full overflow-hidden border-l-2 border-r-2 py-5 dark:border-gray-700 dark:bg-[#17181B] ${activeConversation._id ? "hidden lg:col-span-3 lg:block" : "col-span-12 px-2 lg:col-span-3 lg:px-0"}`}
+          >
             <Outlet />
           </div>
-          <div className="relative col-span-9 w-full">
+          <BottomMenu call={call} />
+          <div
+            className={`relative w-full ${activeConversation._id ? "col-span-12 lg:col-span-9" : "sm:col-span-9"}`}
+          >
             {activeConversation.name ? (
               <Chat callUser={callUser} setCallType={setCallType} />
             ) : (
               <HomeInfo />
             )}
-
-            {(callType === "video" || callType === "audio") &&
-              !receivingCall && (
-                <Call
-                  call={call}
-                  userVideo={userVideo}
-                  myVideo={myVideo}
-                  setCall={setCall}
-                  callAccepted={callAccepted}
-                  stream={stream}
-                  callType={callType}
-                  answerCall={answerCall}
-                  endCall={endCall}
-                  setVideoAndAudio={setVideoAndAudio}
-                  videoAndAudio={videoAndAudio}
-                  toggleVideo={toggleVideo}
-                  toggleAudio={toggleAudio}
-                  remoteUserVideo={remoteUserVideo}
-                  remoteUserAudio={remoteUserAudio}
-                  audioCallTo={audioCallTo}
-                />
-              )}
-
-            {receivingCall && (
-              <Ringing
-                call={call}
-                setCall={setCall}
-                callType={callType}
-                answerCall={answerCall}
-                endCall={endCall}
-              />
-            )}
           </div>
+          {(callType === "video" || callType === "voice") && !receivingCall && (
+            <Call
+              call={call}
+              userVideo={userVideo}
+              myVideo={myVideo}
+              setCall={setCall}
+              callAccepted={callAccepted}
+              stream={stream}
+              callType={callType}
+              answerCall={answerCall}
+              endCall={endCall}
+              setVideoAndAudio={setVideoAndAudio}
+              videoAndAudio={videoAndAudio}
+              toggleVideo={toggleVideo}
+              toggleAudio={toggleAudio}
+              remoteUserVideo={remoteUserVideo}
+              remoteUserAudio={remoteUserAudio}
+              audioCallTo={audioCallTo}
+            />
+          )}
+
+          {receivingCall && (
+            <Ringing
+              call={call}
+              setCall={setCall}
+              callType={callType}
+              answerCall={answerCall}
+              endCall={endCall}
+            />
+          )}
         </div>
       </div>
     </div>

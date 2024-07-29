@@ -12,7 +12,7 @@ function CallAction({
   toggleAudio,
   setIsMuted,
 }: {
-  callType: "video" | "audio" | null;
+  callType: "video" | "voice" | null;
   endCall: () => void;
   setVideoAndAudio: any;
   videoAndAudio: { video: boolean; audio: boolean };
@@ -24,7 +24,7 @@ function CallAction({
 
   return (
     <div
-      className={`absolute z-50 flex w-full justify-center ${activeConversation._id ? "bottom-16" : "bottom-0"}`}
+      className={`fixed z-50 flex w-full justify-center ${activeConversation._id ? "bottom-0" : "bottom-0"}`}
     >
       <div className="flex w-full justify-center gap-3 rounded-t-3xl bg-gray-900 px-3 py-4 text-white">
         {/* add user button */}

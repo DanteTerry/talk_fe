@@ -8,7 +8,7 @@ function MessageBar() {
   const [searchText, setSearchText] = useState("");
 
   return (
-    <div className="h-full w-full px-6 py-5">
+    <div className={`h-full w-full py-5 sm:px-2 md:px-4 xl:px-6`}>
       <div className="relative mb-5 flex flex-col gap-3 border-b-2 pb-5 dark:border-gray-700">
         <input
           type="text"

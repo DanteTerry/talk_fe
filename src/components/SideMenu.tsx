@@ -15,7 +15,7 @@ function SideMenu() {
   const navigate = useNavigate();
 
   return (
-    <aside className="flex h-full w-[100px] flex-col items-center justify-between pb-10 dark:bg-[#17181B]">
+    <aside className="hidden h-full w-[100px] flex-col items-center justify-between pb-10 dark:bg-[#17181B] lg:flex">
       <button
         onClick={() => {
           dispatch(setActiveConversation({}));
@@ -52,13 +52,13 @@ function SideMenu() {
         >
           {!darkMode ? (
             <Sun
-              size={30}
+              size={34}
               strokeWidth={1.25}
               className="text-black dark:text-white"
             />
           ) : (
             <SunMoon
-              size={30}
+              size={34}
               strokeWidth={1.25}
               className="text-black dark:text-white"
             />

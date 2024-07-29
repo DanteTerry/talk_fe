@@ -52,7 +52,9 @@ function Conversations({ searchText }: { searchText: string }) {
   }
 
   return (
-    <div className="no-scrollbar h-screen overflow-y-scroll">
+    <div
+      className={`no-scrollbar h-full overflow-y-scroll ${conversations.length > 6 ? "pb-[160px] lg:pb-0" : ""}`}
+    >
       {conversations &&
         filteredConversations.map((conversation: Conversation) => {
           return (

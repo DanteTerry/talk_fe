@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { logIn } from "../features/userSlice";
 import { Loader } from "lucide-react";
 import { useState } from "react";
+import logo from "../assets/chatgreen.png";
 
 function LoginForm() {
   const dispatch = useDispatch();
@@ -49,10 +50,11 @@ function LoginForm() {
 
   return (
     <>
-      <h3 className="text-center text-2xl font-semibold text-[#1D33C0] dark:text-white md:text-3xl">
+      <img src={logo} alt="logo" className="mx-auto mb-2 w-[130px]" />
+      {/* <h3 className="text-center text-2xl font-semibold text-[#1D33C0] dark:text-white md:text-3xl">
         Join our chat revolution
-      </h3>
-      <h4 className="mb-3 text-center text-[#80868B] dark:text-[#DADCE0]">
+      </h3> */}
+      <h4 className="mb-2 text-center text-[#80868B] dark:text-[#DADCE0]">
         Sign in and Start Chatting!
       </h4>
 

@@ -58,23 +58,31 @@ function Inputs({
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    setSendMessage(e.target.value);
+    const value = e.target.value;
+    setSendMessage(value);
 
-    if (!typing) {
-      setTyping(true);
-      socket.emit("typing", activeConversation._id);
-    }
-    const lastTypingTime = new Date().getTime();
-    const timer = 2000;
-
-    setTimeout(() => {
-      const timeNow = new Date().getTime();
-      const timeDiff = timeNow - lastTypingTime;
-      if (timeDiff >= timer && typing) {
+    if (value === "") {
+      if (typing) {
         socket.emit("stop typing", activeConversation._id);
         setTyping(false);
       }
-    }, timer);
+    } else {
+      if (!typing) {
+        setTyping(true);
+        socket.emit("typing", activeConversation._id);
+      }
+      const lastTypingTime = new Date().getTime();
+      const timer = 3000;
+
+      setTimeout(() => {
+        const timeNow = new Date().getTime();
+        const timeDiff = timeNow - lastTypingTime;
+        if (timeDiff >= timer && typing) {
+          socket.emit("stop typing", activeConversation._id);
+          setTyping(false);
+        }
+      }, timer);
+    }
   };
 
   return (

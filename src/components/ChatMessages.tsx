@@ -3,6 +3,7 @@ import Message from "./Message";
 import { Message as IMessage } from "../types/types";
 import { useEffect, useRef } from "react";
 import FileMessage from "./fileUploader/FileMessage";
+import { SyncLoader } from "react-spinners";
 
 function ChatMessages() {
   const { messages } = useSelector((state) => state.chat);
@@ -19,7 +20,7 @@ function ChatMessages() {
 
   return (
     <div
-      className={`no-scrollbar row-span-9 flex h-[82vh] flex-col gap-1 overflow-y-scroll px-5 py-3 text-white scrollbar-track-white scrollbar-thumb-green-500 dark:scrollbar-track-black ${isDarkMode ? "chatDarkBg" : "chatDarkLight"}`}
+      className={`no-scrollbar row-span-9 flex h-[82vh] flex-col gap-[5px] overflow-y-scroll px-2 py-3 text-white scrollbar-track-white scrollbar-thumb-green-500 dark:scrollbar-track-black sm:px-3 md:px-5 ${isDarkMode ? "chatDarkBg" : "chatDarkLight"}`}
     >
       {messages.length > 0 &&
         messages.map((message: IMessage, index) => (
@@ -46,9 +47,9 @@ function ChatMessages() {
             )}
           </>
         ))}
-      {typing && <div>Typing...</div>}{" "}
+      {typing && <SyncLoader color="white" className="pt-3" size={8} />}{" "}
       {/* Render typing indicator only when typing */}
-      <div className="mt-2" ref={endRef}></div>{" "}
+      <div className="mt-3" ref={endRef}></div>{" "}
       {/* Render the endRef element only once */}
     </div>
   );

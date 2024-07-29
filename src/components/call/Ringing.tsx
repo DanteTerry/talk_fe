@@ -2,7 +2,7 @@ import { Video, X } from "lucide-react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdCallEnd } from "react-icons/md";
 
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import AudioRing from "../../../public/ringing.mp3";
 
 function Ringing({
@@ -14,7 +14,7 @@ function Ringing({
 }: {
   call: any;
   setCall: any;
-  callType: "video" | "audio" | "";
+  callType: "video" | "voice" | "";
   answerCall: () => void;
   endCall: () => void;
 }) {
@@ -29,10 +29,11 @@ function Ringing({
   };
 
   useEffect(() => {
-    if (timer <= 30) {
+    if (timer <= 10) {
       handleTimer();
     } else {
       setCall({ ...call, receivingCall: false });
+      endCall();
     }
 
     return () => clearInterval(interval);

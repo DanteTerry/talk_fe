@@ -95,7 +95,7 @@ function VoiceCallContainer({
   }, [stream]);
 
   return (
-    <div className="callBackground flex h-[92vh] w-full items-center justify-center">
+    <div className="callBackground flex h-[100vh] w-full items-center justify-center">
       <div className="flex w-full flex-col items-center justify-center gap-4">
         <div className="h-48 w-48 overflow-hidden rounded-full bg-green-500">
           <img

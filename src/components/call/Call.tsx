@@ -26,7 +26,7 @@ function Call({
   userVideo: any;
   myVideo: any;
   stream: any;
-  callType: "video" | "audio" | null;
+  callType: "video" | "voice" | null;
   answerCall: () => void;
   endCall: () => void;
   setVideoAndAudio: any;
@@ -46,7 +46,7 @@ function Call({
     >
       <div className="relative flex h-full w-full flex-col justify-between">
         {/* container */}
-        {callType === "audio" && (
+        {callType === "voice" && (
           <VoiceCallContainer
             audioCallTo={audioCallTo}
             call={call}
@@ -60,7 +60,7 @@ function Call({
         )}
 
         {/* actions */}
-        {(callType === "video" || callType === "audio") && (
+        {(callType === "video" || callType === "voice") && (
           <CallAction
             callType={callType}
             endCall={endCall}
@@ -133,7 +133,9 @@ function Call({
                 </div>
               )}
             </div>
-            {!callAccepted && <audio src={AudioRing} autoPlay loop></audio>}
+            {!callAccepted && !callEnded && (
+              <audio src={AudioRing} autoPlay loop></audio>
+            )}
           </div>
         )}
       </div>

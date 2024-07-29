@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export const trimString = (str: string, length: number = 27) => {
+export const trimString = (str: string, length: number) => {
   return str?.length > length ? str?.substring(0, length) + "..." : str;
 };
 

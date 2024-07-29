@@ -13,7 +13,7 @@ function Chat({
   callUser,
   setCallType,
 }: {
-  callUser: (callType: "video" | "audio") => void;
+  callUser: (callType: "video" | "voice") => void;
   setCallType: any;
 }) {
   const dispatch = useDispatch();
