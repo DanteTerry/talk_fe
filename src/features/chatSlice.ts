@@ -113,10 +113,16 @@ export const chatSlice = createSlice({
       state.activeConversation = action.payload;
       state.files = [];
     },
+
     updateMessagesAndConversation: (state, action) => {
       // update the messages
       if (state.activeConversation._id === action.payload.conversation._id) {
-        state.messages = [...state.messages, action.payload];
+        const existingMessage = state.messages.find(
+          (message) => message._id === action.payload._id,
+        );
+        if (!existingMessage) {
+          state.messages = [...state.messages, action.payload];
+        }
       }
 
       // update the conversation

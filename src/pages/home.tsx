@@ -84,7 +84,7 @@ function Home({ socket }: { socket: Socket }) {
     socket.on("typing", () => dispatch(setTyping(true)));
 
     socket.on("stop typing", () => dispatch(setTyping(false)));
-  }, []);
+  }, [dispatch, socket]);
 
   // Set up media devices (video and audio)
   const setUpMedia = () => {

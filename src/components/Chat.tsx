@@ -72,23 +72,13 @@ function Chat({
       />
       {files.length > 0 ? <FilePreview /> : <ChatMessages endRef={endRef} />}
 
-      {/* {!files.length ? (
-        <Inputs
-          sendMessage={sendMessage}
-          setSendMessage={setSendMessage}
-          setEmojiPicker={setEmojiPicker}
-          emojiPicker={emojiPicker}
-          endRef={endRef}
-        />
-      ) : null} */}
-
       <div className="absolute bottom-36 left-2">
         {emojiPicker && (
           <EmojiPicker
             theme={emojiPicker ? "dark" : "light"}
             emojiStyle="facebook"
             className={` ${emojiPicker && "translate-y-0 transition-all duration-300"}`}
-            onEmojiClick={(e) => handleEmojiClick(e)}
+            onEmojiClick={handleEmojiClick}
           />
         )}
       </div>
