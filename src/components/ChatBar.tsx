@@ -1,4 +1,4 @@
-import { Info, MoveLeft, Phone, Video } from "lucide-react";
+import { Info, Languages, MoveLeft, Phone, Video } from "lucide-react";
 import { Conversation } from "../types/types";
 import {
   getConversationName,
@@ -8,6 +8,8 @@ import { useSelector } from "react-redux";
 import { setActiveConversation } from "../features/chatSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useState } from "react";
+import { options } from "../constants/constants";
 
 function ChatBar({
   conversation,
@@ -24,6 +26,9 @@ function ChatBar({
   const { activeConversation } = useSelector((state: any) => state.chat);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [showTranslate, setShowTranslate] = useState(true);
+  const [language, setLanguage] = useState("en");
+
   return (
     <div className="row-span-1 flex items-center justify-between border-b-2 px-2 shadow-sm dark:border-gray-700 dark:bg-green-500 sm:px-4 lg:px-6">
       <div className="flex items-center justify-center gap-3">
@@ -60,7 +65,7 @@ function ChatBar({
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4 sm:gap-6 md:gap-8 lg:gap-10">
+      <div className="relative flex items-center justify-between gap-4 sm:gap-6 md:gap-8 lg:gap-10">
         {!activeConversation.isGroup && online && (
           <div className="flex items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10">
             <button
@@ -89,7 +94,15 @@ function ChatBar({
             </button>
           </div>
         )}
-        <div className="flex items-center justify-center">
+        <div className="relative flex items-center justify-center gap-4">
+          <button onClick={() => setShowTranslate((prev) => !prev)}>
+            <Languages
+              size={25}
+              strokeWidth={1.5}
+              className="text-green-500 dark:text-white"
+            />
+          </button>
+
           <button>
             <Info
               size={30}
@@ -98,6 +111,22 @@ function ChatBar({
             />
           </button>
         </div>
+        {showTranslate && (
+          <div className="absolute right-10 top-12 w-[150px] rounded-md bg-white p-2 dark:bg-slate-700">
+            {options.map((option) => (
+              <li
+                className="flex cursor-pointer list-none items-center justify-between rounded-md px-2 py-1 capitalize text-white transition-all duration-300"
+                onClick={() => {
+                  setLanguage(option.code);
+                  setShowTranslate(false);
+                }}
+              >
+                <img src={option.flag} className="h-5" />
+                {option.name}
+              </li>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
