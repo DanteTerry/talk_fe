@@ -3,9 +3,10 @@ import { Conversation } from "../types/types";
 import {
   getConversationName,
   getConversationPicture,
+  translatedAllMessages,
 } from "../lib/utils/utils";
 import { useSelector } from "react-redux";
-import { setActiveConversation } from "../features/chatSlice";
+import { setActiveConversation, setMessages } from "../features/chatSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
@@ -29,13 +30,25 @@ function ChatBar({
   const dispatch = useDispatch();
   const [showTranslate, setShowTranslate] = useState(false);
 
-  const handleTranslate = (option: {
+  const { messages } = useSelector((state: any) => state.chat);
+
+  const handleTranslate = async (option: {
     name: string;
     code: string;
     flag: string;
   }) => {
     dispatch(setLanguage(option.code));
     setShowTranslate(false);
+
+    const translatedMessages = await translatedAllMessages(
+      {
+        messages,
+        lang: option.code,
+      },
+      user.token,
+    );
+
+    dispatch(setMessages(translatedMessages));
   };
 
   return (
@@ -103,7 +116,7 @@ function ChatBar({
             </button>
           </div>
         )}
-        <div className="relative flex items-center justify-center gap-4">
+        <div className="relative flex items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-10">
           <button onClick={() => setShowTranslate((prev) => !prev)}>
             <Languages
               size={25}

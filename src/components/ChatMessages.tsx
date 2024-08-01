@@ -8,7 +8,6 @@ import { SyncLoader } from "react-spinners";
 function ChatMessages({ endRef }: { endRef: React.RefObject<HTMLDivElement> }) {
   const { messages } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
-
   const typing = useSelector((state) => state.typing);
   const { isDarkMode } = useSelector((state) => state.darkMode);
 
@@ -22,8 +21,8 @@ function ChatMessages({ endRef }: { endRef: React.RefObject<HTMLDivElement> }) {
     <div
       className={`no-scrollbar row-span-9 flex h-[82vh] flex-col gap-[5px] overflow-y-scroll px-2 py-3 text-white scrollbar-track-white scrollbar-thumb-green-500 dark:scrollbar-track-black sm:px-3 md:px-5 ${isDarkMode ? "chatDarkBg" : "chatDarkLight"}`}
     >
-      {messages.length > 0 &&
-        messages.map((message: IMessage, index) => (
+      {messages?.length > 0 &&
+        messages?.map((message: IMessage, index) => (
           <>
             {/* Add a unique key to the parent element */}
             {message?.files?.length > 0 &&

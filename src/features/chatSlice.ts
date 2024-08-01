@@ -151,6 +151,9 @@ export const chatSlice = createSlice({
     emptyMessages: (state) => {
       state.messages = [];
     },
+    setMessages: (state, action) => {
+      state.messages = action.payload;
+    },
   },
   extraReducers(builder) {
     builder
@@ -205,6 +208,7 @@ export const {
   addFiles,
   removeFile,
   emptyFile,
+  setMessages,
   emptyMessages,
 } = chatSlice.actions;
 

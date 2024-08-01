@@ -87,6 +87,26 @@ export const getOtherSocketUser = (user: [], users: []) => {
 
 export const translateMessage = async (messageDetail: any, token: string) => {
   try {
+    const { data } = await axios.post(
+      `${TRANSLATE_ENDPOINT}/one`,
+      messageDetail,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return data;
+  } catch (error: unknown) {
+    console.log(error);
+  }
+};
+export const translatedAllMessages = async (
+  messageDetail: any,
+  token: string,
+) => {
+  try {
     const { data } = await axios.post(`${TRANSLATE_ENDPOINT}`, messageDetail, {
       headers: {
         Authorization: `Bearer ${token}`,

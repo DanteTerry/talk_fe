@@ -60,7 +60,6 @@ function Home({ socket }: { socket: Socket }) {
   });
   const [remoteUserVideo, setRemoteUserVideo] = useState(true);
   const [remoteUserAudio, setRemoteUserAudio] = useState(true);
-  const { token } = useSelector((state: any) => state.user);
   const { receivingCall } = call;
 
   const myVideo = useRef<HTMLVideoElement>(null);
@@ -85,14 +84,14 @@ function Home({ socket }: { socket: Socket }) {
         message,
         lang: language,
       };
-      const translatedMessage = await translateMessage(data, token);
+      const translatedMessage = await translateMessage(data, user.token, "one");
       dispatch(updateMessagesAndConversation(translatedMessage));
     });
 
     socket.on("typing", () => dispatch(setTyping(true)));
 
     socket.on("stop typing", () => dispatch(setTyping(false)));
-  }, [dispatch, socket, language, token]);
+  }, [dispatch, socket, language, user.token]);
 
   // Set up media devices (video and audio)
   const setUpMedia = () => {

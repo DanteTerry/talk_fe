@@ -60,7 +60,7 @@ function Chat({
     if (activeConversation._id) {
       dispatch(getConversationMessages(values));
     }
-  }, [activeConversation, dispatch, language]);
+  }, [activeConversation, dispatch]);
 
   return (
     <div

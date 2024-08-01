@@ -46,7 +46,6 @@ function VoiceCallContainer({
       // Log stream information for debugging
 
       const audioTracks = stream.getAudioTracks();
-      console.log("Audio tracks:", audioTracks);
 
       if (audioTracks.length > 0 && (!isMuted || !remoteUserAudio)) {
         ({ start: startVisualizer, stop: stopVisualizer } =
