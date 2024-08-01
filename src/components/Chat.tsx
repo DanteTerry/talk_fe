@@ -31,6 +31,7 @@ function Chat({
   const onlineUsers = useSelector((state: any) => state.onlineUsers);
   const { user } = useSelector((state: any) => state.user);
   const { files } = useSelector((state: any) => state.chat);
+  const { language } = useSelector((state: any) => state.translate);
 
   const conversation = useSelector(
     (state: any) => state.chat.activeConversation,
@@ -39,6 +40,7 @@ function Chat({
   const values = {
     token,
     conversation_id: activeConversation._id,
+    lang: language,
   };
 
   const handleEmojiClick = (e, emojiData) => {
@@ -58,7 +60,7 @@ function Chat({
     if (activeConversation._id) {
       dispatch(getConversationMessages(values));
     }
-  }, [activeConversation, dispatch]);
+  }, [activeConversation, dispatch, language]);
 
   return (
     <div

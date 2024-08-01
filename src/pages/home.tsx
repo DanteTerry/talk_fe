@@ -17,6 +17,7 @@ import {
   getConversationPicture,
   getOtherSocketUser,
   getUsersInConversation,
+  translateMessage,
 } from "../lib/utils/utils";
 import { Socket } from "socket.io-client";
 import Ringing from "../components/call/Ringing";
@@ -59,12 +60,14 @@ function Home({ socket }: { socket: Socket }) {
   });
   const [remoteUserVideo, setRemoteUserVideo] = useState(true);
   const [remoteUserAudio, setRemoteUserAudio] = useState(true);
-
+  const { token } = useSelector((state: any) => state.user);
   const { receivingCall } = call;
 
   const myVideo = useRef<HTMLVideoElement>(null);
   const userVideo = useRef<HTMLVideoElement>(null);
   const connectionRef = useRef<Peer.Instance | null>(null);
+
+  const { language } = useSelector((state: any) => state.translate);
 
   // Join the user to the socket room
   useEffect(() => {
@@ -77,14 +80,19 @@ function Home({ socket }: { socket: Socket }) {
 
   // Listen for new messages and typing events
   useEffect(() => {
-    socket.on("receive message", (message) => {
-      dispatch(updateMessagesAndConversation(message));
+    socket.on("receive message", async (message) => {
+      const data = {
+        message,
+        lang: language,
+      };
+      const translatedMessage = await translateMessage(data, token);
+      dispatch(updateMessagesAndConversation(translatedMessage));
     });
 
     socket.on("typing", () => dispatch(setTyping(true)));
 
     socket.on("stop typing", () => dispatch(setTyping(false)));
-  }, [dispatch, socket]);
+  }, [dispatch, socket, language, token]);
 
   // Set up media devices (video and audio)
   const setUpMedia = () => {

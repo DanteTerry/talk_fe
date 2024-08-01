@@ -29,7 +29,7 @@ function Message({
         className={`flex flex-col gap-1 ${message?.sender?.name !== messages[index + 1]?.sender?.name && "mb-1"}`}
       >
         <div
-          className={`w-max rounded-md px-3 py-1 text-lg ${me ? "bg-green-500 text-white" : "bg-black/90 text-white dark:bg-white dark:text-black"}`}
+          className={`w-max rounded-md px-3 py-1 text-lg ${me ? "bg-green-500 text-white" : "bg-gray-600 text-white dark:bg-white dark:text-black"}`}
         >
           <p className="flex max-w-[290px] gap-2 text-justify leading-tight tracking-tight md:w-full">
             {message.message}

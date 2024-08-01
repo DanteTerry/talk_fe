@@ -81,7 +81,7 @@ export const options = [
   },
   {
     name: "Chinese",
-    code: "zh",
+    code: "zh-Hans",
     flag: "https://hatscripts.github.io/circle-flags/flags/cn.svg",
   },
 ];

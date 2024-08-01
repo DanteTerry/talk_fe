@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { options } from "../constants/constants";
+import { setLanguage } from "../features/translateSlice";
 
 function ChatBar({
   conversation,
@@ -26,8 +27,16 @@ function ChatBar({
   const { activeConversation } = useSelector((state: any) => state.chat);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [showTranslate, setShowTranslate] = useState(true);
-  const [language, setLanguage] = useState("en");
+  const [showTranslate, setShowTranslate] = useState(false);
+
+  const handleTranslate = (option: {
+    name: string;
+    code: string;
+    flag: string;
+  }) => {
+    dispatch(setLanguage(option.code));
+    setShowTranslate(false);
+  };
 
   return (
     <div className="row-span-1 flex items-center justify-between border-b-2 px-2 shadow-sm dark:border-gray-700 dark:bg-green-500 sm:px-4 lg:px-6">
@@ -115,11 +124,9 @@ function ChatBar({
           <div className="absolute right-10 top-12 w-[150px] rounded-md bg-white p-2 dark:bg-slate-700">
             {options.map((option) => (
               <li
+                key={option.code}
                 className="flex cursor-pointer list-none items-center justify-between rounded-md px-2 py-1 capitalize text-white transition-all duration-300"
-                onClick={() => {
-                  setLanguage(option.code);
-                  setShowTranslate(false);
-                }}
+                onClick={() => handleTranslate(option)}
               >
                 <img src={option.flag} className="h-5" />
                 {option.name}

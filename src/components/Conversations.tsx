@@ -26,15 +26,15 @@ function Conversations({ searchText }: { searchText: string }) {
 
   const filteredConversations = conversations.filter(
     (conversation: UserProfile) =>
-      conversation.name.toLowerCase().includes(searchText.toLowerCase()) &&
-      !conversation.isGroup,
+      conversation?.name?.toLowerCase().includes(searchText.toLowerCase()) &&
+      !conversation?.isGroup,
   );
 
   if (searchText) {
     const filteredConversations = conversations.filter(
       (conversation: UserProfile) =>
-        conversation.name.toLowerCase().includes(searchText.toLowerCase()) &&
-        !conversation.isGroup,
+        conversation?.name?.toLowerCase().includes(searchText.toLowerCase()) &&
+        !conversation?.isGroup,
     );
 
     return (

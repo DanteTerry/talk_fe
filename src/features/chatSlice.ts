@@ -59,10 +59,10 @@ export const createGroupConversation = createAsyncThunk(
 export const getConversationMessages = createAsyncThunk(
   "conversation/messages",
   async (values, { rejectWithValue }) => {
-    const { token, conversation_id } = values;
+    const { token, conversation_id, lang } = values;
     try {
       const { data } = await axios.get(
-        `${MESSAGES_ENDPOINT}/${conversation_id}`,
+        `${MESSAGES_ENDPOINT}/${conversation_id}?lang=${lang}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,7 +70,9 @@ export const getConversationMessages = createAsyncThunk(
         },
       );
 
-      return data;
+      if (data.length > 0) {
+        return data;
+      }
     } catch (error: unknown) {
       console.log(error);
       return rejectWithValue(error.response.data.error.message);
@@ -116,7 +118,7 @@ export const chatSlice = createSlice({
 
     updateMessagesAndConversation: (state, action) => {
       // update the messages
-      if (state.activeConversation._id === action.payload.conversation._id) {
+      if (state.activeConversation._id === action?.payload?.conversation._id) {
         const existingMessage = state.messages.find(
           (message) => message._id === action.payload._id,
         );
@@ -127,7 +129,7 @@ export const chatSlice = createSlice({
 
       // update the conversation
       const conversation = {
-        ...action.payload.conversation,
+        ...action?.payload?.conversation,
         latestMessage: action.payload,
       };
       const newConversation = [...state.conversations].filter(
@@ -145,6 +147,9 @@ export const chatSlice = createSlice({
     },
     removeFile: (state, action) => {
       state.files = state.files.filter((_, index) => index !== action.payload);
+    },
+    emptyMessages: (state) => {
+      state.messages = [];
     },
   },
   extraReducers(builder) {
@@ -200,6 +205,7 @@ export const {
   addFiles,
   removeFile,
   emptyFile,
+  emptyMessages,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

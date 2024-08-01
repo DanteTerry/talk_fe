@@ -1,5 +1,9 @@
 import moment from "moment";
 
+import axios from "axios";
+
+const TRANSLATE_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/translate`;
+
 export const trimString = (str: string, length: number) => {
   return str?.length > length ? str?.substring(0, length) + "..." : str;
 };
@@ -79,4 +83,18 @@ export const getOtherSocketUser = (user: [], users: []) => {
   )[0]?.socketId;
 
   return socketId;
+};
+
+export const translateMessage = async (messageDetail: any, token: string) => {
+  try {
+    const { data } = await axios.post(`${TRANSLATE_ENDPOINT}`, messageDetail, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return data;
+  } catch (error: unknown) {
+    console.log(error);
+  }
 };
