@@ -5,6 +5,7 @@ import { sendMessages } from "../features/chatSlice";
 import FileSender from "./FileSender";
 import SocketContext from "../context/SocketContext";
 import { ClipLoader } from "react-spinners";
+import { getConversationId } from "../lib/utils/utils";
 
 function Inputs({
   sendMessage,
@@ -29,6 +30,7 @@ function Inputs({
   const [filesSender, setFilesSender] = useState(false);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { user } = useSelector((state: any) => state.user);
 
   useEffect(() => {
     if (files.length > 0) {
@@ -36,11 +38,14 @@ function Inputs({
     }
   }, [files]);
 
+  const otherUserId = getConversationId(user, activeConversation.users);
+
   const values = {
     sendMessage,
     conversation_id: activeConversation._id,
     files: [],
     token,
+    otherUserId,
   };
 
   const sendMessageHandler = async (e: React.FormEvent<HTMLFormElement>) => {

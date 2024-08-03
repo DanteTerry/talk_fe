@@ -8,25 +8,27 @@ import {
 import { Conversation } from "../types/types";
 import { emptyMessages, setActiveConversation } from "../features/chatSlice";
 import SocketContext from "../context/SocketContext";
+
+import { Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
 
-function SingleConversation({
+export function SingleConversation({
   conversation,
   socket,
   online,
 }: {
   conversation: Conversation;
-  socket: any;
+  socket: Socket;
   online: boolean;
 }) {
   const dispatch = useDispatch();
+  const { user } = useSelector((state: any) => state.user);
+
   const openConversation = async () => {
     await dispatch(emptyMessages());
     await dispatch(setActiveConversation(conversation));
     socket.emit("join conversation", conversation._id);
   };
-
-  const { user } = useSelector((state: any) => state.user);
 
   return (
     <div

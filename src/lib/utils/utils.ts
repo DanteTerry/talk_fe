@@ -3,6 +3,7 @@ import moment from "moment";
 import axios from "axios";
 
 const TRANSLATE_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/translate`;
+const LANGUAGE_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/language`;
 
 export const trimString = (str: string, length: number) => {
   return str?.length > length ? str?.substring(0, length) + "..." : str;
@@ -44,7 +45,7 @@ export const getConversationPicture = (user, users) => {
 };
 
 export const getConversationId = (user, users) => {
-  return users[0]?._id === user?._id ? users[1]?._id : users[0]?._id;
+  return users?.[0]?._id === user?._id ? users?.[1]?._id : users?.[0]?._id;
 };
 
 export const checkOnlineStatus = (onlineUsers, user, users) => {
@@ -112,6 +113,54 @@ export const translatedAllMessages = async (
         Authorization: `Bearer ${token}`,
       },
     });
+
+    return data;
+  } catch (error: unknown) {
+    console.log(error);
+  }
+};
+
+export const createUserLanguage = async (values: {
+  token: string;
+  language: string;
+  user: string;
+}) => {
+  const { token, language, user } = values;
+
+  try {
+    const { data } = await axios.post(
+      `${LANGUAGE_ENDPOINT}`,
+      { language, user },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return data;
+  } catch (error: unknown) {
+    console.log(error);
+  }
+};
+
+export const changeUserLanguage = async (values: {
+  token: string;
+  language: string;
+  user: string;
+}) => {
+  const { token, language, user } = values;
+
+  try {
+    const { data } = await axios.patch(
+      `${LANGUAGE_ENDPOINT}`,
+      { language, user },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
     return data;
   } catch (error: unknown) {

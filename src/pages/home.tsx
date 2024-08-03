@@ -12,6 +12,7 @@ import { setTyping } from "../features/typingSlice";
 import Call from "../components/call/Call";
 import Peer from "simple-peer";
 import {
+  createUserLanguage,
   getConversationId,
   getConversationName,
   getConversationPicture,
@@ -68,6 +69,17 @@ function Home({ socket }: { socket: Socket }) {
 
   const { language } = useSelector((state: any) => state.translate);
 
+  useEffect(() => {
+    const value = {
+      token: user.token,
+      language,
+      user: user._id,
+    };
+    if (user.token) {
+      createUserLanguage(value);
+    }
+  }, []);
+
   // Join the user to the socket room
   useEffect(() => {
     socket.emit("join", user._id);
@@ -84,7 +96,8 @@ function Home({ socket }: { socket: Socket }) {
         message,
         lang: language,
       };
-      const translatedMessage = await translateMessage(data, user.token, "one");
+      const translatedMessage = await translateMessage(data, user.token);
+      data.lang = "";
       dispatch(updateMessagesAndConversation(translatedMessage));
     });
 

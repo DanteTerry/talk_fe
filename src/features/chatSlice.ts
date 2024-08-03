@@ -87,11 +87,12 @@ export const sendMessages = createAsyncThunk(
     const conversation_id = values.conversation_id;
     const token = values.token;
     const files = values.files;
+    const otherUserId = values.otherUserId;
 
     try {
       const { data } = await axios.post(
         `${MESSAGES_ENDPOINT}`,
-        { message, conversation_id, files },
+        { message, conversation_id, files, otherUserId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
