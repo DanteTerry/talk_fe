@@ -7,6 +7,7 @@ const MESSAGES_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/message`;
 const initialState = {
   status: "",
   error: "",
+  hasNext: false,
   conversations: [],
   messages: [],
   activeConversation: {},
@@ -59,10 +60,10 @@ export const createGroupConversation = createAsyncThunk(
 export const getConversationMessages = createAsyncThunk(
   "conversation/messages",
   async (values, { rejectWithValue }) => {
-    const { token, conversation_id, lang } = values;
+    const { token, conversation_id, lang, page } = values;
     try {
       const { data } = await axios.get(
-        `${MESSAGES_ENDPOINT}/${conversation_id}?lang=${lang}`,
+        `${MESSAGES_ENDPOINT}/${conversation_id}?lang=${lang}&page=${page}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -71,7 +72,8 @@ export const getConversationMessages = createAsyncThunk(
       );
 
       if (data.length > 0) {
-        return data;
+        const messages = await data.slice().reverse();
+        return messages;
       }
     } catch (error: unknown) {
       console.log(error);
@@ -123,6 +125,7 @@ export const chatSlice = createSlice({
         const existingMessage = state.messages.find(
           (message) => message._id === action.payload._id,
         );
+
         if (!existingMessage) {
           state.messages = [...state.messages, action.payload];
         }
@@ -155,6 +158,10 @@ export const chatSlice = createSlice({
     setMessages: (state, action) => {
       state.messages = action.payload;
     },
+
+    setHasNext: (state, action) => {
+      state.hasNext = action.payload;
+    },
   },
   extraReducers(builder) {
     builder
@@ -174,7 +181,11 @@ export const chatSlice = createSlice({
       })
       .addCase(getConversationMessages.fulfilled, (state, action) => {
         state.status = "success";
-        state.messages = action.payload;
+        if (action?.payload?.length > 0) {
+          state.messages = [...action?.payload, ...state?.messages];
+        } else {
+          state.hasNext = false;
+        }
       })
       .addCase(getConversationMessages.rejected, (state, action) => {
         state.status = "failed";
@@ -186,6 +197,7 @@ export const chatSlice = createSlice({
       .addCase(sendMessages.fulfilled, (state, action) => {
         state.status = "success";
         state.messages = [...state.messages, action.payload];
+
         const conversation = {
           ...action.payload.conversation,
           latestMessage: action.payload,
@@ -211,6 +223,7 @@ export const {
   emptyFile,
   setMessages,
   emptyMessages,
+  setHasNext,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { continuousVisualizer } from "sound-visualizer";
 import { createTimeModel, useTimeModel } from "react-compound-timer";
 
+// Create a timer model instance
 const timer = createTimeModel({
   initialTime: 0,
   timeToUpdate: 1000,
@@ -43,8 +44,6 @@ function VoiceCallContainer({
         slices: 100,
       };
 
-      // Log stream information for debugging
-
       const audioTracks = stream.getAudioTracks();
 
       if (audioTracks.length > 0 && (!isMuted || !remoteUserAudio)) {
@@ -59,20 +58,25 @@ function VoiceCallContainer({
     };
   }, [stream, callAccepted, isMuted, remoteUserAudio]);
 
-  useEffect(() => {
-    if (callAccepted) {
-      timer.start();
-    } else {
-      timer.reset();
-    }
-
-    return () => {
-      timer.reset();
-    };
-  }, [callAccepted]);
+  console.log(callAccepted);
 
   const useTimer = useTimeModel(timer);
 
+  useEffect(() => {
+    if (callAccepted) {
+      useTimer.start();
+    } else {
+      useTimer.stop();
+      useTimer.reset();
+    }
+
+    return () => {
+      useTimer.stop();
+      useTimer.reset();
+    };
+  }, [callAccepted]);
+
+  console.log(useTimer.start());
   const formatTime = (time) => {
     const minutes = time?.m ?? 0;
     const seconds = time?.s ?? 0;

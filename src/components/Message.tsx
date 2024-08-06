@@ -14,7 +14,7 @@ function Message({
 }) {
   return (
     <div className={`flex ${me ? "justify-end" : "items-center"} gap-3`}>
-      {!me && message?.sender?.name !== messages[index + 1]?.sender?.name ? (
+      {!me && message?.sender?._id !== messages[index + 1]?.sender?._id ? (
         <div className="h-5 w-5 self-end rounded-full">
           <img
             src={message.sender.picture}
