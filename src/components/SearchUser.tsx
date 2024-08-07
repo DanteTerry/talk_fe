@@ -39,7 +39,11 @@ function SearchUser() {
       }
     };
 
-    getUser(searchText);
+    if (searchText.length > 0) {
+      getUser(searchText);
+    } else {
+      setUsers([]);
+    }
   }, [searchText, token]);
 
   return (
@@ -71,7 +75,7 @@ function SearchUser() {
           return <SingleUser key={user?._id} user={user} />;
         })}
 
-      {searchText.length === 0 && (
+      {searchText.length === 0 && users.length === 0 && (
         <div className="flex flex-col items-center justify-center gap-3">
           <h1 className="text-2xl font-semibold text-green-500 dark:text-white">
             Search for a user

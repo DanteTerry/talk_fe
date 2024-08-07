@@ -304,10 +304,12 @@ function Home({ socket }: { socket: Socket }) {
   };
 
   const endCall = () => {
+    setCallAccepted(false);
     if (connectionRef.current) {
       connectionRef.current.destroy(); // Destroy the peer connection
       connectionRef.current = null;
     }
+    setCallType("");
 
     if (myVideo.current) {
       myVideo.current.srcObject = null; // Clear my video stream
@@ -329,8 +331,6 @@ function Home({ socket }: { socket: Socket }) {
       video: true,
       audio: true,
     });
-    setCallAccepted(false);
-    setCallType("");
   };
 
   // Set up socket listeners for call events
@@ -361,14 +361,13 @@ function Home({ socket }: { socket: Socket }) {
     });
 
     socket.on("end call", (data) => {
-      if (myVideo.current) {
-        myVideo.current.srcObject = null; // Set my video stream to null
-      }
+      setCallAccepted(false);
 
       if (callAccepted) {
         connectionRef?.current?.destroy(); // Destroy the peer
       }
-      setCallAccepted(false);
+
+      setCallType("");
       setCall({
         ...call,
         callEnded: true,
@@ -380,7 +379,10 @@ function Home({ socket }: { socket: Socket }) {
         video: true,
         audio: true,
       });
-      setCallType("");
+
+      if (myVideo.current) {
+        myVideo.current.srcObject = null; // Set my video stream to null
+      }
     });
 
     window.addEventListener("beforeunload", () => {
