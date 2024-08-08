@@ -16,6 +16,8 @@ import {
   getConversationId,
   getConversationName,
   getConversationPicture,
+  getFriendRequests,
+  getFriends,
   getOtherSocketUser,
   getUsersInConversation,
   translateMessage,
@@ -24,6 +26,8 @@ import { Socket } from "socket.io-client";
 import Ringing from "../components/call/Ringing";
 import BottomMenu from "../components/BottomMenu";
 import Inputs from "../components/Inputs";
+import { setFriendRequests } from "../features/notificationSlice";
+import { setFriends } from "../features/friendSlice";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -63,6 +67,7 @@ function Home({ socket }: { socket: Socket }) {
   const [remoteUserAudio, setRemoteUserAudio] = useState(true);
   const { receivingCall } = call;
 
+  const { token } = useSelector((state: any) => state.user.user);
   const myVideo = useRef<HTMLVideoElement>(null);
   const userVideo = useRef<HTMLVideoElement>(null);
   const connectionRef = useRef<Peer.Instance | null>(null);
@@ -236,7 +241,7 @@ function Home({ socket }: { socket: Socket }) {
   useEffect(() => {
     socket.on("toggle-video", ({ userId, enabled }) => {
       if (userVideo.current) {
-        userVideo.current.srcObject?.getVideoTracks().forEach((track) => {
+        userVideo.current?.srcObject?.getVideoTracks().forEach((track) => {
           track.enabled = enabled;
         });
         if (enabled) {
@@ -408,6 +413,88 @@ function Home({ socket }: { socket: Socket }) {
       });
     };
   }, [call, callAccepted, socket, videoAndAudio]);
+
+  // Listen for friend requests
+  useEffect(() => {
+    socket.on("receive-friend-request", async (data) => {
+      const value = {
+        token,
+        id: data.receiver,
+      };
+      const requests = await getFriendRequests(value);
+
+      if (requests.friendRequests.length > 0) {
+        dispatch(setFriendRequests(requests));
+      }
+    });
+  }, [socket, dispatch, user._id, token]);
+
+  // Get friend requests from the database
+  useEffect(() => {
+    async function getRequest() {
+      const value = {
+        token,
+        id: user._id,
+      };
+      const friendRequests = await getFriendRequests(value);
+
+      if (friendRequests.friendRequests.length > 0) {
+        dispatch(setFriendRequests(friendRequests));
+      }
+    }
+
+    getRequest();
+  }, []);
+
+  //  Accept friend request
+  useEffect(() => {
+    socket.on("accepted-friend-request", async () => {
+      const friends = await getFriends(token, user._id);
+      if (friends?.success) {
+        dispatch(setFriends(friends.friends));
+
+        const value = {
+          token,
+          id: user._id,
+        };
+        const friendRequests = await getFriendRequests(value);
+
+        if (friendRequests.friendRequests.length > 0) {
+          dispatch(setFriendRequests(friendRequests));
+        }
+      }
+    });
+  }, [socket, token, dispatch, user._id]);
+
+  //rejected friend request
+  useEffect(() => {
+    socket.on("rejected-friend-request", async () => {
+      const value = {
+        token,
+        id: user._id,
+      };
+
+      const friendRequests = await getFriendRequests(value);
+
+      console.log(friendRequests);
+
+      if (friendRequests.friendRequests.length > 0) {
+        dispatch(setFriendRequests(friendRequests));
+      }
+    });
+  }, [socket, token, dispatch, user._id]);
+
+  // Get friends
+  useEffect(() => {
+    async function getFriendsData() {
+      const friends = await getFriends(token, user._id);
+      if (friends?.success) {
+        dispatch(setFriends(friends?.friends));
+      }
+    }
+
+    getFriendsData();
+  }, []);
 
   return (
     <div className="h-screen overflow-hidden dark:bg-[#17181B]">

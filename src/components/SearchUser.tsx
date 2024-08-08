@@ -4,10 +4,12 @@ import SingleUser from "./SingleUser";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { UserProfile } from "../types/types";
+import SocketContext from "../context/SocketContext";
+import { Socket } from "socket.io-client";
 
 const SEARCH_USER_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/user`;
 
-function SearchUser() {
+function SearchUser({ socket }: { socket: Socket }) {
   const [isFocused, setIsFocused] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [users, setUsers] = useState([]);
@@ -52,7 +54,7 @@ function SearchUser() {
         <input
           type="text"
           className="relative w-full rounded-md bg-[#f0f2f5] px-2 py-2 pl-10 text-green-500 focus:outline-none dark:bg-[#202124]"
-          placeholder="Search talk"
+          placeholder="Search users by email or name"
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           onChange={(e) => setSearchText(e.target.value)}
@@ -89,4 +91,10 @@ function SearchUser() {
   );
 }
 
-export default SearchUser;
+const SearchUserWithContext = (props) => (
+  <SocketContext.Consumer>
+    {(socket) => <SearchUser {...props} socket={socket} />}
+  </SocketContext.Consumer>
+);
+
+export default SearchUserWithContext;

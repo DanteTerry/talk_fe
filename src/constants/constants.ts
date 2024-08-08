@@ -21,11 +21,6 @@ export const sidebarItems = [
     icon: Users,
     url: "group-chat",
   },
-  {
-    name: "notifications",
-    icon: Bell,
-    url: "notifications",
-  },
 ];
 
 export const options = [

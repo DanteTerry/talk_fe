@@ -100,7 +100,7 @@ function VoiceCallContainer({
   return (
     <div className="callBackground flex h-[100vh] w-full items-center justify-center">
       <div className="flex w-full flex-col items-center justify-center gap-4">
-        <div className="h-48 w-48 overflow-hidden rounded-full bg-green-500">
+        <div className="h-48 w-48 overflow-hidden rounded-full">
           <img
             src={call.picture || audioCallTo.picture}
             className="h-full w-full"

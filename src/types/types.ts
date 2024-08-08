@@ -27,7 +27,7 @@ export interface User {
   name: string;
   email: string;
   picture: string;
-  status: string;
+  status?: string;
 }
 
 export interface Conversation {
@@ -61,4 +61,25 @@ export interface CallData {
   picture: string;
   signal: string;
   usersInCall: [];
+}
+
+interface FriendRequest {
+  _id: string;
+  sender: User;
+  receiver: User;
+  status: string;
+  requestDate: string; // ISO 8601 date format
+  createdAt: string; // ISO 8601 date format
+  updatedAt: string; // ISO 8601 date format
+  __v: number;
+}
+
+export interface FriendRequestsResponse {
+  success: boolean;
+  friendRequests: FriendRequest[];
+}
+
+export interface FriendsData {
+  success: boolean;
+  friends: User[];
 }
