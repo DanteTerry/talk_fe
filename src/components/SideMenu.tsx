@@ -11,6 +11,7 @@ import { Socket } from "socket.io-client";
 import { useEffect } from "react";
 import { getFriendRequests } from "../lib/utils/utils";
 import { setFriendRequests } from "../features/notificationSlice";
+import { setActiveFriend } from "../features/friendSlice";
 
 function SideMenu({ socket }: { socket: Socket }) {
   const location = useLocation();
@@ -58,6 +59,7 @@ function SideMenu({ socket }: { socket: Socket }) {
         onClick={() => {
           dispatch(setActiveConversation({}));
           navigate("/messages");
+          dispatch(setActiveFriend({}));
         }}
         className="flex items-end justify-center py-5"
       >

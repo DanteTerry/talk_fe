@@ -69,7 +69,11 @@ function ChatMessages({
         dispatch(setHasNext(true));
       }, 2000);
     }
-  }, [activeConversation, setPage, dispatch]);
+  }, [activeConversation._id, setPage, dispatch]);
+
+  console.log(messages);
+
+  console.log(activeConversation._id);
 
   return (
     <div
@@ -77,7 +81,12 @@ function ChatMessages({
     >
       {hasNext && (
         <div className="mx-auto" ref={ref}>
-          {showLoader && <ScaleLoader color="white" />}
+          {showLoader && (
+            <ScaleLoader
+              color="white"
+              className="text-green-500 dark:text-white"
+            />
+          )}
         </div>
       )}
       {messages?.length > 0 &&

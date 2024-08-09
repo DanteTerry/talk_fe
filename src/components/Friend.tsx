@@ -1,9 +1,22 @@
-import { trimString } from "../lib/utils/utils";
+import { useDispatch } from "react-redux";
 import { UserProfile } from "../types/types";
+import { trimString } from "../lib/utils/utils";
+import { setActiveFriend } from "../features/friendSlice";
+import { setActiveConversation } from "../features/chatSlice";
 
 function Friend({ user }: { user: UserProfile }) {
+  const dispatch = useDispatch();
+
+  const handleClick = () => {
+    dispatch(setActiveFriend(user));
+    dispatch(setActiveConversation({}));
+  };
+
   return (
-    <div className="mb-3 flex w-full cursor-pointer items-center gap-3 rounded-md bg-green-500 px-2 py-3 dark:bg-white">
+    <div
+      onClick={handleClick}
+      className="mb-3 flex w-full cursor-pointer items-center gap-3 rounded-md bg-green-500 px-2 py-3 dark:bg-white"
+    >
       <div className="h-12!important w-12 rounded-full">
         <img
           src={user?.picture}
@@ -17,10 +30,12 @@ function Friend({ user }: { user: UserProfile }) {
             {user?.name}
           </span>
           <span className="text-[13px] font-semibold text-white opacity-95 dark:text-black">
-            {trimString(user?.status)}
+            {trimString(user?.status, 25)}
           </span>
         </div>
-        <span className="font-semibold capitalize">friends</span>
+        <span className="font-semibold capitalize text-white dark:text-green-500">
+          friends
+        </span>
       </div>
     </div>
   );

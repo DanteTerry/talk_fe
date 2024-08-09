@@ -39,12 +39,12 @@ export const timeHandler = (date: string) => {
 
 //  get conversation name
 export const getConversationName = (user, users) => {
-  return users[0]._id === user._id ? users[1].name : users[0].name;
+  return users[0]._id === user?._id ? users[1]?.name : users[0]?.name;
 };
 
 // get conversation picture
 export const getConversationPicture = (user, users) => {
-  return users[0]._id === user._id ? users[1].picture : users[0].picture;
+  return users[0]._id === user?._id ? users[1]?.picture : users[0]?.picture;
 };
 
 // get conversation id

@@ -28,6 +28,7 @@ import BottomMenu from "../components/BottomMenu";
 import Inputs from "../components/Inputs";
 import { setFriendRequests } from "../features/notificationSlice";
 import { setFriends } from "../features/friendSlice";
+import ProfileInfo from "../components/ProfileInfo";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -44,6 +45,8 @@ function Home({ socket }: { socket: Socket }) {
   const [sendMessage, setSendMessage] = useState("");
 
   const { activeConversation } = useSelector((state) => state.chat);
+  const { activeFriend } = useSelector((state) => state.friends);
+
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [call, setCall] = useState(callData);
@@ -502,13 +505,13 @@ function Home({ socket }: { socket: Socket }) {
         <SideMenu />
         <div className="grid h-full w-full grid-cols-12">
           <div
-            className={`h-[99.5vh] w-full overflow-hidden border-l-2 border-r-2 py-5 dark:border-gray-700 dark:bg-[#17181B] ${activeConversation._id ? "hidden lg:col-span-3 lg:block" : "col-span-12 px-2 lg:col-span-3 lg:px-0"}`}
+            className={`h-[99.5vh] w-full overflow-hidden border-l-2 border-r-2 py-5 dark:border-gray-700 dark:bg-[#17181B] ${activeConversation._id ? "hidden lg:col-span-3 lg:block" : "col-span-12 px-2 lg:col-span-3 lg:px-0"} ${activeFriend._id ? "hidden lg:col-span-3 lg:block" : "col-span-12 px-2 lg:col-span-3 lg:px-0"}`}
           >
             <Outlet />
           </div>
           <BottomMenu call={call} />
           <div
-            className={`relative w-full ${activeConversation._id ? "col-span-12 lg:col-span-9" : "sm:col-span-9"}`}
+            className={`relative w-full ${activeConversation._id ? "col-span-12 lg:col-span-9" : "sm:col-span-9"} ${activeFriend._id ? "col-span-12 lg:col-span-9" : "sm:col-span-9"}`}
           >
             {activeConversation.name ? (
               <>
@@ -532,6 +535,8 @@ function Home({ socket }: { socket: Socket }) {
             ) : (
               <HomeInfo />
             )}
+
+            {activeFriend?.name ? <ProfileInfo /> : <HomeInfo />}
           </div>
           {(callType === "video" || callType === "voice") && !receivingCall && (
             <Call
