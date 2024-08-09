@@ -479,13 +479,13 @@ function Home({ socket }: { socket: Socket }) {
 
       const friendRequests = await getFriendRequests(value);
 
-      console.log(friendRequests);
-
       if (friendRequests.friendRequests.length > 0) {
         dispatch(setFriendRequests(friendRequests));
       }
     });
   }, [socket, token, dispatch, user._id]);
+
+  const { page } = useSelector((state: any) => state.page);
 
   // Get friends
   useEffect(() => {
@@ -511,7 +511,7 @@ function Home({ socket }: { socket: Socket }) {
           </div>
           <BottomMenu call={call} />
           <div
-            className={`relative w-full ${activeConversation._id ? "col-span-12 lg:col-span-9" : "sm:col-span-9"} ${activeFriend._id ? "col-span-12 lg:col-span-9" : "sm:col-span-9"}`}
+            className={`relative w-full ${activeConversation._id ? "col-span-12 lg:col-span-9" : "sm:col-span-12"} ${activeFriend._id ? "col-span-12 lg:col-span-9" : "col-span-12 lg:col-span-9"}`}
           >
             {activeConversation.name ? (
               <>

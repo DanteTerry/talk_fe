@@ -27,7 +27,6 @@ function Chat({
   const onlineUsers = useSelector((state: any) => state.onlineUsers);
   const { user } = useSelector((state: any) => state.user);
   const { files } = useSelector((state: any) => state.chat);
-  const [page, setPage] = useState(1);
 
   const conversation = useSelector(
     (state: any) => state.chat.activeConversation,
@@ -55,14 +54,8 @@ function Chat({
         callUser={callUser}
         online={online}
         setCallType={setCallType}
-        page={page}
-        setPage={setPage}
       />
-      {files.length > 0 ? (
-        <FilePreview />
-      ) : (
-        <ChatMessages page={page} setPage={setPage} endRef={endRef} />
-      )}
+      {files.length > 0 ? <FilePreview /> : <ChatMessages endRef={endRef} />}
 
       <div className="absolute bottom-36 left-2">
         {emojiPicker && (

@@ -27,6 +27,7 @@ function SideMenu({ socket }: { socket: Socket }) {
         token,
         id: data.receiver,
       };
+
       const requests = await getFriendRequests(value);
       if (requests.friendRequests.length > 0) {
         dispatch(setFriendRequests(requests));

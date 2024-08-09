@@ -7,16 +7,9 @@ import { ScaleLoader, SyncLoader } from "react-spinners";
 import { useInView } from "react-intersection-observer";
 import { getConversationMessages, setHasNext } from "../features/chatSlice";
 import { useDispatch } from "react-redux";
+import { setPage } from "../features/pageSlice";
 
-function ChatMessages({
-  endRef,
-  page,
-  setPage,
-}: {
-  endRef: React.RefObject<HTMLDivElement>;
-  page: number;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
-}) {
+function ChatMessages({ endRef }: { endRef: React.RefObject<HTMLDivElement> }) {
   const { messages } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
   const typing = useSelector((state) => state.typing);
@@ -28,6 +21,8 @@ function ChatMessages({
   const dispatch = useDispatch();
   const [showLoader, setShowLoader] = useState(false);
   const [ref, inView] = useInView();
+
+  const { page } = useSelector((state: any) => state.page);
 
   const values = {
     token,
@@ -46,7 +41,7 @@ function ChatMessages({
   useEffect(() => {
     if (inView && hasNext) {
       setShowLoader(true);
-      setPage((prev: number) => prev + 1);
+      dispatch(setPage(page + 1));
       if (page > 1) {
         dispatch(getConversationMessages(values));
       }
@@ -55,31 +50,29 @@ function ChatMessages({
         setShowLoader(false);
       }, 300);
     } else {
-      setPage((prev) => prev);
       setShowLoader(false);
     }
-  }, [inView, dispatch]);
+  }, [inView, hasNext, dispatch]);
 
   // Fetch messages when activeConversation changes
   useEffect(() => {
     if (activeConversation._id) {
-      setPage(1);
+      dispatch(setPage(1));
       dispatch(getConversationMessages(values));
+
       setTimeout(() => {
         dispatch(setHasNext(true));
-      }, 2000);
+      }, 4000);
+
+      dispatch(setPage(1));
     }
-  }, [activeConversation._id, setPage, dispatch]);
-
-  console.log(messages);
-
-  console.log(activeConversation._id);
+  }, [activeConversation._id, dispatch]);
 
   return (
     <div
       className={`no-scrollbar row-span-9 flex h-[82vh] flex-col gap-[5px] overflow-y-scroll px-2 py-3 text-white scrollbar-track-white scrollbar-thumb-green-500 dark:scrollbar-track-black sm:px-3 md:px-5 ${isDarkMode ? "chatDarkBg" : "chatDarkLight"}`}
     >
-      {hasNext && (
+      {hasNext && messages.length > 20 && (
         <div className="mx-auto" ref={ref}>
           {showLoader && (
             <ScaleLoader

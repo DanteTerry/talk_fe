@@ -13,31 +13,28 @@ import {
 } from "../features/chatSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { SetStateAction, Dispatch, useState } from "react";
+import { useState } from "react";
 import { options } from "../constants/constants";
 import { setLanguage } from "../features/translateSlice";
+import { setPage } from "../features/pageSlice";
 
 function ChatBar({
   conversation,
   online,
   callUser,
-  page,
   setCallType,
-  setPage,
 }: {
   conversation: Conversation;
   online: boolean | undefined;
   callUser: (callType: "video" | "voice") => void;
   setCallType: any;
-  page: number;
-  setPage: Dispatch<SetStateAction<number>>;
 }) {
   const user = useSelector((state: any) => state.user.user);
   const { activeConversation } = useSelector((state: any) => state.chat);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showTranslate, setShowTranslate] = useState(false);
-
+  const { page } = useSelector((state: any) => state.page);
   const handleTranslate = async (option: {
     name: string;
     code: string;
@@ -56,11 +53,11 @@ function ChatBar({
     setShowTranslate(false);
 
     if (activeConversation._id) {
-      setPage(1);
+      dispatch(setPage(1));
       dispatch(getConversationMessages(values));
     }
 
-    setPage(1);
+    dispatch(setPage(1));
     dispatch(setHasNext(false));
   };
 

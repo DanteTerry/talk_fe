@@ -8,9 +8,9 @@ import {
 import { Conversation } from "../types/types";
 import { emptyMessages, setActiveConversation } from "../features/chatSlice";
 import SocketContext from "../context/SocketContext";
-
 import { Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
+import { setPage } from "../features/pageSlice";
 
 export function SingleConversation({
   conversation,
@@ -25,6 +25,7 @@ export function SingleConversation({
   const { user } = useSelector((state: any) => state.user);
 
   const openConversation = async () => {
+    dispatch(setPage(1));
     await dispatch(emptyMessages());
     await dispatch(setActiveConversation(conversation));
     socket.emit("join conversation", conversation._id);
