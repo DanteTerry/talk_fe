@@ -1,22 +1,22 @@
 import { Info, Languages, MoveLeft, Phone, Video } from "lucide-react";
 import { Conversation } from "../types/types";
-import {
-  getConversationName,
-  getConversationPicture,
-} from "../lib/utils/utils";
-import { useSelector } from "react-redux";
-import {
-  getConversationMessages,
-  setActiveConversation,
-  setHasNext,
-  setMessages,
-} from "../features/chatSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { options } from "../constants/constants";
 import { setLanguage } from "../features/translateSlice";
 import { setPage } from "../features/pageSlice";
+import { useSelector } from "react-redux";
+import {
+  getConversationName,
+  getConversationPicture,
+} from "../lib/utils/utils";
+import {
+  getConversationMessages,
+  setActiveConversation,
+  setHasNext,
+  setMessages,
+} from "../features/chatSlice";
 
 function ChatBar({
   conversation,
@@ -35,6 +35,7 @@ function ChatBar({
   const dispatch = useDispatch();
   const [showTranslate, setShowTranslate] = useState(false);
   const { page } = useSelector((state: any) => state.page);
+
   const handleTranslate = async (option: {
     name: string;
     code: string;

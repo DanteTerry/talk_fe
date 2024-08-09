@@ -47,7 +47,7 @@ function Chat({
 
   return (
     <div
-      className={`relative grid ${files.length ? "grid-rows-11" : "grid-rows-12"}`}
+      className={`relative grid w-full ${files.length ? "grid-rows-11" : "grid-rows-12"}`}
     >
       <ChatBar
         conversation={conversation}

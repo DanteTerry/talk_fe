@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { useState } from "react";
 import SocketContext from "../context/SocketContext";
 import { Socket } from "socket.io-client";
+import { setActiveFriend } from "../features/friendSlice";
 
 function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
   const { activeConversation } = useSelector((state: any) => state.chat);
@@ -44,7 +45,13 @@ function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
           })
           .map((items, index) => {
             return (
-              <Link to={`${items.url}`} key={index}>
+              <Link
+                to={`${items.url}`}
+                key={index}
+                onClick={() => {
+                  dispatch(setActiveFriend({}));
+                }}
+              >
                 <div
                   className={`flex h-12 w-12 items-center justify-center rounded-xl ${items.name === location.pathname.split("/")[1] && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
                 >
@@ -59,7 +66,12 @@ function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
           })}
 
         {!showNotificationIcon && (
-          <Link to={"notifications"}>
+          <Link
+            to={"notifications"}
+            onClick={() => {
+              dispatch(setActiveFriend({}));
+            }}
+          >
             <div
               className={`flex h-12 w-12 items-center justify-center rounded-xl ${location.pathname.split("/")[1] === "notification" && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
             >
@@ -73,7 +85,12 @@ function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
         )}
 
         {showNotificationIcon && (
-          <Link to={"notifications"}>
+          <Link
+            to={"notifications"}
+            onClick={() => {
+              dispatch(setActiveFriend({}));
+            }}
+          >
             <div
               className={`flex h-12 w-12 items-center justify-center rounded-xl ${location.pathname.split("/")[1] === "notification" && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
             >
@@ -138,7 +155,12 @@ function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
                       />
                     )}
                   </div>
-                  <Link to="/profile">
+                  <Link
+                    to="/profile"
+                    onClick={() => {
+                      dispatch(setActiveFriend({}));
+                    }}
+                  >
                     <div className="h-10 w-10 cursor-pointer rounded-full">
                       <img
                         src={user?.picture}

@@ -485,8 +485,6 @@ function Home({ socket }: { socket: Socket }) {
     });
   }, [socket, token, dispatch, user._id]);
 
-  const { page } = useSelector((state: any) => state.page);
-
   // Get friends
   useEffect(() => {
     async function getFriendsData() {
@@ -500,8 +498,8 @@ function Home({ socket }: { socket: Socket }) {
   }, []);
 
   return (
-    <div className="h-screen overflow-hidden dark:bg-[#17181B]">
-      <div className="flex h-full">
+    <div className="h-screen w-full overflow-hidden dark:bg-[#17181B]">
+      <div className="flex h-full w-full">
         <SideMenu />
         <div className="grid h-full w-full grid-cols-12">
           <div
@@ -511,10 +509,10 @@ function Home({ socket }: { socket: Socket }) {
           </div>
           <BottomMenu call={call} />
           <div
-            className={`relative w-full ${activeConversation._id ? "col-span-12 lg:col-span-9" : "sm:col-span-12"} ${activeFriend._id ? "col-span-12 lg:col-span-9" : "col-span-12 lg:col-span-9"}`}
+            className={`relative w-full ${activeConversation._id && "col-span-12 lg:col-span-9"} ${activeFriend._id ? "col-span-12 lg:col-span-9" : "col-span-12 lg:col-span-9"}`}
           >
             {activeConversation.name ? (
-              <>
+              <div className="relative">
                 <Chat
                   callUser={callUser}
                   setCallType={setCallType}
@@ -531,12 +529,16 @@ function Home({ socket }: { socket: Socket }) {
                     emojiPicker={emojiPicker}
                   />
                 ) : null}
-              </>
+              </div>
             ) : (
               <HomeInfo />
             )}
 
-            {activeFriend?.name ? <ProfileInfo /> : <HomeInfo />}
+            {activeFriend?.name ? (
+              <ProfileInfo callUser={callUser} setCallType={setCallType} />
+            ) : (
+              <HomeInfo />
+            )}
           </div>
           {(callType === "video" || callType === "voice") && !receivingCall && (
             <Call

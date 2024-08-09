@@ -13,8 +13,15 @@ import {
   openCreateConversation,
   setActiveConversation,
 } from "../features/chatSlice";
+import { Dispatch, SetStateAction } from "react";
 
-function ProfileInfo() {
+function ProfileInfo({
+  callUser,
+  setCallType,
+}: {
+  callUser: (callType: "video" | "voice") => void;
+  setCallType: Dispatch<SetStateAction<"video" | "voice" | "">>;
+}) {
   const dispatch = useDispatch();
   const { activeFriend } = useSelector((state: any) => state.friends);
   const { token } = useSelector((state: any) => state.user.user);
@@ -30,6 +37,12 @@ function ProfileInfo() {
   };
 
   const { isDarkMode } = useSelector((state: any) => state.darkMode);
+  const onlineUsers = useSelector((state: any) => state.onlineUsers);
+
+  const isOnline = onlineUsers.find(
+    (user: any) => user.userId === activeFriend._id,
+  );
+
   return (
     <div
       className={`h-full w-full items-center justify-center dark:text-white ${isDarkMode ? "chatDarkBg" : "chatDarkLight"}`}
@@ -72,12 +85,28 @@ function ProfileInfo() {
           >
             <MessageCircleMore size={30} />
           </button>
-          <button className="rounded-lg bg-green-500 px-2 py-2 text-white">
-            <Phone size={30} />
-          </button>
-          <button className="rounded-lg bg-green-500 px-2 py-2 text-white">
-            <Video size={30} />
-          </button>
+          {false && (
+            <>
+              <button
+                onClick={() => {
+                  setCallType("voice");
+                  callUser("voice");
+                }}
+                className="rounded-lg bg-green-500 px-2 py-2 text-white"
+              >
+                <Phone size={30} />
+              </button>
+              <button
+                onClick={() => {
+                  setCallType("video");
+                  callUser("video");
+                }}
+                className="rounded-lg bg-green-500 px-2 py-2 text-white"
+              >
+                <Video size={30} />
+              </button>
+            </>
+          )}
           <button className="rounded-lg bg-green-500 px-2 py-2 text-white">
             <UserMinus size={30} />
           </button>

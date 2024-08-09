@@ -147,11 +147,6 @@ function Inputs({
           ref={inputRef}
         />
         <div className="flex cursor-pointer">
-          <Mic
-            size={25}
-            strokeWidth={1.5}
-            className="course-pointer absolute right-14 top-2 text-green-500"
-          />
           <button type="submit">
             {status === "loading" && loading ? (
               <ClipLoader
