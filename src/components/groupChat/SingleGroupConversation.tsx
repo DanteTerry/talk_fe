@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { dateHandler, trimString } from "../../lib/utils/utils";
 import { Conversation } from "../../types/types";
-import { setActiveConversation } from "../../features/chatSlice";
+import { emptyMessages, setActiveConversation } from "../../features/chatSlice";
 import SocketContext from "../../context/SocketContext";
 
 function SingleGroupConversation({
@@ -14,6 +14,7 @@ function SingleGroupConversation({
   const dispatch = useDispatch();
 
   const openConversation = async () => {
+    await dispatch(emptyMessages());
     await dispatch(setActiveConversation(conversation));
     socket.emit("join conversation", conversation._id);
   };

@@ -27,7 +27,7 @@ export interface User {
   name: string;
   email: string;
   picture: string;
-  status: string;
+  status?: string;
 }
 
 export interface Conversation {
@@ -47,7 +47,7 @@ export interface Message {
   sender: User;
   message: string;
   conversation: Conversation;
-  files: string[]; // Adjust this type if you know the structure of files
+  files: string[];
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -61,4 +61,26 @@ export interface CallData {
   picture: string;
   signal: string;
   usersInCall: [];
+}
+
+interface FriendRequest {
+  _id: string;
+  sender: User;
+  receiver: User;
+  status: string;
+  requestDate: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface FriendRequestsResponse {
+  success: boolean;
+  friendRequests: FriendRequest[];
+}
+
+export interface FriendsData {
+  success: boolean;
+  friends: User[];
+  activeFriend: User;
 }

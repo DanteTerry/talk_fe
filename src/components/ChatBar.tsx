@@ -1,18 +1,22 @@
-import { Info, Languages, MoveLeft, Phone, Vault, Video } from "lucide-react";
+import { Info, Languages, MoveLeft, Phone, Video } from "lucide-react";
 import { Conversation } from "../types/types";
-import {
-  changeUserLanguage,
-  getConversationName,
-  getConversationPicture,
-  translatedAllMessages,
-} from "../lib/utils/utils";
-import { useSelector } from "react-redux";
-import { setActiveConversation, setMessages } from "../features/chatSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { options } from "../constants/constants";
 import { setLanguage } from "../features/translateSlice";
+import { setPage } from "../features/pageSlice";
+import { useSelector } from "react-redux";
+import {
+  getConversationName,
+  getConversationPicture,
+} from "../lib/utils/utils";
+import {
+  getConversationMessages,
+  setActiveConversation,
+  setHasNext,
+  setMessages,
+} from "../features/chatSlice";
 
 function ChatBar({
   conversation,
@@ -30,37 +34,32 @@ function ChatBar({
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showTranslate, setShowTranslate] = useState(false);
-  const { language } = useSelector((state: any) => state.translate);
-
-  const { messages } = useSelector((state: any) => state.chat);
-
-  useEffect(() => {
-    const value = {
-      token: user.token,
-      language,
-      user: user._id,
-    };
-
-    changeUserLanguage(value);
-  }, [language, user.token, user._id]);
+  const { page } = useSelector((state: any) => state.page);
 
   const handleTranslate = async (option: {
     name: string;
     code: string;
     flag: string;
   }) => {
+    dispatch(setMessages([]));
     dispatch(setLanguage(option.code));
+
+    const values = {
+      token: user.token,
+      conversation_id: activeConversation._id,
+      lang: option.code,
+      page,
+    };
+
     setShowTranslate(false);
 
-    const translatedMessages = await translatedAllMessages(
-      {
-        messages,
-        lang: option.code,
-      },
-      user.token,
-    );
+    if (activeConversation._id) {
+      dispatch(setPage(1));
+      dispatch(getConversationMessages(values));
+    }
 
-    dispatch(setMessages(translatedMessages));
+    dispatch(setPage(1));
+    dispatch(setHasNext(false));
   };
 
   return (
@@ -70,6 +69,8 @@ function ChatBar({
           onClick={() => {
             dispatch(setActiveConversation({}));
             navigate("/messages");
+            setPage(1);
+            dispatch(setHasNext(false));
           }}
         >
           <MoveLeft size={25} className="text-green-500 dark:text-white" />

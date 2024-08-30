@@ -1,9 +1,7 @@
 import { useSelector } from "react-redux";
 import ChatBar from "./ChatBar";
 import ChatMessages from "./ChatMessages";
-import { useDispatch } from "react-redux";
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
-import { getConversationMessages } from "../features/chatSlice";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { checkOnlineStatus } from "../lib/utils/utils";
 import FilePreview from "./fileUploader/FilePreview";
@@ -23,25 +21,16 @@ function Chat({
   sendMessage: string;
   setSendMessage: any;
 }) {
-  const dispatch = useDispatch();
   const endRef = useRef<HTMLDivElement>(null);
 
   const { activeConversation } = useSelector((state: any) => state.chat);
-  const { token } = useSelector((state: any) => state.user.user);
   const onlineUsers = useSelector((state: any) => state.onlineUsers);
   const { user } = useSelector((state: any) => state.user);
   const { files } = useSelector((state: any) => state.chat);
-  const { language } = useSelector((state: any) => state.translate);
 
   const conversation = useSelector(
     (state: any) => state.chat.activeConversation,
   );
-
-  const values = {
-    token,
-    conversation_id: activeConversation._id,
-    lang: language,
-  };
 
   const handleEmojiClick = (e, emojiData) => {
     e.preventDefault();
@@ -56,15 +45,9 @@ function Chat({
       : false;
   }
 
-  useEffect(() => {
-    if (activeConversation._id) {
-      dispatch(getConversationMessages(values));
-    }
-  }, [activeConversation, dispatch]);
-
   return (
     <div
-      className={`relative grid ${files.length ? "grid-rows-11" : "grid-rows-12"}`}
+      className={`relative grid w-full ${files.length ? "grid-rows-11" : "grid-rows-12"}`}
     >
       <ChatBar
         conversation={conversation}

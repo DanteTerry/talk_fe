@@ -16,6 +16,8 @@ import {
   getConversationId,
   getConversationName,
   getConversationPicture,
+  getFriendRequests,
+  getFriends,
   getOtherSocketUser,
   getUsersInConversation,
   translateMessage,
@@ -24,6 +26,9 @@ import { Socket } from "socket.io-client";
 import Ringing from "../components/call/Ringing";
 import BottomMenu from "../components/BottomMenu";
 import Inputs from "../components/Inputs";
+import { setFriendRequests } from "../features/notificationSlice";
+import { setFriends } from "../features/friendSlice";
+import ProfileInfo from "../components/ProfileInfo";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -40,6 +45,8 @@ function Home({ socket }: { socket: Socket }) {
   const [sendMessage, setSendMessage] = useState("");
 
   const { activeConversation } = useSelector((state) => state.chat);
+  const { activeFriend } = useSelector((state) => state.friends);
+
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [call, setCall] = useState(callData);
@@ -63,6 +70,7 @@ function Home({ socket }: { socket: Socket }) {
   const [remoteUserAudio, setRemoteUserAudio] = useState(true);
   const { receivingCall } = call;
 
+  const { token } = useSelector((state: any) => state.user.user);
   const myVideo = useRef<HTMLVideoElement>(null);
   const userVideo = useRef<HTMLVideoElement>(null);
   const connectionRef = useRef<Peer.Instance | null>(null);
@@ -236,7 +244,7 @@ function Home({ socket }: { socket: Socket }) {
   useEffect(() => {
     socket.on("toggle-video", ({ userId, enabled }) => {
       if (userVideo.current) {
-        userVideo.current.srcObject?.getVideoTracks().forEach((track) => {
+        userVideo.current?.srcObject?.getVideoTracks().forEach((track) => {
           track.enabled = enabled;
         });
         if (enabled) {
@@ -304,10 +312,12 @@ function Home({ socket }: { socket: Socket }) {
   };
 
   const endCall = () => {
+    setCallAccepted(false);
     if (connectionRef.current) {
       connectionRef.current.destroy(); // Destroy the peer connection
       connectionRef.current = null;
     }
+    setCallType("");
 
     if (myVideo.current) {
       myVideo.current.srcObject = null; // Clear my video stream
@@ -329,8 +339,6 @@ function Home({ socket }: { socket: Socket }) {
       video: true,
       audio: true,
     });
-    setCallAccepted(false);
-    setCallType("");
   };
 
   // Set up socket listeners for call events
@@ -361,14 +369,13 @@ function Home({ socket }: { socket: Socket }) {
     });
 
     socket.on("end call", (data) => {
-      if (myVideo.current) {
-        myVideo.current.srcObject = null; // Set my video stream to null
-      }
+      setCallAccepted(false);
 
       if (callAccepted) {
         connectionRef?.current?.destroy(); // Destroy the peer
       }
-      setCallAccepted(false);
+
+      setCallType("");
       setCall({
         ...call,
         callEnded: true,
@@ -380,7 +387,10 @@ function Home({ socket }: { socket: Socket }) {
         video: true,
         audio: true,
       });
-      setCallType("");
+
+      if (myVideo.current) {
+        myVideo.current.srcObject = null; // Set my video stream to null
+      }
     });
 
     window.addEventListener("beforeunload", () => {
@@ -407,22 +417,102 @@ function Home({ socket }: { socket: Socket }) {
     };
   }, [call, callAccepted, socket, videoAndAudio]);
 
+  // Listen for friend requests
+  useEffect(() => {
+    socket.on("receive-friend-request", async (data) => {
+      const value = {
+        token,
+        id: data.receiver,
+      };
+      const requests = await getFriendRequests(value);
+
+      if (requests.friendRequests.length > 0) {
+        dispatch(setFriendRequests(requests));
+      }
+    });
+  }, [socket, dispatch, user._id, token]);
+
+  // Get friend requests from the database
+  useEffect(() => {
+    async function getRequest() {
+      const value = {
+        token,
+        id: user._id,
+      };
+      const friendRequests = await getFriendRequests(value);
+
+      if (friendRequests.friendRequests.length > 0) {
+        dispatch(setFriendRequests(friendRequests));
+      }
+    }
+
+    getRequest();
+  }, []);
+
+  //  Accept friend request
+  useEffect(() => {
+    socket.on("accepted-friend-request", async () => {
+      const friends = await getFriends(token, user._id);
+      if (friends?.success) {
+        dispatch(setFriends(friends.friends));
+
+        const value = {
+          token,
+          id: user._id,
+        };
+        const friendRequests = await getFriendRequests(value);
+
+        if (friendRequests.friendRequests.length > 0) {
+          dispatch(setFriendRequests(friendRequests));
+        }
+      }
+    });
+  }, [socket, token, dispatch, user._id]);
+
+  //rejected friend request
+  useEffect(() => {
+    socket.on("rejected-friend-request", async () => {
+      const value = {
+        token,
+        id: user._id,
+      };
+
+      const friendRequests = await getFriendRequests(value);
+
+      if (friendRequests.friendRequests.length > 0) {
+        dispatch(setFriendRequests(friendRequests));
+      }
+    });
+  }, [socket, token, dispatch, user._id]);
+
+  // Get friends
+  useEffect(() => {
+    async function getFriendsData() {
+      const friends = await getFriends(token, user._id);
+      if (friends?.success) {
+        dispatch(setFriends(friends?.friends));
+      }
+    }
+
+    getFriendsData();
+  }, []);
+
   return (
-    <div className="h-screen overflow-hidden dark:bg-[#17181B]">
-      <div className="flex h-full">
+    <div className="h-screen w-full overflow-hidden dark:bg-[#17181B]">
+      <div className="flex h-full w-full">
         <SideMenu />
         <div className="grid h-full w-full grid-cols-12">
           <div
-            className={`h-[99.5vh] w-full overflow-hidden border-l-2 border-r-2 py-5 dark:border-gray-700 dark:bg-[#17181B] ${activeConversation._id ? "hidden lg:col-span-3 lg:block" : "col-span-12 px-2 lg:col-span-3 lg:px-0"}`}
+            className={`h-[99.5vh] w-full overflow-hidden border-l-2 border-r-2 py-5 dark:border-gray-700 dark:bg-[#17181B] ${activeConversation._id ? "hidden lg:col-span-3 lg:block" : "col-span-12 px-2 lg:col-span-3 lg:px-0"} ${activeFriend._id ? "hidden lg:col-span-3 lg:block" : "col-span-12 px-2 lg:col-span-3 lg:px-0"}`}
           >
             <Outlet />
           </div>
           <BottomMenu call={call} />
           <div
-            className={`relative w-full ${activeConversation._id ? "col-span-12 lg:col-span-9" : "sm:col-span-9"}`}
+            className={`relative w-full ${activeConversation._id && "col-span-12 lg:col-span-9"} ${activeFriend._id ? "col-span-12 lg:col-span-9" : "col-span-12 lg:col-span-9"}`}
           >
             {activeConversation.name ? (
-              <>
+              <div className="relative">
                 <Chat
                   callUser={callUser}
                   setCallType={setCallType}
@@ -439,7 +529,13 @@ function Home({ socket }: { socket: Socket }) {
                     emojiPicker={emojiPicker}
                   />
                 ) : null}
-              </>
+              </div>
+            ) : (
+              <HomeInfo />
+            )}
+
+            {activeFriend?.name ? (
+              <ProfileInfo callUser={callUser} setCallType={setCallType} />
             ) : (
               <HomeInfo />
             )}

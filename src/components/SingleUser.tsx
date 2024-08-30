@@ -1,8 +1,40 @@
 import { UserPlus } from "lucide-react";
-import { trimString } from "../lib/utils/utils";
+import { sendFriendRequest, trimString } from "../lib/utils/utils";
 import { UserProfile } from "../types/types";
+import { useSelector } from "react-redux";
+import { Socket } from "socket.io-client";
+import SocketContext from "../context/SocketContext";
 
-function SingleUser({ user }: { user: UserProfile }) {
+export function SingleUser({
+  user,
+  socket,
+}: {
+  user: UserProfile;
+  socket: Socket;
+}) {
+  const { user: CurrentUser } = useSelector((state) => state.user);
+  const { token } = useSelector((state) => state.user.user);
+  const value = {
+    sender: CurrentUser?._id,
+    receiver: user?._id,
+  };
+
+  const { friends } = useSelector((state) => state.friends);
+
+  const isFriend = friends.some(
+    (friend) => friend._id === user?._id || friend._id === CurrentUser?._id,
+  );
+
+  const handleSendFriendRequest = async () => {
+    const data = await sendFriendRequest(token, value);
+    if (data) {
+      socket.emit("send-friend-request", {
+        sender: CurrentUser?._id,
+        receiver: user?._id,
+      });
+    }
+  };
+
   return (
     <div className="mb-3 flex w-full cursor-pointer items-center gap-3 rounded-md bg-green-500 px-2 py-3 dark:bg-white">
       <div className="h-12!important w-12 rounded-full">
@@ -21,13 +53,23 @@ function SingleUser({ user }: { user: UserProfile }) {
             {trimString(user?.status)}
           </span>
         </div>
-        <UserPlus
-          className="cursor-pointer self-start"
-          onClick={() => console.log("Friend request sent")}
-        />
+        {!isFriend ? (
+          <UserPlus
+            className="cursor-pointer self-start"
+            onClick={handleSendFriendRequest}
+          />
+        ) : (
+          <span className="font-semibold capitalize">friends</span>
+        )}
       </div>
     </div>
   );
 }
 
-export default SingleUser;
+const SingleUserWithContext = (props) => (
+  <SocketContext.Consumer>
+    {(socket) => <SingleUser {...props} socket={socket} />}
+  </SocketContext.Consumer>
+);
+
+export default SingleUserWithContext;

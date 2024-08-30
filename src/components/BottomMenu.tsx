@@ -1,20 +1,39 @@
 import { Link } from "react-router-dom";
 import { sidebarItems } from "../constants/constants";
 import { useSelector } from "react-redux";
-import { Grip, Sun, SunMoon } from "lucide-react";
+import { Bell, BellDot, Grip, Sun, SunMoon } from "lucide-react";
 import { toggleDarkMode } from "../features/darkmodeSlice";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
+import SocketContext from "../context/SocketContext";
+import { Socket } from "socket.io-client";
+import { setActiveFriend } from "../features/friendSlice";
 
-function BottomMenu({ call }: { call: any }) {
+function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
   const { activeConversation } = useSelector((state: any) => state.chat);
 
   const [showMenu, setShowMenu] = useState(false);
-
   const { user } = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   const darkMode = useSelector((state) => state.darkMode.isDarkMode);
+
+  const notification = useSelector(
+    (state) => state.notification.friendRequests,
+  );
+
+  const isRequestAcceptedOrRejected = notification?.friendRequests?.some(
+    (req) =>
+      req.sender._id === user._id &&
+      (req.status === "accepted" || req.status === "rejected"),
+  );
+
+  const isRequestPending = notification?.friendRequests?.some(
+    (req) => req.receiver._id === user._id && req.status === "pending",
+  );
+
+  const showNotificationIcon = isRequestAcceptedOrRejected || isRequestPending;
+
   return (
     <div
       className={`fixed bottom-0 z-50 w-full ${call.usersInCall.length > 0 ? "hidden" : "flex"} bg-green-500 px-2 py-3 ${activeConversation._id ? "hidden" : "flex lg:hidden"}`}
@@ -26,7 +45,13 @@ function BottomMenu({ call }: { call: any }) {
           })
           .map((items, index) => {
             return (
-              <Link to={`${items.url}`} key={index}>
+              <Link
+                to={`${items.url}`}
+                key={index}
+                onClick={() => {
+                  dispatch(setActiveFriend({}));
+                }}
+              >
                 <div
                   className={`flex h-12 w-12 items-center justify-center rounded-xl ${items.name === location.pathname.split("/")[1] && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
                 >
@@ -39,6 +64,44 @@ function BottomMenu({ call }: { call: any }) {
               </Link>
             );
           })}
+
+        {!showNotificationIcon && (
+          <Link
+            to={"notifications"}
+            onClick={() => {
+              dispatch(setActiveFriend({}));
+            }}
+          >
+            <div
+              className={`flex h-12 w-12 items-center justify-center rounded-xl ${location.pathname.split("/")[1] === "notification" && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
+            >
+              <Bell
+                size={30}
+                className="text-black dark:text-white"
+                strokeWidth={1.25}
+              />
+            </div>
+          </Link>
+        )}
+
+        {showNotificationIcon && (
+          <Link
+            to={"notifications"}
+            onClick={() => {
+              dispatch(setActiveFriend({}));
+            }}
+          >
+            <div
+              className={`flex h-12 w-12 items-center justify-center rounded-xl ${location.pathname.split("/")[1] === "notification" && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
+            >
+              <BellDot
+                size={30}
+                className="text-black dark:text-white"
+                strokeWidth={1.25}
+              />
+            </div>
+          </Link>
+        )}
 
         <button className="relative">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl">
@@ -92,7 +155,12 @@ function BottomMenu({ call }: { call: any }) {
                       />
                     )}
                   </div>
-                  <Link to="/profile">
+                  <Link
+                    to="/profile"
+                    onClick={() => {
+                      dispatch(setActiveFriend({}));
+                    }}
+                  >
                     <div className="h-10 w-10 cursor-pointer rounded-full">
                       <img
                         src={user?.picture}
@@ -111,5 +179,10 @@ function BottomMenu({ call }: { call: any }) {
     </div>
   );
 }
+const BottomMenuWithContext = (props) => (
+  <SocketContext.Consumer>
+    {(socket) => <BottomMenu {...props} socket={socket} />}
+  </SocketContext.Consumer>
+);
 
-export default BottomMenu;
+export default BottomMenuWithContext;

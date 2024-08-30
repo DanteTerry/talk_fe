@@ -29,7 +29,7 @@ function App() {
   const darkMode = useSelector((state) => state.darkMode.isDarkMode);
 
   return (
-    <div className={`${darkMode ? "dark" : ""}`}>
+    <div className={`${darkMode ? "dark" : ""} w-full`}>
       <SocketContext.Provider value={socket}>
         <Router>
           <Routes>
