@@ -1,22 +1,21 @@
 import { Mic, Paperclip, SendHorizonal, Smile, X } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { sendMessages } from "../features/chatSlice";
-import { useSelector } from "react-redux";
 import FileSender from "./FileSender";
 import SocketContext from "../context/SocketContext";
 import { ClipLoader } from "react-spinners";
+import { getConversationId } from "../lib/utils/utils";
 
 function Inputs({
   sendMessage,
-  emojiPicker,
   setSendMessage,
+  emojiPicker,
   setEmojiPicker,
   socket,
 }: {
   setEmojiPicker: Dispatch<SetStateAction<boolean>>;
   emojiPicker: boolean;
-  textRef: React.RefObject<HTMLInputElement>;
   sendMessage: string;
   setSendMessage: Dispatch<SetStateAction<string>>;
   socket: any;
@@ -29,26 +28,9 @@ function Inputs({
   const { files } = useSelector((state: any) => state.chat);
   const [typing, setTyping] = useState(false);
   const [filesSender, setFilesSender] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const [loading, setLoading] = useState(false);
-
-  const values = {
-    sendMessage,
-    conversation_id: activeConversation._id,
-    files: [],
-    token,
-  };
-
-  const sendMessageHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    const newMessage = await dispatch(sendMessages(values));
-    socket.emit("send message", newMessage.payload);
-    setEmojiPicker(false);
-    setSendMessage("");
-    setLoading(false);
-  };
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { user } = useSelector((state: any) => state.user);
 
   useEffect(() => {
     if (files.length > 0) {
@@ -56,37 +38,65 @@ function Inputs({
     }
   }, [files]);
 
-  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const otherUserId = getConversationId(user, activeConversation.users);
+
+  const values = {
+    sendMessage,
+    conversation_id: activeConversation._id,
+    files: [],
+    token,
+    otherUserId,
+  };
+
+  const sendMessageHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSendMessage(e.target.value);
+    if (!sendMessage.trim()) return;
 
-    if (!typing) {
-      setTyping(true);
-      socket.emit("typing", activeConversation._id);
-    }
-    const lastTypingTime = new Date().getTime();
-    const timer = 2000;
+    setLoading(true);
+    const newMessage = await dispatch(sendMessages(values));
+    socket.emit("send message", newMessage.payload);
+    setSendMessage("");
+    setLoading(false);
+  };
 
-    setTimeout(() => {
-      const timeNow = new Date().getTime();
-      const timeDiff = timeNow - lastTypingTime;
-      if (timeDiff >= timer && typing) {
+  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSendMessage(value);
+
+    if (value.trim() === "") {
+      if (typing) {
         socket.emit("stop typing", activeConversation._id);
         setTyping(false);
       }
-    }, timer);
+    } else {
+      if (!typing) {
+        setTyping(true);
+        socket.emit("typing", activeConversation._id);
+      }
+      const lastTypingTime = new Date().getTime();
+      const timer = 3000;
+
+      setTimeout(() => {
+        const timeNow = new Date().getTime();
+        const timeDiff = timeNow - lastTypingTime;
+        if (timeDiff >= timer && typing) {
+          socket.emit("stop typing", activeConversation._id);
+          setTyping(false);
+        }
+      }, timer);
+    }
   };
 
   return (
     <form
-      className="relative row-span-1 flex items-center justify-between gap-5 border-t-2 px-5 dark:border-gray-700"
-      onSubmit={(e) => sendMessageHandler(e)}
+      className="fixed bottom-0 row-span-1 flex w-full items-center justify-between gap-5 border-t-2 px-5 py-3 dark:border-gray-700 dark:bg-[#17181B]"
+      onSubmit={sendMessageHandler}
     >
       <div className="relative flex gap-4">
-        {/* //Todo: Fix emoji picker bug*/}
         <button
-          onClick={(e) => {
-            setEmojiPicker((state) => !state);
+          type="button"
+          onClick={() => {
+            setEmojiPicker(!emojiPicker);
             setFilesSender(false);
           }}
         >
@@ -105,9 +115,9 @@ function Inputs({
           )}
         </button>
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            setFilesSender((state) => !state);
+          type="button"
+          onClick={() => {
+            setFilesSender(!filesSender);
             setEmojiPicker(false);
           }}
         >
@@ -136,25 +146,27 @@ function Inputs({
           onChange={onChangeHandler}
           ref={inputRef}
         />
-        <div>
-          <div className="flex cursor-pointer">
-            <Mic
-              size={25}
-              strokeWidth={1.5}
-              className="course-pointer absolute right-14 top-2 text-green-500"
-            />
-            <button type="submit">
-              {status === "loading" && loading ? (
-                <ClipLoader size={25} color="#22c55e" />
-              ) : (
-                <SendHorizonal
-                  size={25}
-                  strokeWidth={1.5}
-                  className="absolute right-4 top-2 text-green-500"
-                />
-              )}
-            </button>
-          </div>
+        <div className="flex cursor-pointer">
+          <Mic
+            size={25}
+            strokeWidth={1.5}
+            className="course-pointer absolute right-14 top-2 text-green-500"
+          />
+          <button type="submit">
+            {status === "loading" && loading ? (
+              <ClipLoader
+                className="absolute right-4 top-2 text-green-500"
+                size={25}
+                color="#22c55e"
+              />
+            ) : (
+              <SendHorizonal
+                size={25}
+                strokeWidth={1.5}
+                className="absolute right-4 top-2 text-green-500"
+              />
+            )}
+          </button>
         </div>
       </div>
       {filesSender && <FileSender filesSender={filesSender} />}

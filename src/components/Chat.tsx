@@ -1,9 +1,8 @@
 import { useSelector } from "react-redux";
 import ChatBar from "./ChatBar";
 import ChatMessages from "./ChatMessages";
-import Inputs from "./Inputs";
 import { useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { getConversationMessages } from "../features/chatSlice";
 import EmojiPicker from "emoji-picker-react";
 import { checkOnlineStatus } from "../lib/utils/utils";
@@ -12,20 +11,27 @@ import FilePreview from "./fileUploader/FilePreview";
 function Chat({
   callUser,
   setCallType,
+  emojiPicker,
+  setEmojiPicker,
+  sendMessage,
+  setSendMessage,
 }: {
-  callUser: (callType: "video" | "audio") => void;
-  setCallType: any;
+  callUser: (callType: "video" | "voice") => void;
+  setCallType: Dispatch<SetStateAction<"video" | "voice" | "">>;
+  emojiPicker: boolean;
+  setEmojiPicker: any;
+  sendMessage: string;
+  setSendMessage: any;
 }) {
   const dispatch = useDispatch();
+  const endRef = useRef<HTMLDivElement>(null);
 
   const { activeConversation } = useSelector((state: any) => state.chat);
   const { token } = useSelector((state: any) => state.user.user);
   const onlineUsers = useSelector((state: any) => state.onlineUsers);
   const { user } = useSelector((state: any) => state.user);
   const { files } = useSelector((state: any) => state.chat);
-
-  const [emojiPicker, setEmojiPicker] = useState(false);
-  const [sendMessage, setSendMessage] = useState("");
+  const { language } = useSelector((state: any) => state.translate);
 
   const conversation = useSelector(
     (state: any) => state.chat.activeConversation,
@@ -34,11 +40,12 @@ function Chat({
   const values = {
     token,
     conversation_id: activeConversation._id,
+    lang: language,
   };
 
-  const handleEmojiClick = (emojiData) => {
+  const handleEmojiClick = (e, emojiData) => {
+    e.preventDefault();
     const { emoji } = emojiData;
-    console.log(emoji);
   };
 
   let online;
@@ -65,16 +72,7 @@ function Chat({
         online={online}
         setCallType={setCallType}
       />
-      {files.length > 0 ? <FilePreview /> : <ChatMessages />}
-
-      {!files.length ? (
-        <Inputs
-          sendMessage={sendMessage}
-          setSendMessage={setSendMessage}
-          setEmojiPicker={setEmojiPicker}
-          emojiPicker={emojiPicker}
-        />
-      ) : null}
+      {files.length > 0 ? <FilePreview /> : <ChatMessages endRef={endRef} />}
 
       <div className="absolute bottom-36 left-2">
         {emojiPicker && (

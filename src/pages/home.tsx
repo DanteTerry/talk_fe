@@ -12,15 +12,18 @@ import { setTyping } from "../features/typingSlice";
 import Call from "../components/call/Call";
 import Peer from "simple-peer";
 import {
+  createUserLanguage,
   getConversationId,
   getConversationName,
   getConversationPicture,
   getOtherSocketUser,
   getUsersInConversation,
+  translateMessage,
 } from "../lib/utils/utils";
 import { Socket } from "socket.io-client";
 import Ringing from "../components/call/Ringing";
-import { set } from "react-hook-form";
+import BottomMenu from "../components/BottomMenu";
+import Inputs from "../components/Inputs";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -33,29 +36,49 @@ function Home({ socket }: { socket: Socket }) {
     usersInCall: [],
   };
 
+  const [emojiPicker, setEmojiPicker] = useState(false);
+  const [sendMessage, setSendMessage] = useState("");
+
   const { activeConversation } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [call, setCall] = useState(callData);
   const [stream, setStream] = useState<MediaStream | undefined>(undefined);
   const [callAccepted, setCallAccepted] = useState(false);
-  const [callType, setCallType] = useState<"video" | "audio" | "">("");
+  const [callType, setCallType] = useState<"video" | "voice" | "">("");
 
   const onlineUsers = useSelector((state) => state.onlineUsers);
+  const { files } = useSelector((state: any) => state.chat);
 
   const [videoAndAudio, setVideoAndAudio] = useState({
     video: true,
     audio: true,
   });
 
+  const [audioCallTo, setAudioCallTo] = useState({
+    name: "",
+    picture: "",
+  });
   const [remoteUserVideo, setRemoteUserVideo] = useState(true);
   const [remoteUserAudio, setRemoteUserAudio] = useState(true);
-
   const { receivingCall } = call;
 
   const myVideo = useRef<HTMLVideoElement>(null);
   const userVideo = useRef<HTMLVideoElement>(null);
   const connectionRef = useRef<Peer.Instance | null>(null);
+
+  const { language } = useSelector((state: any) => state.translate);
+
+  useEffect(() => {
+    const value = {
+      token: user.token,
+      language,
+      user: user._id,
+    };
+    if (user.token) {
+      createUserLanguage(value);
+    }
+  }, []);
 
   // Join the user to the socket room
   useEffect(() => {
@@ -68,14 +91,20 @@ function Home({ socket }: { socket: Socket }) {
 
   // Listen for new messages and typing events
   useEffect(() => {
-    socket.on("receive message", (message) => {
-      dispatch(updateMessagesAndConversation(message));
+    socket.on("receive message", async (message) => {
+      const data = {
+        message,
+        lang: language,
+      };
+      const translatedMessage = await translateMessage(data, user.token);
+      data.lang = "";
+      dispatch(updateMessagesAndConversation(translatedMessage));
     });
 
     socket.on("typing", () => dispatch(setTyping(true)));
 
     socket.on("stop typing", () => dispatch(setTyping(false)));
-  }, [dispatch, socket]);
+  }, [dispatch, socket, language, user.token]);
 
   // Set up media devices (video and audio)
   const setUpMedia = () => {
@@ -97,7 +126,7 @@ function Home({ socket }: { socket: Socket }) {
   };
 
   // Function to call a user
-  const callUser = (callType: "video" | "audio") => {
+  const callUser = (callType: "video" | "voice") => {
     enableMedia();
     const usersInConversation = getUsersInConversation(
       [user._id, getConversationId(user, activeConversation.users)],
@@ -147,13 +176,18 @@ function Home({ socket }: { socket: Socket }) {
         callEnded: false,
         usersInCall: signal.usersInCall,
       });
+
+      setAudioCallTo({
+        name: signal.userName,
+        picture: signal.userPicture,
+      });
+
       peer.signal(signal.data); // Signal the peer with the received signal
     });
 
     connectionRef.current = peer; // Save the peer connection
 
     peer.on("close", () => {
-      console.log("peer closed");
       socket.off("call accepted");
     });
   };
@@ -164,7 +198,6 @@ function Home({ socket }: { socket: Socket }) {
   const toggleVideo = () => {
     if (stream) {
       stream.getVideoTracks().forEach((track) => {
-        console.log(track);
         track.enabled = !track.enabled;
       });
 
@@ -185,7 +218,6 @@ function Home({ socket }: { socket: Socket }) {
   const toggleAudio = () => {
     if (stream) {
       stream.getAudioTracks().forEach((track) => {
-        console.log(track);
         track.enabled = !track.enabled;
       });
       setVideoAndAudio((prevState) => ({
@@ -204,10 +236,12 @@ function Home({ socket }: { socket: Socket }) {
   useEffect(() => {
     socket.on("toggle-video", ({ userId, enabled }) => {
       if (userVideo.current) {
-        // Mute or unmute the video element based on the `enabled` value
-        userVideo?.current?.srcObject
-          ?.getVideoTracks()
-          .forEach((track) => (track.enabled = enabled));
+        userVideo.current.srcObject?.getVideoTracks().forEach((track) => {
+          track.enabled = enabled;
+        });
+        if (enabled) {
+          userVideo.current.srcObject = stream; // Set received stream to userVideo element
+        }
       }
 
       setRemoteUserVideo(enabled);
@@ -228,7 +262,7 @@ function Home({ socket }: { socket: Socket }) {
       socket.off("toggle-video");
       socket.off("toggle-audio");
     };
-  }, [socket, socketId]);
+  }, [socket, socketId, stream]);
 
   // Function to answer a call
   const answerCall = () => {
@@ -253,6 +287,8 @@ function Home({ socket }: { socket: Socket }) {
         signal: data,
         to: call.socketId,
         usersInCall: call.usersInCall,
+        userName: user.name,
+        userPicture: user.picture,
       });
     });
 
@@ -265,22 +301,36 @@ function Home({ socket }: { socket: Socket }) {
     peer.signal(call.signal); // Signal the peer with the received signal
 
     connectionRef.current = peer; // Save the peer connection
-    setCallType("video");
   };
 
   const endCall = () => {
-    setCallType("");
+    if (connectionRef.current) {
+      connectionRef.current.destroy(); // Destroy the peer connection
+      connectionRef.current = null;
+    }
+
+    if (myVideo.current) {
+      myVideo.current.srcObject = null; // Clear my video stream
+    }
+
+    socket.emit("end call", {
+      userId: call.socketId,
+      usersInCall: call.usersInCall,
+    });
+
+    // Reset state variables
     setCall({
       ...call,
       callEnded: true,
       receivingCall: false,
       usersInCall: [],
     });
-    socket.emit("end call", {
-      userId: call.socketId,
-      usersInCall: call.usersInCall,
-    }); // Emit end call event
-    connectionRef?.current?.destroy(); // Destroy the peer
+    setVideoAndAudio({
+      video: true,
+      audio: true,
+    });
+    setCallAccepted(false);
+    setCallType("");
   };
 
   // Set up socket listeners for call events
@@ -292,7 +342,6 @@ function Home({ socket }: { socket: Socket }) {
     });
 
     socket.on("call user", (data) => {
-      setCallType("");
       setCall({
         ...call,
         callEnded: false,
@@ -303,16 +352,15 @@ function Home({ socket }: { socket: Socket }) {
         signal: data.signal,
         usersInCall: data.usersInCall,
       });
+
+      setAudioCallTo({
+        name: data.to,
+        picture: data.toPicture,
+      });
+      setCallType(data.callType);
     });
 
     socket.on("end call", (data) => {
-      setCallType("");
-      setCall({
-        ...call,
-        callEnded: true,
-        receivingCall: false,
-        usersInCall: data,
-      });
       if (myVideo.current) {
         myVideo.current.srcObject = null; // Set my video stream to null
       }
@@ -320,7 +368,43 @@ function Home({ socket }: { socket: Socket }) {
       if (callAccepted) {
         connectionRef?.current?.destroy(); // Destroy the peer
       }
+      setCallAccepted(false);
+      setCall({
+        ...call,
+        callEnded: true,
+        receivingCall: false,
+        usersInCall: [],
+      });
+
+      setVideoAndAudio({
+        video: true,
+        audio: true,
+      });
+      setCallType("");
     });
+
+    window.addEventListener("beforeunload", () => {
+      endCall();
+
+      socket.emit("end call", {
+        userId: call.socketId,
+        usersInCall: call.usersInCall,
+      });
+    });
+
+    return () => {
+      socket.off("setup socket");
+      socket.off("call user");
+      socket.off("end call");
+      window.removeEventListener("beforeunload", () => {
+        endCall();
+
+        socket.emit("end call", {
+          userId: call.socketId,
+          usersInCall: call.usersInCall,
+        });
+      });
+    };
   }, [call, callAccepted, socket, videoAndAudio]);
 
   return (
@@ -328,46 +412,68 @@ function Home({ socket }: { socket: Socket }) {
       <div className="flex h-full">
         <SideMenu />
         <div className="grid h-full w-full grid-cols-12">
-          <div className="col-span-3 h-[99.5vh] w-full overflow-hidden border-l-2 border-r-2 py-5 dark:border-gray-700 dark:bg-[#17181B]">
+          <div
+            className={`h-[99.5vh] w-full overflow-hidden border-l-2 border-r-2 py-5 dark:border-gray-700 dark:bg-[#17181B] ${activeConversation._id ? "hidden lg:col-span-3 lg:block" : "col-span-12 px-2 lg:col-span-3 lg:px-0"}`}
+          >
             <Outlet />
           </div>
-          <div className="relative col-span-9 w-full">
+          <BottomMenu call={call} />
+          <div
+            className={`relative w-full ${activeConversation._id ? "col-span-12 lg:col-span-9" : "sm:col-span-9"}`}
+          >
             {activeConversation.name ? (
-              <Chat callUser={callUser} setCallType={setCallType} />
+              <>
+                <Chat
+                  callUser={callUser}
+                  setCallType={setCallType}
+                  sendMessage={sendMessage}
+                  setSendMessage={setSendMessage}
+                  setEmojiPicker={setEmojiPicker}
+                  emojiPicker={emojiPicker}
+                />
+                {!files.length ? (
+                  <Inputs
+                    sendMessage={sendMessage}
+                    setSendMessage={setSendMessage}
+                    setEmojiPicker={setEmojiPicker}
+                    emojiPicker={emojiPicker}
+                  />
+                ) : null}
+              </>
             ) : (
               <HomeInfo />
             )}
-
-            {(callType === "video" || callType === "audio") && (
-              <Call
-                call={call}
-                userVideo={userVideo}
-                myVideo={myVideo}
-                setCall={setCall}
-                callAccepted={callAccepted}
-                stream={stream}
-                callType={callType}
-                answerCall={answerCall}
-                endCall={endCall}
-                setVideoAndAudio={setVideoAndAudio}
-                videoAndAudio={videoAndAudio}
-                toggleVideo={toggleVideo}
-                toggleAudio={toggleAudio}
-                remoteUserVideo={remoteUserVideo}
-                remoteUserAudio={remoteUserAudio}
-              />
-            )}
-
-            {receivingCall && (
-              <Ringing
-                call={call}
-                setCall={setCall}
-                callType={callType}
-                answerCall={answerCall}
-                endCall={endCall}
-              />
-            )}
           </div>
+          {(callType === "video" || callType === "voice") && !receivingCall && (
+            <Call
+              call={call}
+              userVideo={userVideo}
+              myVideo={myVideo}
+              setCall={setCall}
+              callAccepted={callAccepted}
+              stream={stream}
+              callType={callType}
+              answerCall={answerCall}
+              endCall={endCall}
+              setVideoAndAudio={setVideoAndAudio}
+              videoAndAudio={videoAndAudio}
+              toggleVideo={toggleVideo}
+              toggleAudio={toggleAudio}
+              remoteUserVideo={remoteUserVideo}
+              remoteUserAudio={remoteUserAudio}
+              audioCallTo={audioCallTo}
+            />
+          )}
+
+          {receivingCall && (
+            <Ringing
+              call={call}
+              setCall={setCall}
+              callType={callType}
+              answerCall={answerCall}
+              endCall={endCall}
+            />
+          )}
         </div>
       </div>
     </div>

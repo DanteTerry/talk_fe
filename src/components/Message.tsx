@@ -25,11 +25,13 @@ function Message({
       ) : (
         <div className="h-5 w-5 self-end rounded-full"></div>
       )}
-      <div className="flex flex-col gap-1">
+      <div
+        className={`flex flex-col gap-1 ${message?.sender?.name !== messages[index + 1]?.sender?.name && "mb-1"}`}
+      >
         <div
-          className={`w-max rounded-md px-3 py-1 text-lg ${me ? "bg-green-500 text-white" : "bg-black/90 text-white dark:bg-white dark:text-black"}`}
+          className={`w-max rounded-md px-3 py-1 text-lg ${me ? "bg-green-500 text-white" : "bg-gray-600 text-white dark:bg-white dark:text-black"}`}
         >
-          <p className="flex gap-2">
+          <p className="flex max-w-[290px] gap-2 text-justify leading-tight tracking-tight md:w-full">
             {message.message}
             <span className="self-end text-xs">
               {timeHandler(message.createdAt)}

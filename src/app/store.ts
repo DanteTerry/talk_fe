@@ -7,21 +7,28 @@ import darkModeReducer from "../features/darkmodeSlice";
 import chatSlice from "../features/chatSlice";
 import onlineUserSlice from "../features/onlineUserSlice";
 import typingSlice from "../features/typingSlice";
+import translateSlice from "../features/translateSlice";
 
-const saveUserAndDarkModeFilter = createFilter("root", ["user", "darkMode"]);
+const saveUserAndDarkModeFilter = createFilter("root", [
+  "user",
+  "darkMode",
+  "translate",
+]);
+
 const rootReducer = combineReducers({
   user: userSlice,
   darkMode: darkModeReducer,
   chat: chatSlice,
   onlineUsers: onlineUserSlice,
   typing: typingSlice,
+  translate: translateSlice,
 });
 
 // persisting the user and darkMode state in the local storage
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user", "darkMode"],
+  whitelist: ["user", "darkMode", "translate"],
   transforms: [saveUserAndDarkModeFilter],
 };
 

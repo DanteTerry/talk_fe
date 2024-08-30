@@ -1,4 +1,4 @@
-import { MessageCircleMore, Search, User, UserPlus, Users } from "lucide-react";
+import { MessageCircleMore, Search, User, Bell, Users } from "lucide-react";
 
 export const sidebarItems = [
   {
@@ -21,33 +21,67 @@ export const sidebarItems = [
     icon: Users,
     url: "group-chat",
   },
+  {
+    name: "notifications",
+    icon: Bell,
+    url: "notifications",
+  },
 ];
 
-export const messages = [
+export const options = [
   {
-    sender: "Arpit Yadav",
-    messages: [
-      {
-        message: "Hello there!",
-        time: "10:00",
-      },
-      {
-        message: " how are you doing?",
-        time: "10:01",
-      },
-    ],
+    name: "Czech",
+    code: "cs",
+    flag: "https://hatscripts.github.io/circle-flags/flags/cz.svg",
   },
   {
-    sender: "Terry Yadav",
-    messages: [
-      {
-        message: "Ahoy !",
-        time: "10:00",
-      },
-      {
-        message: "I am good, how about you?",
-        time: "10:01",
-      },
-    ],
+    name: "English",
+    code: "en",
+    flag: "https://hatscripts.github.io/circle-flags/flags/us.svg",
+  },
+  {
+    name: "French",
+    code: "fr",
+    flag: "https://hatscripts.github.io/circle-flags/flags/fr.svg",
+  },
+  {
+    name: "German",
+    code: "de",
+    flag: "https://hatscripts.github.io/circle-flags/flags/de.svg",
+  },
+  {
+    name: "Hindi",
+    code: "hi",
+    flag: "https://hatscripts.github.io/circle-flags/flags/in.svg",
+  },
+  {
+    name: "Japanese",
+    code: "ja",
+    flag: "https://hatscripts.github.io/circle-flags/flags/jp.svg",
+  },
+  {
+    name: "Korean",
+    code: "ko",
+    flag: "https://hatscripts.github.io/circle-flags/flags/kr.svg",
+  },
+  {
+    name: "Philippine",
+    code: "ph",
+    flag: "https://hatscripts.github.io/circle-flags/flags/ph.svg",
+  },
+  {
+    name: "Russian",
+    code: "ru",
+    flag: "https://hatscripts.github.io/circle-flags/flags/ru.svg",
+  },
+  {
+    name: "Spanish",
+    code: "es",
+    flag: "https://hatscripts.github.io/circle-flags/flags/es.svg",
+  },
+  {
+    name: "Chinese",
+    code: "zh-Hans",
+    flag: "https://hatscripts.github.io/circle-flags/flags/cn.svg",
   },
 ];

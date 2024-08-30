@@ -17,6 +17,8 @@ function Call({
   toggleAudio,
   remoteUserVideo,
   remoteUserAudio,
+  audioCallTo,
+  stream,
 }: {
   call: any;
   setCall: any;
@@ -24,7 +26,7 @@ function Call({
   userVideo: any;
   myVideo: any;
   stream: any;
-  callType: "video" | "audio" | null;
+  callType: "video" | "voice" | null;
   answerCall: () => void;
   endCall: () => void;
   setVideoAndAudio: any;
@@ -33,6 +35,7 @@ function Call({
   toggleAudio: () => void;
   remoteUserAudio: boolean;
   remoteUserVideo: boolean;
+  audioCallTo: { name: string; picture: string };
 }) {
   const { callEnded } = call;
   const [isMuted, setIsMuted] = useState(false);
@@ -43,10 +46,21 @@ function Call({
     >
       <div className="relative flex h-full w-full flex-col justify-between">
         {/* container */}
-        {callType === "audio" && <VoiceCallContainer name={"arpit Yadav"} />}
+        {callType === "voice" && (
+          <VoiceCallContainer
+            audioCallTo={audioCallTo}
+            call={call}
+            callAccepted={callAccepted}
+            stream={stream}
+            remoteUserAudio={remoteUserAudio}
+            isMuted={isMuted}
+            myVideo={myVideo}
+            userVideo={userVideo}
+          />
+        )}
 
         {/* actions */}
-        {(callType === "video" || callType === "audio") && (
+        {(callType === "video" || callType === "voice") && (
           <CallAction
             callType={callType}
             endCall={endCall}
@@ -64,7 +78,7 @@ function Call({
           <div className="absolute flex h-[90vh] w-full items-center justify-center bg-slate-800">
             {/* user video */}
             <div
-              className={`relative h-[91%] w-[98%] overflow-hidden rounded-xl`}
+              className={`relative h-[91%] w-[98%] overflow-hidden rounded-xl bg-black`}
             >
               {callAccepted && !callEnded && remoteUserVideo && (
                 <video
@@ -119,7 +133,9 @@ function Call({
                 </div>
               )}
             </div>
-            {!callAccepted && <audio src={AudioRing} autoPlay loop></audio>}
+            {!callAccepted && !callEnded && (
+              <audio src={AudioRing} autoPlay loop></audio>
+            )}
           </div>
         )}
       </div>

@@ -15,10 +15,14 @@ import GroupChat from "./components/groupChat/GroupChat";
 import Profile from "./components/Profile";
 import { io } from "socket.io-client";
 import SocketContext from "./context/SocketContext";
+import Notification from "./components/Notification";
 
 // socket.io-client
 const localhost = import.meta.env.VITE_APP_LOCALHOST;
-const socket = io(localhost, { autoConnect: true });
+const socket = io(localhost, {
+  autoConnect: true,
+  reconnection: true,
+});
 
 function App() {
   const { token } = useSelector((state) => state.user.user);
@@ -39,6 +43,7 @@ function App() {
               <Route path="friends" element={<Friends />} />
               <Route path="group-chat" element={<GroupChat />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="notifications" element={<Notification />} />
             </Route>
             <Route
               path="/login"

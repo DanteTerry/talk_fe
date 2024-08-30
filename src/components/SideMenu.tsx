@@ -1,7 +1,7 @@
 import chatDarkLogo from "../assets/chatGreen.svg";
 import { Sun, SunMoon } from "lucide-react";
 import { sidebarItems } from "../constants/constants";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toggleDarkMode } from "../features/darkmodeSlice";
 import { useSelector } from "react-redux";
@@ -12,23 +12,30 @@ function SideMenu() {
   const dispatch = useDispatch();
   const darkMode = useSelector((state) => state.darkMode.isDarkMode);
   const { user } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
   return (
-    <aside className="flex h-full w-[130px] flex-col items-center justify-between pb-10 dark:bg-[#17181B]">
-      <button onClick={() => dispatch(setActiveConversation({}))}>
-        <img src={chatDarkLogo} className="w-[100px]" />
+    <aside className="hidden h-full w-[100px] flex-col items-center justify-between pb-10 dark:bg-[#17181B] lg:flex">
+      <button
+        onClick={() => {
+          dispatch(setActiveConversation({}));
+          navigate("/messages");
+        }}
+        className="flex items-end justify-center py-5"
+      >
+        <img src={chatDarkLogo} className="w-5/6" />
       </button>
 
-      <div className="flex w-full flex-col items-center gap-8">
+      <div className="flex w-full flex-col items-center gap-5">
         {sidebarItems.map((items, index) => {
           return (
             <Link to={`${items.url}`} key={items.name}>
               <div
                 key={index}
-                className={`flex h-14 w-14 items-center justify-center rounded-xl ${items.name === location.pathname.split("/")[1] && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
+                className={`flex h-12 w-12 items-center justify-center rounded-xl ${items.name === location.pathname.split("/")[1] && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
               >
                 <items.icon
-                  size={36}
+                  size={30}
                   className="text-black dark:text-white"
                   strokeWidth={1.25}
                 />
@@ -45,13 +52,13 @@ function SideMenu() {
         >
           {!darkMode ? (
             <Sun
-              size={36}
+              size={34}
               strokeWidth={1.25}
               className="text-black dark:text-white"
             />
           ) : (
             <SunMoon
-              size={36}
+              size={34}
               strokeWidth={1.25}
               className="text-black dark:text-white"
             />

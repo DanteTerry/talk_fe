@@ -1,14 +1,24 @@
 import { TbFileDownload } from "react-icons/tb";
-import { timeHandler } from "../../lib/utils/utils";
+import { timeHandler, trimString } from "../../lib/utils/utils";
 
-function FileOther({ file, type, message }) {
+function FileOther({
+  file,
+  type,
+  message,
+}: {
+  file: any;
+  type: string;
+  message: any;
+}) {
   return (
     <div className="flex flex-col justify-center gap-1 px-1">
-      <div className="flex justify-between gap-10 rounded-lg bg-green-600 px-2 py-2">
+      <div className="flex max-w-[300px] justify-between gap-10 rounded-lg bg-green-600 px-2 py-2">
         <div className="flex gap-3">
           <img src={`../../../public/uploader/${type}.svg`} className="h-12" />
           <div className="flex flex-col justify-center">
-            <span className="leading-tight">{file.file.original_filename}</span>
+            <span className="leading-tight">
+              {trimString(file.file.original_filename, 14)}
+            </span>
             <span className="text-sm leading-tight">
               {type} &#183; {file.file.bytes / 1000} KB
             </span>

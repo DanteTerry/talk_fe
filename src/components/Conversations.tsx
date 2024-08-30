@@ -26,15 +26,15 @@ function Conversations({ searchText }: { searchText: string }) {
 
   const filteredConversations = conversations.filter(
     (conversation: UserProfile) =>
-      conversation.name.toLowerCase().includes(searchText.toLowerCase()) &&
-      !conversation.isGroup,
+      conversation?.name?.toLowerCase().includes(searchText.toLowerCase()) &&
+      !conversation?.isGroup,
   );
 
   if (searchText) {
     const filteredConversations = conversations.filter(
       (conversation: UserProfile) =>
-        conversation.name.toLowerCase().includes(searchText.toLowerCase()) &&
-        !conversation.isGroup,
+        conversation?.name?.toLowerCase().includes(searchText.toLowerCase()) &&
+        !conversation?.isGroup,
     );
 
     return (
@@ -52,7 +52,9 @@ function Conversations({ searchText }: { searchText: string }) {
   }
 
   return (
-    <div className="no-scrollbar h-screen overflow-y-scroll">
+    <div
+      className={`no-scrollbar h-full overflow-y-scroll ${conversations.length > 6 ? "pb-[160px] lg:pb-0" : ""}`}
+    >
       {conversations &&
         filteredConversations.map((conversation: Conversation) => {
           return (

@@ -59,10 +59,10 @@ export const createGroupConversation = createAsyncThunk(
 export const getConversationMessages = createAsyncThunk(
   "conversation/messages",
   async (values, { rejectWithValue }) => {
-    const { token, conversation_id } = values;
+    const { token, conversation_id, lang } = values;
     try {
       const { data } = await axios.get(
-        `${MESSAGES_ENDPOINT}/${conversation_id}`,
+        `${MESSAGES_ENDPOINT}/${conversation_id}?lang=${lang}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,7 +70,9 @@ export const getConversationMessages = createAsyncThunk(
         },
       );
 
-      return data;
+      if (data.length > 0) {
+        return data;
+      }
     } catch (error: unknown) {
       console.log(error);
       return rejectWithValue(error.response.data.error.message);
@@ -85,11 +87,12 @@ export const sendMessages = createAsyncThunk(
     const conversation_id = values.conversation_id;
     const token = values.token;
     const files = values.files;
+    const otherUserId = values.otherUserId;
 
     try {
       const { data } = await axios.post(
         `${MESSAGES_ENDPOINT}`,
-        { message, conversation_id, files },
+        { message, conversation_id, files, otherUserId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -113,15 +116,21 @@ export const chatSlice = createSlice({
       state.activeConversation = action.payload;
       state.files = [];
     },
+
     updateMessagesAndConversation: (state, action) => {
       // update the messages
-      if (state.activeConversation._id === action.payload.conversation._id) {
-        state.messages = [...state.messages, action.payload];
+      if (state.activeConversation._id === action?.payload?.conversation._id) {
+        const existingMessage = state.messages.find(
+          (message) => message._id === action.payload._id,
+        );
+        if (!existingMessage) {
+          state.messages = [...state.messages, action.payload];
+        }
       }
 
       // update the conversation
       const conversation = {
-        ...action.payload.conversation,
+        ...action?.payload?.conversation,
         latestMessage: action.payload,
       };
       const newConversation = [...state.conversations].filter(
@@ -139,6 +148,12 @@ export const chatSlice = createSlice({
     },
     removeFile: (state, action) => {
       state.files = state.files.filter((_, index) => index !== action.payload);
+    },
+    emptyMessages: (state) => {
+      state.messages = [];
+    },
+    setMessages: (state, action) => {
+      state.messages = action.payload;
     },
   },
   extraReducers(builder) {
@@ -194,6 +209,8 @@ export const {
   addFiles,
   removeFile,
   emptyFile,
+  setMessages,
+  emptyMessages,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

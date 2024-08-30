@@ -1,6 +1,11 @@
 import moment from "moment";
 
-export const trimString = (str: string, length: number = 27) => {
+import axios from "axios";
+
+const TRANSLATE_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/translate`;
+const LANGUAGE_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/language`;
+
+export const trimString = (str: string, length: number) => {
   return str?.length > length ? str?.substring(0, length) + "..." : str;
 };
 
@@ -40,7 +45,7 @@ export const getConversationPicture = (user, users) => {
 };
 
 export const getConversationId = (user, users) => {
-  return users[0]?._id === user?._id ? users[1]?._id : users[0]?._id;
+  return users?.[0]?._id === user?._id ? users?.[1]?._id : users?.[0]?._id;
 };
 
 export const checkOnlineStatus = (onlineUsers, user, users) => {
@@ -79,4 +84,86 @@ export const getOtherSocketUser = (user: [], users: []) => {
   )[0]?.socketId;
 
   return socketId;
+};
+
+export const translateMessage = async (messageDetail: any, token: string) => {
+  try {
+    const { data } = await axios.post(
+      `${TRANSLATE_ENDPOINT}/one`,
+      messageDetail,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return data;
+  } catch (error: unknown) {
+    console.log(error);
+  }
+};
+export const translatedAllMessages = async (
+  messageDetail: any,
+  token: string,
+) => {
+  try {
+    const { data } = await axios.post(`${TRANSLATE_ENDPOINT}`, messageDetail, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return data;
+  } catch (error: unknown) {
+    console.log(error);
+  }
+};
+
+export const createUserLanguage = async (values: {
+  token: string;
+  language: string;
+  user: string;
+}) => {
+  const { token, language, user } = values;
+
+  try {
+    const { data } = await axios.post(
+      `${LANGUAGE_ENDPOINT}`,
+      { language, user },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return data;
+  } catch (error: unknown) {
+    console.log(error);
+  }
+};
+
+export const changeUserLanguage = async (values: {
+  token: string;
+  language: string;
+  user: string;
+}) => {
+  const { token, language, user } = values;
+
+  try {
+    const { data } = await axios.patch(
+      `${LANGUAGE_ENDPOINT}`,
+      { language, user },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return data;
+  } catch (error: unknown) {
+    console.log(error);
+  }
 };
