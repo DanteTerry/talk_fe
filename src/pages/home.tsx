@@ -82,6 +82,7 @@ function Home({ socket }: { socket: Socket }) {
   const userVideo = useRef<HTMLVideoElement | null>(null);
   const myVideo = useRef<HTMLVideoElement | null>(null);
   const connectionRef = useRef<Peer.Instance | null>(null);
+  const textRef = useRef<HTMLInputElement>(null);
 
   const { language } = useSelector((state: RootState) => state.translate);
 
@@ -551,8 +552,8 @@ function Home({ socket }: { socket: Socket }) {
                   setCallType={setCallType}
                   sendMessage={sendMessage}
                   setSendMessage={setSendMessage}
-                  setEmojiPicker={setEmojiPicker}
                   emojiPicker={emojiPicker}
+                  textRef={textRef}
                 />
                 {!files.length ? (
                   <Inputs
@@ -560,6 +561,7 @@ function Home({ socket }: { socket: Socket }) {
                     setSendMessage={setSendMessage}
                     setEmojiPicker={setEmojiPicker}
                     emojiPicker={emojiPicker}
+                    textRef={textRef}
                   />
                 ) : null}
               </div>

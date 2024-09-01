@@ -2,25 +2,30 @@ import { useSelector } from "react-redux";
 import ChatBar from "./ChatBar";
 import ChatMessages from "./ChatMessages";
 import { Dispatch, SetStateAction, useRef } from "react";
-import EmojiPicker, { EmojiStyle, Theme } from "emoji-picker-react";
+import EmojiPicker, {
+  EmojiClickData,
+  EmojiStyle,
+  Theme,
+} from "emoji-picker-react";
 import { checkOnlineStatus } from "../lib/utils/utils";
 import FilePreview from "./fileUploader/FilePreview";
 import { RootState } from "../app/store";
+import { Conversation } from "../types/types";
 
 function Chat({
   callUser,
   setCallType,
   emojiPicker,
-  setEmojiPicker,
   sendMessage,
   setSendMessage,
+  textRef,
 }: {
   callUser: (callType: "video" | "voice") => void;
   setCallType: Dispatch<SetStateAction<"video" | "voice" | "">>;
   emojiPicker: boolean;
-  setEmojiPicker: Dispatch<SetStateAction<boolean>>;
   sendMessage: string;
   setSendMessage: Dispatch<SetStateAction<string>>;
+  textRef: React.RefObject<HTMLInputElement>;
 }) {
   const endRef = useRef<HTMLDivElement>(null);
   const { activeConversation } = useSelector((state: RootState) => state.chat);
@@ -28,17 +33,29 @@ function Chat({
   const { user } = useSelector((state: RootState) => state.user);
   const { files } = useSelector((state: RootState) => state.chat);
 
-  console.log(activeConversation);
-
-  //TODO add emoji picker
-  const handleEmojiClick = (e, emojiData) => {
-    e.preventDefault();
+  // Handle emoji click and insert into the text area
+  const handleEmojiClick = (emojiData: EmojiClickData) => {
     const { emoji } = emojiData;
+    const ref = textRef.current;
+
+    if (ref) {
+      ref.focus();
+      const start = sendMessage.substring(0, ref.selectionStart as number);
+      const end = sendMessage.substring(ref.selectionEnd as number);
+      const newText = start + emoji + end;
+      setSendMessage(newText);
+      const newCursorPosition = start.length + emoji.length;
+      setTimeout(() => {
+        ref.setSelectionRange(newCursorPosition, newCursorPosition);
+      }, 0);
+    } else {
+      console.error("textRef is not available.");
+    }
   };
 
   let online;
 
-  if (Object.keys(activeConversation).length > 0) {
+  if (Object.keys(activeConversation as Conversation).length > 0) {
     online = activeConversation?._id
       ? checkOnlineStatus(onlineUsers, user, activeConversation?.users)
       : false;

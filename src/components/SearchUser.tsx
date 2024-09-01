@@ -5,12 +5,11 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { UserProfile } from "../types/types";
 import SocketContext from "../context/SocketContext";
-import { Socket } from "socket.io-client";
 import { RootState } from "../app/store";
 
 const SEARCH_USER_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/user`;
 
-function SearchUser({ socket }: { socket: Socket }) {
+function SearchUser() {
   const [isFocused, setIsFocused] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [users, setUsers] = useState([]);

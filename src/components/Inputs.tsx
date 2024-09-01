@@ -1,5 +1,5 @@
 import { Paperclip, SendHorizonal, Smile, X } from "lucide-react";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sendMessages } from "../features/chatSlice";
 import FileSender from "./FileSender";
@@ -16,12 +16,14 @@ function Inputs({
   emojiPicker,
   setEmojiPicker,
   socket,
+  textRef,
 }: {
   setEmojiPicker: Dispatch<SetStateAction<boolean>>;
   emojiPicker: boolean;
   sendMessage: string;
   setSendMessage: Dispatch<SetStateAction<string>>;
   socket: Socket;
+  textRef: React.RefObject<HTMLInputElement>;
 }) {
   const dispatch = useDispatch<AppDispatch>();
   const { activeConversation, status } = useSelector(
@@ -32,7 +34,6 @@ function Inputs({
   const [typing, setTyping] = useState(false);
   const [filesSender, setFilesSender] = useState(false);
   const [loading, setLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
   const { user } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
@@ -61,6 +62,7 @@ function Inputs({
     setLoading(true);
     const newMessage = await dispatch(sendMessages(values));
     socket.emit("send message", newMessage.payload);
+    setEmojiPicker(false);
     setSendMessage("");
     setLoading(false);
   };
@@ -95,7 +97,7 @@ function Inputs({
 
   return (
     <form
-      className="fixed bottom-0 row-span-1 flex w-full items-center justify-between gap-5 border-t-2 px-5 py-3 dark:border-gray-700 dark:bg-[#17181B]"
+      className="fixed bottom-0 row-span-1 flex w-full items-center justify-between gap-5 border-t-2 px-5 py-3 dark:border-gray-700 dark:bg-[#17181B] lg:w-4/6"
       onSubmit={sendMessageHandler}
     >
       <div className="relative flex gap-4">
@@ -150,7 +152,7 @@ function Inputs({
           placeholder="Type a message..."
           value={sendMessage}
           onChange={onChangeHandler}
-          ref={inputRef}
+          ref={textRef}
         />
         <div className="flex cursor-pointer">
           <button type="submit">

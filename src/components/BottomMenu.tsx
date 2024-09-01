@@ -6,12 +6,11 @@ import { toggleDarkMode } from "../features/darkmodeSlice";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import SocketContext from "../context/SocketContext";
-import { Socket } from "socket.io-client";
 import { setActiveFriend } from "../features/friendSlice";
 import { RootState } from "../app/store";
 import { CallData } from "../types/types";
 
-function BottomMenu({ call, socket }: { call: CallData; socket: Socket }) {
+function BottomMenu({ call }: { call: CallData }) {
   const { activeConversation } = useSelector((state: RootState) => state.chat);
   const [showMenu, setShowMenu] = useState(false);
   const { user } = useSelector((state: RootState) => state.user);
