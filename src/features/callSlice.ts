@@ -1,6 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { CallState } from "../types/types";
 
-const initialState = {
+const initialState: CallState = {
   receivingCall: false,
   callEnded: false,
   socketId: "",
@@ -15,7 +16,7 @@ const callSlice = createSlice({
   name: "call",
   initialState,
   reducers: {
-    setCall: (state, action) => {
+    setCall: (state, action: PayloadAction<Partial<CallState>>) => {
       return { ...state, ...action.payload };
     },
   },

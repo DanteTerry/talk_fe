@@ -1,15 +1,16 @@
 import { MoveRight, Search } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { UserProfile } from "../types/types";
 import Friend from "./Friend";
+import { RootState } from "../app/store";
+import { User } from "../types/types";
 
 function Friends() {
   const [isFocused, setIsFocused] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const { friends } = useSelector((state) => state.friends);
+  const { friends } = useSelector((state: RootState) => state.friends);
 
-  const filteredFriends = friends.filter((user: UserProfile) => {
+  const filteredFriends = friends.filter((user) => {
     return (
       user.name.toLowerCase().includes(searchText.toLowerCase()) ||
       user.email.toLowerCase().includes(searchText.toLowerCase())
@@ -41,7 +42,7 @@ function Friends() {
       </div>
 
       {filteredFriends.length > 0 &&
-        filteredFriends.map((user: UserProfile) => {
+        filteredFriends.map((user: User) => {
           return <Friend key={user?._id} user={user} />;
         })}
 

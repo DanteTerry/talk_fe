@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef } from "react";
 import { continuousVisualizer } from "sound-visualizer";
 import { createTimeModel, useTimeModel } from "react-compound-timer";
+import { CallData } from "../../types/types";
 
 // Create a timer model instance
 const timer = createTimeModel({
@@ -9,6 +10,17 @@ const timer = createTimeModel({
   direction: "forward",
 });
 
+interface VoiceCallContainerProps {
+  audioCallTo: { name: string; picture: string };
+  call: CallData;
+  callAccepted: boolean;
+  stream: MediaStream | undefined;
+  isMuted: boolean;
+  remoteUserAudio: boolean;
+  userVideo: RefObject<HTMLAudioElement>; // Change to HTMLAudioElement
+  myVideo: RefObject<HTMLAudioElement>; // Change to HTMLAudioElement
+}
+
 function VoiceCallContainer({
   audioCallTo,
   call,
@@ -16,25 +28,16 @@ function VoiceCallContainer({
   stream,
   isMuted,
   remoteUserAudio,
-  myVideo,
   userVideo,
-}: {
-  audioCallTo: { name: string; picture: string };
-  call: any;
-  callAccepted: boolean;
-  stream: any;
-  isMuted: boolean;
-  remoteUserAudio: boolean;
-  myVideo: any;
-  userVideo: any;
-}) {
-  const canvasRef = useRef(null);
-  const myAudioRef = useRef(null);
-  const userAudioRef = useRef(null);
+  myVideo,
+}: VoiceCallContainerProps) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null); // Type the canvas ref
+  const myAudioRef = useRef<HTMLAudioElement | null>(null); // Type the audio ref
+  const userAudioRef = useRef<HTMLAudioElement | null>(null); // Type the audio ref
 
   useEffect(() => {
-    let startVisualizer;
-    let stopVisualizer;
+    let startVisualizer: (() => void) | undefined;
+    let stopVisualizer: (() => void) | undefined;
 
     if (canvasRef.current && stream instanceof MediaStream && callAccepted) {
       const canvas = canvasRef.current;
@@ -74,10 +77,11 @@ function VoiceCallContainer({
       useTimer.stop();
       useTimer.reset();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callAccepted]);
 
-  console.log(useTimer.start());
-  const formatTime = (time) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const formatTime = (time: any) => {
     const minutes = time?.m ?? 0;
     const seconds = time?.s ?? 0;
 
@@ -104,6 +108,7 @@ function VoiceCallContainer({
           <img
             src={call.picture || audioCallTo.picture}
             className="h-full w-full"
+            alt="Call"
           />
         </div>
         <div className="flex flex-col items-center text-white">

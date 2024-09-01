@@ -1,6 +1,5 @@
-import { Camera, Sparkles, User } from "lucide-react";
-import PhotoAndVideo from "./fileUploader/PhotoAndVideo";
 import DocumentAttachment from "./fileUploader/DocumentAttachment";
+import PhotoAndVideoView from "./fileUploader/PhotoAndVideoView";
 
 function FileSender() {
   return (
@@ -9,7 +8,7 @@ function FileSender() {
     >
       <ul className="flex flex-col gap-2">
         <DocumentAttachment />
-        <PhotoAndVideo />
+        <PhotoAndVideoView />
       </ul>
     </div>
   );

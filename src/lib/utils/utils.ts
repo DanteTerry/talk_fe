@@ -1,6 +1,8 @@
 import moment from "moment";
-
 import axios from "axios";
+import { User } from "../../features/userSlice";
+import { SocketUser, UserDataForUtil } from "../../types/types";
+import { onlineUser } from "../../features/onlineUserSlice";
 
 const TRANSLATE_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/translate`;
 const LANGUAGE_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/language`;
@@ -38,25 +40,32 @@ export const timeHandler = (date: string) => {
 };
 
 //  get conversation name
-export const getConversationName = (user, users) => {
+export const getConversationName = (user: User, users: UserDataForUtil[]) => {
   return users[0]._id === user?._id ? users[1]?.name : users[0]?.name;
 };
 
 // get conversation picture
-export const getConversationPicture = (user, users) => {
+export const getConversationPicture = (
+  user: User,
+  users: UserDataForUtil[],
+) => {
   return users[0]._id === user?._id ? users[1]?.picture : users[0]?.picture;
 };
 
 // get conversation id
-export const getConversationId = (user, users) => {
+export const getConversationId = (user: User, users: UserDataForUtil[]) => {
   return users?.[0]?._id === user?._id ? users?.[1]?._id : users?.[0]?._id;
 };
 
 // check if user is online
-export const checkOnlineStatus = (onlineUsers, user, users) => {
+export const checkOnlineStatus = (
+  onlineUsers: onlineUser[],
+  user: User,
+  users: UserDataForUtil[],
+) => {
   const conversationId = getConversationId(user, users);
   const check = onlineUsers?.find(
-    (onlineUser) => onlineUser?.userId === conversationId,
+    (onlineUser: onlineUser) => onlineUser?.userId === conversationId,
   );
   return check?.userId ? true : false;
 };
@@ -77,25 +86,35 @@ export const formatKbSize = (size: number) => {
 };
 
 // get users in conversation
-export const getUsersInConversation = (users, onlineUsers) => {
-  const onlineUsersInConversation = onlineUsers?.filter((onlineUser) =>
-    users.includes(onlineUser.userId),
+export const getUsersInConversation = (
+  users: string[],
+  onlineUsers: onlineUser[],
+) => {
+  const onlineUsersInConversation = onlineUsers?.filter(
+    (onlineUser: onlineUser) => users.includes(onlineUser.userId),
   );
   return onlineUsersInConversation;
 };
 
-// get other socket user
-export const getOtherSocketUser = (user: [], users: []) => {
-  const socketId = users?.filter(
-    (socketUser: { userId: string; socketId: string }) =>
-      socketUser?.userId !== user?._id,
-  )[0]?.socketId;
+// Update the function to use types
+export const getOtherSocketUser = (
+  user: User,
+  users: SocketUser[],
+): string | undefined => {
+  const socketId = users.find(
+    (socketUser) => socketUser.userId !== user._id,
+  )?.socketId;
 
   return socketId;
 };
 
 // translate message
-export const translateMessage = async (messageDetail: any, token: string) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const translateMessage = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  messageDetail: any,
+  token: string,
+) => {
   try {
     const { data } = await axios.post(
       `${TRANSLATE_ENDPOINT}/one`,
@@ -115,6 +134,7 @@ export const translateMessage = async (messageDetail: any, token: string) => {
 
 // translate all messages
 export const translatedAllMessages = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messageDetail: any,
   token: string,
 ) => {

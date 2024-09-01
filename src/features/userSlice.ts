@@ -1,8 +1,23 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState = {
+export interface User {
+  _id: "";
+  name: string;
+  email: string;
+  picture: string;
+  status: string;
+  token: string;
+}
+
+// Define the initial state type
+export interface UserState {
+  user: User;
+}
+
+// Set up the initial state with proper types
+const initialState: UserState = {
   user: {
-    id: "",
+    _id: "",
     name: "",
     email: "",
     picture: "",
@@ -17,7 +32,7 @@ export const userSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.user = {
-        id: "",
+        _id: "",
         name: "",
         email: "",
         picture: "",
@@ -25,12 +40,15 @@ export const userSlice = createSlice({
         token: "",
       };
     },
-    logIn: (state, action) => {
+    logIn: (state, action: PayloadAction<User>) => {
+      // Using PayloadAction<User> for proper typing
       state.user = action.payload;
     },
   },
 });
 
+// Export the actions
 export const { logout, logIn } = userSlice.actions;
 
+// Export the reducer
 export default userSlice.reducer;

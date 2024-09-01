@@ -2,22 +2,37 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import createFilter from "redux-persist-transform-filter";
-import userSlice from "../features/userSlice";
-import darkModeReducer from "../features/darkmodeSlice";
-import chatSlice from "../features/chatSlice";
-import onlineUserSlice from "../features/onlineUserSlice";
+import userSlice, { UserState } from "../features/userSlice";
+import darkModeReducer, { DarkModeState } from "../features/darkmodeSlice";
+import chatSlice, { ChatState } from "../features/chatSlice";
+import onlineUserSlice, { onlineUser } from "../features/onlineUserSlice";
 import typingSlice from "../features/typingSlice";
-import translateSlice from "../features/translateSlice";
+import translateSlice, { TranslateState } from "../features/translateSlice";
 import notificationSlice from "../features/notificationSlice";
 import friendsSlice from "../features/friendSlice";
-import pageSlice from "../features/pageSlice";
+import pageSlice, { PageState } from "../features/pageSlice";
+import { FriendRequestsResponse, FriendsData } from "../types/types";
 
+export interface RootState {
+  user: UserState;
+  darkMode: DarkModeState;
+  chat: ChatState;
+  onlineUsers: onlineUser[];
+  typing: boolean;
+  translate: TranslateState;
+  notification: FriendRequestsResponse;
+  friends: FriendsData;
+  page: PageState;
+}
+
+// Create a filter to save specific slices
 const saveUserAndDarkModeFilter = createFilter("root", [
   "user",
   "darkMode",
   "translate",
 ]);
 
+// Combine all the reducers into a root reducer
 const rootReducer = combineReducers({
   user: userSlice,
   darkMode: darkModeReducer,
@@ -30,7 +45,7 @@ const rootReducer = combineReducers({
   page: pageSlice,
 });
 
-// persisting the user and darkMode state in the local storage
+// Define the persist configuration
 const persistConfig = {
   key: "root",
   storage,
@@ -38,8 +53,10 @@ const persistConfig = {
   transforms: [saveUserAndDarkModeFilter],
 };
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+// Create a persisted reducer
+const persistedReducer = persistReducer<RootState>(persistConfig, rootReducer);
 
+// Configure the store with the persisted reducer
 export const store = configureStore({
   reducer: persistedReducer,
   devTools: true,
@@ -50,3 +67,7 @@ export const store = configureStore({
 });
 
 export const persister = persistStore(store);
+
+// Define AppDispatch type
+export type AppDispatch = typeof store.dispatch;
+export type AppState = RootState;

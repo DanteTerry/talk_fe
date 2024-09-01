@@ -1,6 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+export interface PageState {
+  page: number;
+}
+
+const initialState: PageState = {
   page: 1,
 };
 

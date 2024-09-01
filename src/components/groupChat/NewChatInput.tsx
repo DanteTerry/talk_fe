@@ -2,13 +2,14 @@ import { useSelector } from "react-redux";
 import MultipleSelect from "./MultipleSelect";
 import { Dispatch, SetStateAction, useState } from "react";
 import axios from "axios";
-import { User } from "../../types/types";
+import { searchResult, User } from "../../types/types";
 import { ClipLoader } from "react-spinners";
 import { useDispatch } from "react-redux";
 import {
   createGroupConversation,
   getConversation,
 } from "../../features/chatSlice";
+import { AppDispatch, RootState } from "../../app/store";
 
 const SEARCH_USER_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/user`;
 
@@ -17,15 +18,16 @@ function NewChatInput({
 }: {
   setShow: Dispatch<SetStateAction<boolean>>;
 }) {
-  const { user } = useSelector((state) => state.user);
-  const { status } = useSelector((state) => state.chat);
-  const dispatch = useDispatch();
+  const { user } = useSelector((state: RootState) => state.user);
+  const { status } = useSelector((state: RootState) => state.chat);
+  const dispatch = useDispatch<AppDispatch>();
 
-  const [searchResults, setSearchResults] = useState([]);
-  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [searchResults, setSearchResults] = useState<searchResult[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<searchResult[]>([]);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSearch = async (e: any) => {
     if (e.target.value && e.key === "Enter") {
       setSearchResults([]);
@@ -41,7 +43,7 @@ function NewChatInput({
         );
 
         if (data.length > 0) {
-          const tempArray = [];
+          const tempArray: searchResult[] = [];
 
           data.forEach((user: User) => {
             tempArray.push({
@@ -62,11 +64,12 @@ function NewChatInput({
     }
   };
 
-  const createGroupHandler = async (e: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const createGroupHandler = async () => {
     if (status !== "loading") {
       setLoading(true);
-      const users = [];
-      selectedUsers.forEach((user) => {
+      const users: string[] = [];
+      selectedUsers.forEach((user: searchResult) => {
         users.push(user.value);
       });
       const values = {
@@ -97,7 +100,6 @@ function NewChatInput({
 
         {/* multiple select */}
         <MultipleSelect
-          user={user}
           status={status}
           searchResults={searchResults}
           selectedUsers={selectedUsers}
@@ -107,7 +109,7 @@ function NewChatInput({
 
         <button
           className="flex w-full items-center justify-center gap-1 rounded-md bg-green-500 p-2 text-center font-bold text-white hover:bg-green-600 hover:transition-all hover:duration-300"
-          onClick={(e) => createGroupHandler(e)}
+          onClick={createGroupHandler}
         >
           {loading ? <ClipLoader size={22} color="white" /> : "Create Group"}
         </button>

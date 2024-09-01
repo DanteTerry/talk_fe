@@ -6,6 +6,7 @@ import axios from "axios";
 import { UserProfile } from "../types/types";
 import SocketContext from "../context/SocketContext";
 import { Socket } from "socket.io-client";
+import { RootState } from "../app/store";
 
 const SEARCH_USER_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/user`;
 
@@ -13,7 +14,7 @@ function SearchUser({ socket }: { socket: Socket }) {
   const [isFocused, setIsFocused] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [users, setUsers] = useState([]);
-  const { token } = useSelector((state) => state.user.user);
+  const { token } = useSelector((state: RootState) => state.user.user);
 
   useEffect(() => {
     const getUser = async (searchText: string) => {
@@ -91,7 +92,8 @@ function SearchUser({ socket }: { socket: Socket }) {
   );
 }
 
-const SearchUserWithContext = (props) => (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SearchUserWithContext = (props: any) => (
   <SocketContext.Consumer>
     {(socket) => <SearchUser {...props} socket={socket} />}
   </SocketContext.Consumer>

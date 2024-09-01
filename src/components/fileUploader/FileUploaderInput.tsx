@@ -1,4 +1,12 @@
-function FileUploaderInput({ caption, setCaption }) {
+import { Dispatch, SetStateAction } from "react";
+
+function FileUploaderInput({
+  caption,
+  setCaption,
+}: {
+  caption: string;
+  setCaption: Dispatch<SetStateAction<string>>;
+}) {
   return (
     <input
       type="text"

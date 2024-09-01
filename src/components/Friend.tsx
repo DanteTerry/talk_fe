@@ -1,15 +1,17 @@
 import { useDispatch } from "react-redux";
-import { UserProfile } from "../types/types";
+import { User } from "../types/types";
 import { trimString } from "../lib/utils/utils";
 import { setActiveFriend } from "../features/friendSlice";
 import { setActiveConversation } from "../features/chatSlice";
+import { AppDispatch } from "../app/store";
 
-function Friend({ user }: { user: UserProfile }) {
-  const dispatch = useDispatch();
+function Friend({ user }: { user: User }) {
+  const dispatch = useDispatch<AppDispatch>();
 
+  console.log(user);
   const handleClick = () => {
     dispatch(setActiveFriend(user));
-    dispatch(setActiveConversation({}));
+    dispatch(setActiveConversation(null));
   };
 
   return (
@@ -30,7 +32,7 @@ function Friend({ user }: { user: UserProfile }) {
             {user?.name}
           </span>
           <span className="text-[13px] font-semibold text-white opacity-95 dark:text-black">
-            {trimString(user?.status, 25)}
+            {trimString(user?.status as string, 25)}
           </span>
         </div>
         <span className="font-semibold capitalize text-white dark:text-green-500">

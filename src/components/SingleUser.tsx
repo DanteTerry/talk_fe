@@ -4,6 +4,7 @@ import { UserProfile } from "../types/types";
 import { useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
 import SocketContext from "../context/SocketContext";
+import { RootState } from "../app/store";
 
 export function SingleUser({
   user,
@@ -12,14 +13,14 @@ export function SingleUser({
   user: UserProfile;
   socket: Socket;
 }) {
-  const { user: CurrentUser } = useSelector((state) => state.user);
-  const { token } = useSelector((state) => state.user.user);
+  const { user: CurrentUser } = useSelector((state: RootState) => state.user);
+  const { token } = useSelector((state: RootState) => state.user.user);
   const value = {
     sender: CurrentUser?._id,
     receiver: user?._id,
   };
 
-  const { friends } = useSelector((state) => state.friends);
+  const { friends } = useSelector((state: RootState) => state.friends);
 
   const isFriend = friends.some(
     (friend) => friend._id === user?._id || friend._id === CurrentUser?._id,
@@ -50,7 +51,7 @@ export function SingleUser({
             {user?.name}
           </span>
           <span className="text-[13px] font-semibold text-white opacity-95 dark:text-black">
-            {trimString(user?.status)}
+            {trimString(user?.status, 0)}
           </span>
         </div>
         {!isFriend ? (
@@ -66,7 +67,8 @@ export function SingleUser({
   );
 }
 
-const SingleUserWithContext = (props) => (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SingleUserWithContext = (props: any) => (
   <SocketContext.Consumer>
     {(socket) => <SingleUser {...props} socket={socket} />}
   </SocketContext.Consumer>

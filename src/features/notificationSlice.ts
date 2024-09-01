@@ -3,7 +3,9 @@ import { FriendRequestsResponse } from "../types/types";
 
 const initialState: FriendRequestsResponse = {
   success: false,
-  friendRequests: [],
+  friendRequests: {
+    friendRequests: [], // This is an array of FriendRequest
+  },
 };
 
 const notificationSlice = createSlice({
@@ -17,20 +19,22 @@ const notificationSlice = createSlice({
     setRequestStatus: (state, action) => {
       const { requestId, status } = action.payload;
 
-      if (state.friendRequests.length === 0) return;
+      if (state.friendRequests.friendRequests.length === 0) return;
 
-      const updatedRequests = state.friendRequests.map((request) => {
-        if (request._id === requestId) {
-          return {
-            ...request,
-            status,
-          };
-        }
+      const updatedRequests = state.friendRequests.friendRequests.map(
+        (request) => {
+          if (request._id === requestId) {
+            return {
+              ...request,
+              status,
+            };
+          }
 
-        return request;
-      });
+          return request;
+        },
+      );
 
-      state.friendRequests = updatedRequests;
+      state.friendRequests.friendRequests = updatedRequests;
     },
   },
 });

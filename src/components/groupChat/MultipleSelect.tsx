@@ -1,19 +1,17 @@
 import Select from "react-select";
+import { searchResult } from "../../types/types";
+import { Dispatch, SetStateAction } from "react";
 
 function MultipleSelect({
-  user,
-  status,
   searchResults,
-  selectedUsers,
   setSelectedUsers,
   handleSearch,
 }: {
-  user: any;
-  status: any;
-  searchResults: any;
-  selectedUsers: any;
-  setSelectedUsers: any;
-  handleSearch: any;
+  status: string;
+  searchResults: searchResult[];
+  selectedUsers: searchResult[];
+  setSelectedUsers: Dispatch<SetStateAction<searchResult[]>>;
+  handleSearch: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }) {
   return (
     <div className="w-full">
@@ -23,7 +21,7 @@ function MultipleSelect({
         onKeyDown={(e) => handleSearch(e)}
         placeholder={"Select users"}
         isMulti
-        formatOptionLabel={(user) => (
+        formatOptionLabel={(user: searchResult) => (
           <div className="flex w-full items-center gap-2">
             <img
               src={user.picture}

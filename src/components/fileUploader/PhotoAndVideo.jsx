@@ -2,7 +2,7 @@ import { Images } from "lucide-react";
 import { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { addFiles } from "../../features/chatSlice";
-import { useSelector } from "react-redux";
+
 import { getFileType } from "../../lib/utils/file";
 
 function PhotoAndVideo() {

@@ -2,10 +2,11 @@ import { useDispatch } from "react-redux";
 import { logout } from "../features/userSlice";
 import { useSelector } from "react-redux";
 import { LogOut, Pencil } from "lucide-react";
+import { RootState } from "../app/store";
 
 function Profile() {
   const dispatch = useDispatch();
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useSelector((state: RootState) => state.user);
   return (
     <div className="flex h-[82vh] w-full flex-col items-center gap-5 p-4">
       <h1 className="text-2xl font-semibold text-green-500 dark:text-white">

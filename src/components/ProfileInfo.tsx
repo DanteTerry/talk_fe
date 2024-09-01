@@ -14,6 +14,7 @@ import {
   setActiveConversation,
 } from "../features/chatSlice";
 import { Dispatch, SetStateAction } from "react";
+import { AppDispatch, RootState } from "../app/store";
 
 function ProfileInfo({
   callUser,
@@ -22,26 +23,29 @@ function ProfileInfo({
   callUser: (callType: "video" | "voice") => void;
   setCallType: Dispatch<SetStateAction<"video" | "voice" | "">>;
 }) {
-  const dispatch = useDispatch();
-  const { activeFriend } = useSelector((state: any) => state.friends);
-  const { token } = useSelector((state: any) => state.user.user);
+  const dispatch = useDispatch<AppDispatch>();
+  const { activeFriend } = useSelector((state: RootState) => state.friends);
+  const { token } = useSelector((state: RootState) => state.user.user);
   const value = {
-    receiver_id: activeFriend._id,
+    receiver_id: activeFriend && (activeFriend?._id as string),
     isGroup: false,
     token,
   };
 
   const createOrOpenConversation = async () => {
-    await dispatch(emptyMessages());
-    await dispatch(openCreateConversation(value));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await dispatch(emptyMessages() as any);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await dispatch(openCreateConversation(value as any));
   };
 
-  const { isDarkMode } = useSelector((state: any) => state.darkMode);
-  const onlineUsers = useSelector((state: any) => state.onlineUsers);
+  const { isDarkMode } = useSelector((state: RootState) => state.darkMode);
 
-  const isOnline = onlineUsers.find(
-    (user: any) => user.userId === activeFriend._id,
-  );
+  // Todo create rendering of call button based on onlineUser
+  // const onlineUsers = useSelector((state: RootState) => state.onlineUsers);
+  // const isOnline = onlineUsers.find(
+  //   (user: onlineUser) => user.userId === activeFriend?._id,
+  // );
 
   return (
     <div
@@ -50,8 +54,8 @@ function ProfileInfo({
       <div className="flex w-full bg-white px-2 py-2 dark:bg-green-500">
         <button
           onClick={() => {
-            dispatch(setActiveFriend({}));
-            dispatch(setActiveConversation({}));
+            dispatch(setActiveFriend(null));
+            dispatch(setActiveConversation(null));
           }}
         >
           <MoveLeft size={25} className="text-green-500 dark:text-white" />
@@ -63,7 +67,7 @@ function ProfileInfo({
       <div className="my-auto flex h-[82vh] w-full flex-col items-center justify-center gap-5">
         <div className="w-1/2 rounded-full lg:w-1/4">
           <img
-            src={activeFriend.picture}
+            src={activeFriend?.picture}
             className="w-full rounded-full object-cover"
             alt="friend's profile"
           />
@@ -71,10 +75,10 @@ function ProfileInfo({
 
         <div className="flex flex-col items-center gap-1">
           <h1 className="text-2xl font-bold text-green-500 dark:text-white">
-            {activeFriend.name}
+            {activeFriend?.name}
           </h1>
           <p className="text-lg text-green-500 dark:text-white">
-            {activeFriend.status}
+            {activeFriend?.status}
           </p>
         </div>
 

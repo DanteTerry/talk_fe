@@ -29,6 +29,14 @@ import Inputs from "../components/Inputs";
 import { setFriendRequests } from "../features/notificationSlice";
 import { setFriends } from "../features/friendSlice";
 import ProfileInfo from "../components/ProfileInfo";
+import { RootState } from "../app/store";
+
+import {
+  CallData,
+  ToggleAudioPayload,
+  ToggleVideoPayload,
+  UserDataForUtil,
+} from "../types/types";
 
 function Home({ socket }: { socket: Socket }) {
   const callData = {
@@ -44,18 +52,18 @@ function Home({ socket }: { socket: Socket }) {
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [sendMessage, setSendMessage] = useState("");
 
-  const { activeConversation } = useSelector((state) => state.chat);
-  const { activeFriend } = useSelector((state) => state.friends);
+  const { activeConversation } = useSelector((state: RootState) => state.chat);
+  const { activeFriend } = useSelector((state: RootState) => state.friends);
 
-  const { user } = useSelector((state) => state.user);
+  const { user } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
-  const [call, setCall] = useState(callData);
+  const [call, setCall] = useState<CallData>(callData);
   const [stream, setStream] = useState<MediaStream | undefined>(undefined);
   const [callAccepted, setCallAccepted] = useState(false);
   const [callType, setCallType] = useState<"video" | "voice" | "">("");
 
-  const onlineUsers = useSelector((state) => state.onlineUsers);
-  const { files } = useSelector((state: any) => state.chat);
+  const onlineUsers = useSelector((state: RootState) => state.onlineUsers);
+  const { files } = useSelector((state: RootState) => state.chat);
 
   const [videoAndAudio, setVideoAndAudio] = useState({
     video: true,
@@ -70,12 +78,12 @@ function Home({ socket }: { socket: Socket }) {
   const [remoteUserAudio, setRemoteUserAudio] = useState(true);
   const { receivingCall } = call;
 
-  const { token } = useSelector((state: any) => state.user.user);
-  const myVideo = useRef<HTMLVideoElement>(null);
-  const userVideo = useRef<HTMLVideoElement>(null);
+  const { token } = useSelector((state: RootState) => state.user.user);
+  const userVideo = useRef<HTMLVideoElement | null>(null);
+  const myVideo = useRef<HTMLVideoElement | null>(null);
   const connectionRef = useRef<Peer.Instance | null>(null);
 
-  const { language } = useSelector((state: any) => state.translate);
+  const { language } = useSelector((state: RootState) => state.translate);
 
   useEffect(() => {
     const value = {
@@ -86,6 +94,7 @@ function Home({ socket }: { socket: Socket }) {
     if (user.token) {
       createUserLanguage(value);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Join the user to the socket room
@@ -137,7 +146,10 @@ function Home({ socket }: { socket: Socket }) {
   const callUser = (callType: "video" | "voice") => {
     enableMedia();
     const usersInConversation = getUsersInConversation(
-      [user._id, getConversationId(user, activeConversation.users)],
+      [
+        user._id,
+        getConversationId(user, activeConversation?.users as UserDataForUtil[]),
+      ],
       onlineUsers,
     );
 
@@ -146,8 +158,14 @@ function Home({ socket }: { socket: Socket }) {
       callEnded: false,
       receivingCall: false,
       usersInCall: usersInConversation,
-      name: getConversationName(user, activeConversation.users),
-      picture: getConversationPicture(user, activeConversation.users),
+      name: getConversationName(
+        user,
+        activeConversation?.users as UserDataForUtil[],
+      ),
+      picture: getConversationPicture(
+        user,
+        activeConversation?.users as UserDataForUtil[],
+      ),
     });
 
     const peer = new Peer({
@@ -160,7 +178,10 @@ function Home({ socket }: { socket: Socket }) {
 
     peer.on("signal", (data) => {
       socket.emit("call user", {
-        userToCall: getConversationId(user, activeConversation.users),
+        userToCall: getConversationId(
+          user,
+          activeConversation?.users as UserDataForUtil[],
+        ),
         signal: data,
         from: socket.id,
         name: user.name,
@@ -190,10 +211,10 @@ function Home({ socket }: { socket: Socket }) {
         picture: signal.userPicture,
       });
 
-      peer.signal(signal.data); // Signal the peer with the received signal
+      peer.signal(signal.data);
     });
 
-    connectionRef.current = peer; // Save the peer connection
+    connectionRef.current = peer;
 
     peer.on("close", () => {
       socket.off("call accepted");
@@ -214,7 +235,6 @@ function Home({ socket }: { socket: Socket }) {
         video: !prevState.video,
       }));
 
-      // Notify the other user
       socket.emit("toggle-video", {
         userId: socketId,
         enabled: !videoAndAudio.video,
@@ -242,25 +262,35 @@ function Home({ socket }: { socket: Socket }) {
   };
 
   useEffect(() => {
-    socket.on("toggle-video", ({ userId, enabled }) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    socket.on("toggle-video", ({ userId, enabled }: ToggleVideoPayload) => {
       if (userVideo.current) {
-        userVideo.current?.srcObject?.getVideoTracks().forEach((track) => {
-          track.enabled = enabled;
-        });
-        if (enabled) {
-          userVideo.current.srcObject = stream; // Set received stream to userVideo element
+        const mediaStream = userVideo.current.srcObject as MediaStream | null;
+
+        if (mediaStream) {
+          mediaStream.getVideoTracks().forEach((track) => {
+            track.enabled = enabled;
+          });
+
+          if (enabled && stream) {
+            userVideo.current.srcObject = stream;
+          }
         }
       }
 
       setRemoteUserVideo(enabled);
     });
 
-    socket.on("toggle-audio", ({ userId, enabled }) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    socket.on("toggle-audio", ({ userId, enabled }: ToggleAudioPayload) => {
       if (userVideo.current) {
-        // Mute or unmute the audio element based on the `enabled` value
-        userVideo.current?.srcObject
-          ?.getAudioTracks()
-          .forEach((track) => (track.enabled = enabled));
+        const mediaStream = userVideo.current.srcObject as MediaStream | null;
+
+        if (mediaStream) {
+          mediaStream
+            .getAudioTracks()
+            .forEach((track) => (track.enabled = enabled));
+        }
       }
 
       setRemoteUserAudio(enabled);
@@ -270,7 +300,7 @@ function Home({ socket }: { socket: Socket }) {
       socket.off("toggle-video");
       socket.off("toggle-audio");
     };
-  }, [socket, socketId, stream]);
+  }, [socket, stream]);
 
   // Function to answer a call
   const answerCall = () => {
@@ -368,6 +398,7 @@ function Home({ socket }: { socket: Socket }) {
       setCallType(data.callType);
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     socket.on("end call", (data) => {
       setCallAccepted(false);
 
@@ -415,6 +446,7 @@ function Home({ socket }: { socket: Socket }) {
         });
       });
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [call, callAccepted, socket, videoAndAudio]);
 
   // Listen for friend requests
@@ -495,6 +527,7 @@ function Home({ socket }: { socket: Socket }) {
     }
 
     getFriendsData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -503,15 +536,15 @@ function Home({ socket }: { socket: Socket }) {
         <SideMenu />
         <div className="grid h-full w-full grid-cols-12">
           <div
-            className={`h-[99.5vh] w-full overflow-hidden border-l-2 border-r-2 py-5 dark:border-gray-700 dark:bg-[#17181B] ${activeConversation._id ? "hidden lg:col-span-3 lg:block" : "col-span-12 px-2 lg:col-span-3 lg:px-0"} ${activeFriend._id ? "hidden lg:col-span-3 lg:block" : "col-span-12 px-2 lg:col-span-3 lg:px-0"}`}
+            className={`h-[99.5vh] w-full overflow-hidden border-l-2 border-r-2 py-5 dark:border-gray-700 dark:bg-[#17181B] ${activeConversation?._id ? "hidden lg:col-span-3 lg:block" : "col-span-12 px-2 lg:col-span-3 lg:px-0"} ${activeFriend?._id ? "hidden lg:col-span-3 lg:block" : "col-span-12 px-2 lg:col-span-3 lg:px-0"}`}
           >
             <Outlet />
           </div>
           <BottomMenu call={call} />
           <div
-            className={`relative w-full ${activeConversation._id && "col-span-12 lg:col-span-9"} ${activeFriend._id ? "col-span-12 lg:col-span-9" : "col-span-12 lg:col-span-9"}`}
+            className={`relative w-full ${activeConversation?._id && "col-span-12 lg:col-span-9"} ${activeFriend?._id ? "col-span-12 lg:col-span-9" : "col-span-12 lg:col-span-9"}`}
           >
-            {activeConversation.name ? (
+            {activeConversation?.name ? (
               <div className="relative">
                 <Chat
                   callUser={callUser}
@@ -576,7 +609,8 @@ function Home({ socket }: { socket: Socket }) {
   );
 }
 
-const HomeWithSocket = (props) => (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const HomeWithSocket = (props: any) => (
   <SocketContext.Consumer>
     {(socket) => <Home {...props} socket={socket} />}
   </SocketContext.Consumer>
