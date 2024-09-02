@@ -1,6 +1,7 @@
 import axios from "axios";
 
-export const uploadFiles = async (files) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const uploadFiles = async (files: any) => {
   if (files.length === 0) return;
 
   const uploadedFiles = [];
@@ -24,7 +25,8 @@ export const uploadFiles = async (files) => {
   return uploadedFiles;
 };
 
-const uploadToCloudinary = async (formData) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const uploadToCloudinary = async (formData: any) => {
   try {
     const { data } = await axios.post(
       `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_APP_CLOUD_NAME}/raw/upload`,

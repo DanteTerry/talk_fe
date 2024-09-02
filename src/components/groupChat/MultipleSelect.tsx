@@ -1,29 +1,31 @@
-import Select from "react-select";
+import Select, { MultiValue } from "react-select";
+import { searchResult } from "../../types/types";
+import { Dispatch, SetStateAction } from "react";
 
 function MultipleSelect({
-  user,
-  status,
   searchResults,
-  selectedUsers,
   setSelectedUsers,
   handleSearch,
 }: {
-  user: any;
-  status: any;
-  searchResults: any;
-  selectedUsers: any;
-  setSelectedUsers: any;
-  handleSearch: any;
+  status: string;
+  searchResults: searchResult[];
+  selectedUsers: searchResult[];
+  setSelectedUsers: Dispatch<SetStateAction<searchResult[]>>;
+  handleSearch: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }) {
+  const handleChange = (newValue: MultiValue<searchResult>) => {
+    setSelectedUsers(newValue as searchResult[]);
+  };
+
   return (
     <div className="w-full">
       <Select
         options={searchResults}
-        onChange={setSelectedUsers}
+        onChange={handleChange}
         onKeyDown={(e) => handleSearch(e)}
         placeholder={"Select users"}
         isMulti
-        formatOptionLabel={(user) => (
+        formatOptionLabel={(user: searchResult) => (
           <div className="flex w-full items-center gap-2">
             <img
               src={user.picture}
@@ -37,10 +39,10 @@ function MultipleSelect({
           control: (styles, { isFocused }) => ({
             ...styles,
             backgroundColor: "#202124",
-            color: "#22c55e ",
+            color: "#22c55e",
             border: "none",
             outline: "none",
-            boxShadow: isFocused && "none",
+            boxShadow: isFocused ? "none" : undefined, // Fix boxShadow type issue
           }),
           placeholder: (styles) => ({
             ...styles,

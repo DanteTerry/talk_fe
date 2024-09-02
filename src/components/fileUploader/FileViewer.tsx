@@ -1,24 +1,34 @@
 import { SendHorizontal, X } from "lucide-react";
 import { useSelector } from "react-redux";
-import { formatKbSize } from "../../lib/utils/utils";
-import FileUploaderInput from "./FileUploaderInput";
+import { formatKbSize, getConversationId } from "../../lib/utils/utils";
 import { useState } from "react";
-import AddFilesButton from "./AddFilesButton";
 import { uploadFiles } from "../../lib/utils/upload";
 import { useDispatch } from "react-redux";
 import { emptyFile, removeFile, sendMessages } from "../../features/chatSlice";
 import SocketContext from "../../context/SocketContext";
 import { ClipLoader } from "react-spinners";
+import { Socket } from "socket.io-client";
+import { AppDispatch, RootState } from "../../app/store";
+import AddFilesButton from "./AddFilesButton";
+import FileUploaderInput from "./FileUploaderInput";
+import { UserDataForUtil } from "../../types/types";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import VideoThumbnail from "react-video-thumbnail";
 
-function FileViewer({ socket }) {
-  const { files, activeConversation } = useSelector((state) => state.chat);
-  const dispatch = useDispatch();
+function FileViewer({ socket }: { socket: Socket }) {
+  const { files, activeConversation } = useSelector(
+    (state: RootState) => state.chat,
+  );
+
+  console.log(files);
+  const dispatch = useDispatch<AppDispatch>();
 
   const [caption, setCaption] = useState("");
   const [selectedFile, setSelectedFile] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { token } = useSelector((state) => state.user.user);
+  const { token } = useSelector((state: RootState) => state.user.user);
+  const { user } = useSelector((state: RootState) => state.user);
 
   const sendMessageHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -27,23 +37,29 @@ function FileViewer({ socket }) {
     // upload file to cloudinary
     const uploadedFiles = await uploadFiles(files);
 
+    const otherUserId = getConversationId(
+      user,
+      activeConversation?.users as UserDataForUtil[],
+    );
+
     // send message to the server
     const values = {
       token,
       sendMessage: caption,
-      conversation_id: activeConversation._id,
-      files: uploadedFiles?.length > 0 ? uploadedFiles : [],
+      conversation_id: activeConversation?._id as string,
+      files: uploadedFiles ? uploadedFiles : [],
+      otherUserId,
     };
 
     // dispatch action to send message
-    const newMessage = await dispatch(sendMessages(values));
-    socket.emit("send message", newMessage.payload);
+    if (values.conversation_id && values.otherUserId) {
+      const newMessage = await dispatch(sendMessages(values));
 
-    setLoading(false);
-    console.log(newMessage.payload);
-
-    if (newMessage?.payload?._id) {
-      dispatch(emptyFile());
+      if (typeof newMessage.payload !== "string" && newMessage.payload?._id) {
+        socket.emit("send message", newMessage.payload);
+        dispatch(emptyFile());
+      }
+      setLoading(false);
     }
   };
 
@@ -141,7 +157,10 @@ function FileViewer({ socket }) {
   );
 }
 
-const FileViewerWithContext = (props) => (
+const FileViewerWithContext = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  props: any,
+) => (
   <SocketContext.Consumer>
     {(socket) => <FileViewer {...props} socket={socket} />}
   </SocketContext.Consumer>

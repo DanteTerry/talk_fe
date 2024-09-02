@@ -1,11 +1,14 @@
-import { Mic, Paperclip, SendHorizonal, Smile, X } from "lucide-react";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Paperclip, SendHorizonal, Smile, X } from "lucide-react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sendMessages } from "../features/chatSlice";
 import FileSender from "./FileSender";
 import SocketContext from "../context/SocketContext";
 import { ClipLoader } from "react-spinners";
 import { getConversationId } from "../lib/utils/utils";
+import { Socket } from "socket.io-client";
+import { AppDispatch, RootState } from "../app/store";
+import { UserDataForUtil } from "../types/types";
 
 function Inputs({
   sendMessage,
@@ -13,24 +16,25 @@ function Inputs({
   emojiPicker,
   setEmojiPicker,
   socket,
+  textRef,
 }: {
   setEmojiPicker: Dispatch<SetStateAction<boolean>>;
   emojiPicker: boolean;
   sendMessage: string;
   setSendMessage: Dispatch<SetStateAction<string>>;
-  socket: any;
+  socket: Socket;
+  textRef: React.RefObject<HTMLInputElement>;
 }) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { activeConversation, status } = useSelector(
-    (state: any) => state.chat,
+    (state: RootState) => state.chat,
   );
-  const { token } = useSelector((state: any) => state.user.user);
-  const { files } = useSelector((state: any) => state.chat);
+  const { token } = useSelector((state: RootState) => state.user.user);
+  const { files } = useSelector((state: RootState) => state.chat);
   const [typing, setTyping] = useState(false);
   const [filesSender, setFilesSender] = useState(false);
   const [loading, setLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     if (files.length > 0) {
@@ -38,11 +42,14 @@ function Inputs({
     }
   }, [files]);
 
-  const otherUserId = getConversationId(user, activeConversation.users);
+  const otherUserId = getConversationId(
+    user,
+    activeConversation?.users as UserDataForUtil[],
+  );
 
   const values = {
     sendMessage,
-    conversation_id: activeConversation._id,
+    conversation_id: activeConversation?._id as string,
     files: [],
     token,
     otherUserId,
@@ -55,6 +62,7 @@ function Inputs({
     setLoading(true);
     const newMessage = await dispatch(sendMessages(values));
     socket.emit("send message", newMessage.payload);
+    setEmojiPicker(false);
     setSendMessage("");
     setLoading(false);
   };
@@ -65,13 +73,13 @@ function Inputs({
 
     if (value.trim() === "") {
       if (typing) {
-        socket.emit("stop typing", activeConversation._id);
+        socket.emit("stop typing", activeConversation?._id);
         setTyping(false);
       }
     } else {
       if (!typing) {
         setTyping(true);
-        socket.emit("typing", activeConversation._id);
+        socket.emit("typing", activeConversation?._id);
       }
       const lastTypingTime = new Date().getTime();
       const timer = 3000;
@@ -80,7 +88,7 @@ function Inputs({
         const timeNow = new Date().getTime();
         const timeDiff = timeNow - lastTypingTime;
         if (timeDiff >= timer && typing) {
-          socket.emit("stop typing", activeConversation._id);
+          socket.emit("stop typing", activeConversation?._id);
           setTyping(false);
         }
       }, timer);
@@ -89,7 +97,7 @@ function Inputs({
 
   return (
     <form
-      className="fixed bottom-0 row-span-1 flex w-full items-center justify-between gap-5 border-t-2 px-5 py-3 dark:border-gray-700 dark:bg-[#17181B]"
+      className="fixed bottom-0 row-span-1 flex w-full items-center justify-between gap-5 border-t-2 px-5 py-3 dark:border-gray-700 dark:bg-[#17181B] lg:w-4/6"
       onSubmit={sendMessageHandler}
     >
       <div className="relative flex gap-4">
@@ -144,7 +152,7 @@ function Inputs({
           placeholder="Type a message..."
           value={sendMessage}
           onChange={onChangeHandler}
-          ref={inputRef}
+          ref={textRef}
         />
         <div className="flex cursor-pointer">
           <button type="submit">
@@ -164,12 +172,13 @@ function Inputs({
           </button>
         </div>
       </div>
-      {filesSender && <FileSender filesSender={filesSender} />}
+      {filesSender && <FileSender />}
     </form>
   );
 }
 
-const InputsWithContext = (props) => (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const InputsWithContext = (props: any) => (
   <SocketContext.Consumer>
     {(socket) => <Inputs {...props} socket={socket} />}
   </SocketContext.Consumer>

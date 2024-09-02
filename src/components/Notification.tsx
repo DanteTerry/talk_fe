@@ -10,20 +10,23 @@ import {
 import { useDispatch } from "react-redux";
 import { setFriendRequests } from "../features/notificationSlice";
 import { setFriends } from "../features/friendSlice";
+import { AppDispatch, RootState } from "../app/store";
+import { FriendRequest } from "../types/types";
 
 export function Notification({ socket }: { socket: Socket }) {
   const notification = useSelector(
-    (state) => state.notification.friendRequests,
+    (state: RootState) => state.notification.friendRequests,
   );
 
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector((state: RootState) => state.user.user);
 
-  const { token } = useSelector((state) => state.user.user);
+  const { token } = useSelector((state: RootState) => state.user.user);
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   // reject friend request
-  const requestRejectHandler = async (request) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const requestRejectHandler = async (request: any) => {
     await updateFriendRequest(token, {
       id: request._id,
       status: "rejected",
@@ -33,21 +36,24 @@ export function Notification({ socket }: { socket: Socket }) {
       friendId: request.sender?._id,
     });
 
-    const updatedRequest = notification.friendRequests.map((req) => {
-      if (req._id === request._id) {
-        return {
-          ...req,
-          status: "rejected",
-        };
-      }
-      return req;
-    });
+    const updatedRequest = notification.friendRequests.map(
+      (req: FriendRequest) => {
+        if (req._id === request._id) {
+          return {
+            ...req,
+            status: "rejected",
+          };
+        }
+        return req;
+      },
+    );
 
     dispatch(setFriendRequests(updatedRequest));
   };
 
   // accept friend request
-  const requestAcceptHandler = async (request) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const requestAcceptHandler = async (request: any) => {
     const value = {
       userId: request.receiver?._id,
       friendId: request.sender?._id,
@@ -64,15 +70,17 @@ export function Notification({ socket }: { socket: Socket }) {
         status: "accepted",
       });
 
-      const updatedRequest = notification.friendRequests.map((req) => {
-        if (req._id === request._id) {
-          return {
-            ...req,
-            status: "accepted",
-          };
-        }
-        return req;
-      });
+      const updatedRequest = notification.friendRequests.map(
+        (req: FriendRequest) => {
+          if (req._id === request._id) {
+            return {
+              ...req,
+              status: "accepted",
+            };
+          }
+          return req;
+        },
+      );
 
       dispatch(setFriendRequests(updatedRequest));
 
@@ -90,7 +98,7 @@ export function Notification({ socket }: { socket: Socket }) {
       </div>
       <div className="flex w-full flex-col items-center gap-5">
         {notification.friendRequests?.length > 0 ? (
-          notification.friendRequests?.map((request) => (
+          notification.friendRequests?.map((request: FriendRequest) => (
             <div className="w-full" key={request._id}>
               {user._id === request.receiver._id &&
                 request.status === "pending" && (
@@ -175,7 +183,8 @@ export function Notification({ socket }: { socket: Socket }) {
   );
 }
 
-const NotificationWithContext = (props) => (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const NotificationWithContext = (props: any) => (
   <SocketContext.Consumer>
     {(socket) => <Notification {...props} socket={socket} />}
   </SocketContext.Consumer>

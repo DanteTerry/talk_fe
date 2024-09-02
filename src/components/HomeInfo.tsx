@@ -1,11 +1,12 @@
 import { useSelector } from "react-redux";
 import chatGreen from "../assets/chatgreen.png";
+import { RootState } from "../app/store";
 
 function HomeInfo() {
-  const { activeFriend } = useSelector((state: any) => state.friends);
+  const { activeFriend } = useSelector((state: RootState) => state.friends);
   return (
     <div
-      className={`hidden h-full items-center justify-center bg-green-200 dark:bg-transparent dark:text-white ${activeFriend.name ? "hidden" : "sm:flex"}`}
+      className={`hidden h-full items-center justify-center bg-green-200 dark:bg-transparent dark:text-white ${activeFriend?.name ? "hidden" : "sm:flex"}`}
     >
       <div className="flex flex-col items-center gap-5">
         <img src={chatGreen} className="w-[250px] sm:w-[300px] lg:w-[400px]" />

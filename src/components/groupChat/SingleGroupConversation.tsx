@@ -3,13 +3,15 @@ import { dateHandler, trimString } from "../../lib/utils/utils";
 import { Conversation } from "../../types/types";
 import { emptyMessages, setActiveConversation } from "../../features/chatSlice";
 import SocketContext from "../../context/SocketContext";
+import { Socket } from "socket.io-client";
 
+// eslint-disable-next-line react-refresh/only-export-components
 function SingleGroupConversation({
   conversation,
   socket,
 }: {
   conversation: Conversation;
-  socket: any;
+  socket: Socket;
 }) {
   const dispatch = useDispatch();
 
@@ -50,7 +52,8 @@ function SingleGroupConversation({
   );
 }
 
-const singleConversationWithSocket = (props) => (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const singleConversationWithSocket = (props: any) => (
   <SocketContext.Consumer>
     {(socket) => <SingleGroupConversation {...props} socket={socket} />}
   </SocketContext.Consumer>

@@ -3,17 +3,19 @@ import SingleConversation from "./SingleConversation";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { getConversation } from "../features/chatSlice";
-import { Conversation, UserProfile } from "../types/types";
+import { Conversation } from "../types/types";
 import { checkOnlineStatus } from "../lib/utils/utils";
+import { AppDispatch, RootState } from "../app/store";
 
 function Conversations({ searchText }: { searchText: string }) {
-  const onlineUsers = useSelector((state) => state.onlineUsers);
+  const onlineUsers = useSelector((state: RootState) => state.onlineUsers);
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const { user } = useSelector((state) => state.user);
-  const { conversations } = useSelector((state) => state.chat);
-
+  const { user } = useSelector((state: RootState) => state.user);
+  const conversations: Conversation[] = useSelector(
+    (state: RootState) => state.chat.conversations,
+  );
   useEffect(() => {
     if (user?.token) {
       dispatch(getConversation(user?.token));
@@ -25,21 +27,21 @@ function Conversations({ searchText }: { searchText: string }) {
   }
 
   const filteredConversations = conversations.filter(
-    (conversation: UserProfile) =>
+    (conversation: Conversation) =>
       conversation?.name?.toLowerCase().includes(searchText.toLowerCase()) &&
       !conversation?.isGroup,
   );
 
   if (searchText) {
     const filteredConversations = conversations.filter(
-      (conversation: UserProfile) =>
+      (conversation: Conversation) =>
         conversation?.name?.toLowerCase().includes(searchText.toLowerCase()) &&
         !conversation?.isGroup,
     );
 
     return (
       <div className="no-scrollbar h-screen overflow-y-scroll">
-        {filteredConversations.map((conversation: UserProfile) => {
+        {filteredConversations.map((conversation: Conversation) => {
           return (
             <SingleConversation
               key={conversation._id}

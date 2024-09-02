@@ -2,11 +2,13 @@ import { Mic, MicOff, Video, VideoOff } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import { MdCallEnd } from "react-icons/md";
 import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 
 function CallAction({
   callType,
   endCall,
-  setVideoAndAudio,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // setVideoAndAudio,
   videoAndAudio,
   toggleVideo,
   toggleAudio,
@@ -14,17 +16,22 @@ function CallAction({
 }: {
   callType: "video" | "voice" | null;
   endCall: () => void;
-  setVideoAndAudio: any;
+  // setVideoAndAudio: Dispatch<
+  //   SetStateAction<{
+  //     video: boolean;
+  //     audio: boolean;
+  //   }>
+  // >;
   videoAndAudio: { video: boolean; audio: boolean };
   toggleVideo: () => void;
   toggleAudio: () => void;
   setIsMuted: Dispatch<SetStateAction<boolean>>;
 }) {
-  const { activeConversation } = useSelector((state) => state.chat);
+  const { activeConversation } = useSelector((state: RootState) => state.chat);
 
   return (
     <div
-      className={`fixed z-50 flex w-full justify-center ${activeConversation._id ? "bottom-0" : "bottom-0"}`}
+      className={`fixed z-50 flex w-full justify-center ${activeConversation?._id ? "bottom-0" : "bottom-0"}`}
     >
       <div
         className={`flex w-full justify-center gap-3 rounded-t-3xl px-3 py-4 ${callType === "video" ? "bg-gray-900" : "bg-transparent"} text-white`}

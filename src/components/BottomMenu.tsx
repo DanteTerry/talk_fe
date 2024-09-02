@@ -6,20 +6,20 @@ import { toggleDarkMode } from "../features/darkmodeSlice";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import SocketContext from "../context/SocketContext";
-import { Socket } from "socket.io-client";
 import { setActiveFriend } from "../features/friendSlice";
+import { RootState } from "../app/store";
+import { CallData } from "../types/types";
 
-function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
-  const { activeConversation } = useSelector((state: any) => state.chat);
-
+function BottomMenu({ call }: { call: CallData }) {
+  const { activeConversation } = useSelector((state: RootState) => state.chat);
   const [showMenu, setShowMenu] = useState(false);
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
-  const darkMode = useSelector((state) => state.darkMode.isDarkMode);
+  const darkMode = useSelector((state: RootState) => state.darkMode.isDarkMode);
 
   const notification = useSelector(
-    (state) => state.notification.friendRequests,
+    (state: RootState) => state.notification.friendRequests,
   );
 
   const isRequestAcceptedOrRejected = notification?.friendRequests?.some(
@@ -36,7 +36,7 @@ function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
 
   return (
     <div
-      className={`fixed bottom-0 z-50 w-full ${call.usersInCall.length > 0 ? "hidden" : "flex"} bg-green-500 px-2 py-3 ${activeConversation._id ? "hidden" : "flex lg:hidden"}`}
+      className={`fixed bottom-0 z-50 w-full ${call.usersInCall.length > 0 ? "hidden" : "flex"} bg-green-500 px-2 py-3 ${activeConversation?._id ? "hidden" : "flex lg:hidden"}`}
     >
       <div className="relative mx-auto flex w-full items-center justify-evenly">
         {sidebarItems
@@ -49,7 +49,7 @@ function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
                 to={`${items.url}`}
                 key={index}
                 onClick={() => {
-                  dispatch(setActiveFriend({}));
+                  dispatch(setActiveFriend(null));
                 }}
               >
                 <div
@@ -69,7 +69,7 @@ function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
           <Link
             to={"notifications"}
             onClick={() => {
-              dispatch(setActiveFriend({}));
+              dispatch(setActiveFriend(null));
             }}
           >
             <div
@@ -88,7 +88,7 @@ function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
           <Link
             to={"notifications"}
             onClick={() => {
-              dispatch(setActiveFriend({}));
+              dispatch(setActiveFriend(null));
             }}
           >
             <div
@@ -158,7 +158,7 @@ function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
                   <Link
                     to="/profile"
                     onClick={() => {
-                      dispatch(setActiveFriend({}));
+                      dispatch(setActiveFriend(null));
                     }}
                   >
                     <div className="h-10 w-10 cursor-pointer rounded-full">
@@ -179,7 +179,8 @@ function BottomMenu({ call, socket }: { call: any; socket: Socket }) {
     </div>
   );
 }
-const BottomMenuWithContext = (props) => (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const BottomMenuWithContext = (props: any) => (
   <SocketContext.Consumer>
     {(socket) => <BottomMenu {...props} socket={socket} />}
   </SocketContext.Consumer>

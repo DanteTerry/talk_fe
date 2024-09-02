@@ -2,7 +2,8 @@ import CallAction from "./CallAction";
 import VoiceCallContainer from "./VoiceCallContainer";
 import AudioRing from "../../../public/ringing.mp3";
 import { MicOff, VideoOff } from "lucide-react";
-import { useState } from "react";
+import { Dispatch, RefObject, SetStateAction, useState } from "react";
+import { CallData } from "../../types/types";
 
 function Call({
   call,
@@ -11,7 +12,7 @@ function Call({
   myVideo,
   callType,
   endCall,
-  setVideoAndAudio,
+  // setVideoAndAudio,
   videoAndAudio,
   toggleVideo,
   toggleAudio,
@@ -20,16 +21,21 @@ function Call({
   audioCallTo,
   stream,
 }: {
-  call: any;
-  setCall: any;
+  call: CallData;
+  setCall: Dispatch<SetStateAction<CallData>>;
   callAccepted: boolean;
-  userVideo: any;
-  myVideo: any;
-  stream: any;
+  userVideo: RefObject<HTMLVideoElement>;
+  myVideo: RefObject<HTMLVideoElement>;
+  stream: MediaStream | undefined;
   callType: "video" | "voice" | null;
   answerCall: () => void;
   endCall: () => void;
-  setVideoAndAudio: any;
+  setVideoAndAudio: Dispatch<
+    SetStateAction<{
+      video: boolean;
+      audio: boolean;
+    }>
+  >;
   videoAndAudio: { video: boolean; audio: boolean };
   toggleVideo: () => void;
   toggleAudio: () => void;
@@ -64,10 +70,10 @@ function Call({
           <CallAction
             callType={callType}
             endCall={endCall}
-            setVideoAndAudio={setVideoAndAudio}
             videoAndAudio={videoAndAudio}
             toggleVideo={toggleVideo}
             toggleAudio={toggleAudio}
+            // setVideoAndAudio={setVideoAndAudio}
             setIsMuted={setIsMuted}
           />
         )}

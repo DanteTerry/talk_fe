@@ -16,6 +16,7 @@ import Profile from "./components/Profile";
 import { io } from "socket.io-client";
 import SocketContext from "./context/SocketContext";
 import Notification from "./components/Notification";
+import { RootState } from "./app/store";
 
 // socket.io-client
 const localhost = import.meta.env.VITE_APP_LOCALHOST;
@@ -25,8 +26,8 @@ const socket = io(localhost, {
 });
 
 function App() {
-  const { token } = useSelector((state) => state.user.user);
-  const darkMode = useSelector((state) => state.darkMode.isDarkMode);
+  const { token } = useSelector((state: RootState) => state.user.user);
+  const darkMode = useSelector((state: RootState) => state.darkMode.isDarkMode);
 
   return (
     <div className={`${darkMode ? "dark" : ""} w-full`}>

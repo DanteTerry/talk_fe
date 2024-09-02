@@ -11,6 +11,7 @@ import SocketContext from "../context/SocketContext";
 import { Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { setPage } from "../features/pageSlice";
+import { AppDispatch, RootState } from "../app/store";
 
 export function SingleConversation({
   conversation,
@@ -21,8 +22,8 @@ export function SingleConversation({
   socket: Socket;
   online: boolean;
 }) {
-  const dispatch = useDispatch();
-  const { user } = useSelector((state: any) => state.user);
+  const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.user);
 
   const openConversation = async () => {
     dispatch(setPage(1));
@@ -51,7 +52,7 @@ export function SingleConversation({
             {getConversationName(user, conversation.users)}
           </span>
           <span className="text-[13px] font-semibold text-white opacity-95 dark:text-black">
-            {trimString(conversation?.latestMessage?.message, 30)}
+            {trimString(conversation?.latestMessage?.message, 27)}
           </span>
         </div>
         <span className="absolute right-0 h-full justify-start pl-2 text-xs text-green-500 opacity-95 dark:bg-white dark:text-green-500">
@@ -62,10 +63,12 @@ export function SingleConversation({
   );
 }
 
-const singleConversationWithSocket = (props) => (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const singleConversationWithSocket = (props: any) => (
   <SocketContext.Consumer>
     {(socket) => <SingleConversation {...props} socket={socket} />}
   </SocketContext.Consumer>
 );
 
+// eslint-disable-next-line react-refresh/only-export-components
 export default singleConversationWithSocket;

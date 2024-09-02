@@ -1,14 +1,18 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState = {
+export interface TranslateState {
+  language: string;
+}
+
+const initialState: TranslateState = {
   language: "en",
 };
 
 const translateSlice = createSlice({
   name: "translate",
-  initialState: initialState,
+  initialState,
   reducers: {
-    setLanguage: (state, action) => {
+    setLanguage: (state, action: PayloadAction<string>) => {
       state.language = action.payload;
     },
   },

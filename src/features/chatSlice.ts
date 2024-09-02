@@ -1,45 +1,69 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import {
+  Conversation,
+  ErrorResponse,
+  FileData,
+  Message,
+  UploadedFile,
+} from "../types/types"; // Adjust the import path according to your structure
 
 const CONVERSATION_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/conversation`;
 const MESSAGES_ENDPOINT = `${import.meta.env.VITE_APP_API_ENDPOINT}/message`;
 
-const initialState = {
-  status: "",
+export interface ChatState {
+  status: string;
+  error: string;
+  hasNext: boolean;
+  conversations: Conversation[];
+  messages: Message[];
+  activeConversation: Conversation | null;
+  notifications: Notification[];
+  files: FileData[];
+}
+
+const initialState: ChatState = {
+  status: "idle",
   error: "",
   hasNext: false,
   conversations: [],
   messages: [],
-  activeConversation: {},
+  activeConversation: null,
   notifications: [],
   files: [],
 };
 
-// function to get all conversations
-export const getConversation = createAsyncThunk(
-  "conversation/all",
-  async (token, { rejectWithValue }) => {
-    try {
-      const { data } = await axios.get(`${CONVERSATION_ENDPOINT}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+// Function to get all conversations
+export const getConversation = createAsyncThunk<
+  Conversation[], // Return type
+  string, // Argument type (token)
+  { rejectValue: string } // Rejection type
+>("conversation/all", async (token, { rejectWithValue }) => {
+  try {
+    const { data } = await axios.get(CONVERSATION_ENDPOINT, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return data;
+  } catch (error) {
+    return rejectWithValue(
+      (error as { response: { data: ErrorResponse } }).response.data.message,
+    );
+  }
+});
 
-      return data;
-    } catch (error: unknown) {
-      console.log(error);
-      return rejectWithValue(error.response.data.error.message);
-    }
-  },
-);
-export const openCreateConversation = createAsyncThunk(
+// Function to open or create a conversation
+export const openCreateConversation = createAsyncThunk<
+  Conversation,
+  { token: string; receiver_id: string; isGroup: boolean },
+  { rejectValue: string }
+>(
   "conversation/open_create",
-  async (values, { rejectWithValue }) => {
+  async ({ token, receiver_id, isGroup }, { rejectWithValue }) => {
     try {
-      const { token, receiver_id, isGroup } = values;
       const { data } = await axios.post(
-        `${CONVERSATION_ENDPOINT}`,
+        CONVERSATION_ENDPOINT,
         { receiver_id, isGroup },
         {
           headers: {
@@ -47,22 +71,26 @@ export const openCreateConversation = createAsyncThunk(
           },
         },
       );
-
       return data;
-    } catch (error: unknown) {
-      console.log(error);
-      return rejectWithValue(error.response.data.error.message);
+    } catch (error) {
+      return rejectWithValue(
+        (error as { response: { data: ErrorResponse } }).response.data.message,
+      );
     }
   },
 );
 
-export const createGroupConversation = createAsyncThunk(
+// Function to create a group conversation
+export const createGroupConversation = createAsyncThunk<
+  Conversation,
+  { token: string; name: string; users: string[] },
+  { rejectValue: string }
+>(
   "conversation/create_group",
-  async (values, { rejectWithValue }) => {
-    const { token, name, users } = values;
+  async ({ token, name, users }, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(
-        `${`${CONVERSATION_ENDPOINT}/group`}`,
+        `${CONVERSATION_ENDPOINT}/group`,
         { name, users },
         {
           headers: {
@@ -70,19 +98,23 @@ export const createGroupConversation = createAsyncThunk(
           },
         },
       );
-
       return data;
-    } catch (error: unknown) {
-      console.log(error);
-      return rejectWithValue(error.response.data.error.message);
+    } catch (error) {
+      return rejectWithValue(
+        (error as { response: { data: ErrorResponse } }).response.data.message,
+      );
     }
   },
 );
 
-export const getConversationMessages = createAsyncThunk(
+// Function to get messages of a conversation
+export const getConversationMessages = createAsyncThunk<
+  Message[], // Return type
+  { token: string; conversation_id: string; lang: string; page: number },
+  { rejectValue: string }
+>(
   "conversation/messages",
-  async (values, { rejectWithValue }) => {
-    const { token, conversation_id, lang, page } = values;
+  async ({ token, conversation_id, lang, page }, { rejectWithValue }) => {
     try {
       const { data } = await axios.get(
         `${MESSAGES_ENDPOINT}/${conversation_id}?lang=${lang}&page=${page}`,
@@ -92,100 +124,107 @@ export const getConversationMessages = createAsyncThunk(
           },
         },
       );
-
-      if (data.length > 0) {
-        const messages = await data.slice().reverse();
-        return messages;
-      }
-    } catch (error: unknown) {
-      console.log(error);
-      return rejectWithValue(error.response.data.error.message);
+      return data.length > 0 ? data.slice().reverse() : [];
+    } catch (error) {
+      return rejectWithValue(
+        (error as { response: { data: ErrorResponse } }).response.data.message,
+      );
     }
   },
 );
 
-export const sendMessages = createAsyncThunk(
+// Function to send a message
+export const sendMessages = createAsyncThunk<
+  Message,
+  {
+    sendMessage: string;
+    conversation_id: string;
+    token: string;
+    files: UploadedFile[];
+    otherUserId: string;
+  },
+  { rejectValue: string }
+>(
   "message/send",
-  async (values, { rejectWithValue }) => {
-    const message = values.sendMessage;
-    const conversation_id = values.conversation_id;
-    const token = values.token;
-    const files = values.files;
-    const otherUserId = values.otherUserId;
-
+  async (
+    { sendMessage, conversation_id, token, files, otherUserId },
+    { rejectWithValue },
+  ) => {
     try {
       const { data } = await axios.post(
-        `${MESSAGES_ENDPOINT}`,
-        { message, conversation_id, files, otherUserId },
+        MESSAGES_ENDPOINT,
+        { message: sendMessage, conversation_id, files, otherUserId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         },
       );
-
-      return data;
-    } catch (error: unknown) {
-      console.log(error);
-      return rejectWithValue(error.response.data.error.message);
+      return await data;
+    } catch (error) {
+      return rejectWithValue(
+        (error as { response: { data: ErrorResponse } }).response.data.message,
+      );
     }
   },
 );
 
+// Chat slice definition
 export const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    setActiveConversation: (state, action) => {
+    setActiveConversation: (
+      state,
+      action: PayloadAction<Conversation | null>,
+    ) => {
       state.activeConversation = action.payload;
       state.files = [];
     },
-
-    updateMessagesAndConversation: (state, action) => {
-      // update the messages
-      if (state.activeConversation._id === action?.payload?.conversation._id) {
+    updateMessagesAndConversation: (state, action: PayloadAction<Message>) => {
+      // Update messages if the conversation matches
+      if (state.activeConversation?._id === action.payload.conversation._id) {
         const existingMessage = state.messages.find(
           (message) => message._id === action.payload._id,
         );
 
         if (!existingMessage) {
-          state.messages = [...state.messages, action.payload];
+          state.messages.push(action.payload);
         }
       }
 
-      // update the conversation
+      // Update conversation list
       const conversation = {
-        ...action?.payload?.conversation,
+        ...action.payload.conversation,
         latestMessage: action.payload,
       };
-      const newConversation = [...state.conversations].filter(
+      const newConversations = state.conversations.filter(
         (conv) => conv._id !== conversation._id,
       );
-      newConversation.unshift(conversation);
-      state.conversations = newConversation;
+      newConversations.unshift(conversation);
+      state.conversations = newConversations;
     },
-
-    addFiles: (state, action) => {
-      state.files = [...state.files, action.payload];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    addFiles: (state, action: PayloadAction<FileData>) => {
+      state.files.push(action.payload);
+    },
+    removeFile: (state, action: PayloadAction<number>) => {
+      state.files.splice(action.payload, 1);
     },
     emptyFile: (state) => {
       state.files = [];
     },
-    removeFile: (state, action) => {
-      state.files = state.files.filter((_, index) => index !== action.payload);
+    setMessages: (state, action: PayloadAction<Message[]>) => {
+      state.messages = action.payload;
     },
     emptyMessages: (state) => {
       state.messages = [];
     },
-    setMessages: (state, action) => {
-      state.messages = action.payload;
-    },
-
-    setHasNext: (state, action) => {
+    setHasNext: (state, action: PayloadAction<boolean>) => {
       state.hasNext = action.payload;
     },
   },
-  extraReducers(builder) {
+  extraReducers: (builder) => {
     builder
       .addCase(getConversation.pending, (state) => {
         state.status = "loading";
@@ -196,59 +235,59 @@ export const chatSlice = createSlice({
       })
       .addCase(getConversation.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload;
+        state.error = action.payload ?? "An error occurred";
       })
       .addCase(openCreateConversation.pending, (state) => {
         state.status = "loading";
       })
-
       .addCase(openCreateConversation.fulfilled, (state, action) => {
         state.status = "success";
         state.activeConversation = action.payload;
       })
       .addCase(openCreateConversation.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload;
+        state.error = action.payload ?? "An error occurred";
       })
       .addCase(getConversationMessages.pending, (state) => {
         state.status = "loading";
       })
       .addCase(getConversationMessages.fulfilled, (state, action) => {
         state.status = "success";
-        if (action?.payload?.length > 0) {
-          state.messages = [...action?.payload, ...state?.messages];
+        if (action.payload.length > 0) {
+          state.messages = [...action.payload, ...state.messages];
         } else {
           state.hasNext = false;
         }
       })
       .addCase(getConversationMessages.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload;
+        state.error = action.payload ?? "An error occurred";
       })
       .addCase(sendMessages.pending, (state) => {
         state.status = "loading";
       })
       .addCase(sendMessages.fulfilled, (state, action) => {
         state.status = "success";
-        state.messages = [...state.messages, action.payload];
+        state.messages.push(action.payload);
 
         const conversation = {
           ...action.payload.conversation,
           latestMessage: action.payload,
         };
-        const newConversation = [...state.conversations].filter(
+        const newConversations = state.conversations.filter(
           (conv) => conv._id !== conversation._id,
         );
-        newConversation.unshift(conversation);
-        state.conversations = newConversation;
+        newConversations.unshift(conversation);
+        state.conversations = newConversations;
       })
       .addCase(sendMessages.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload;
+        state.error = action.payload ?? "An error occurred";
       });
   },
 });
 
+// Exporting actions and reducer
 export const {
   setActiveConversation,
   updateMessagesAndConversation,

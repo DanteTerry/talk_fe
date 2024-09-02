@@ -1,5 +1,5 @@
 import { timeHandler } from "../../lib/utils/utils";
-import { Message as IMessage } from "../types/types";
+import { Message, UploadedFile } from "../../types/types";
 import FileOther from "./FileOther";
 import PhotoAndVideoView from "./PhotoAndVideoView";
 
@@ -9,8 +9,8 @@ function FileMessage({
   me,
   type,
 }: {
-  file: any;
-  message: IMessage;
+  file: UploadedFile;
+  message: Message;
   me: boolean;
   type: string;
 }) {
@@ -25,16 +25,10 @@ function FileMessage({
                   <PhotoAndVideoView
                     file={file}
                     message={message}
-                    me={me}
                     type={file?.type}
                   />
                 ) : (
-                  <FileOther
-                    file={file}
-                    message={message}
-                    me={me}
-                    type={file?.type}
-                  />
+                  <FileOther file={file} message={message} type={file?.type} />
                 )}
 
                 {((message.message && type === "IMAGE") ||
@@ -70,7 +64,6 @@ function FileMessage({
                   <PhotoAndVideoView
                     file={file}
                     message={message}
-                    me={me}
                     type={file?.type}
                   />
                 ) : (

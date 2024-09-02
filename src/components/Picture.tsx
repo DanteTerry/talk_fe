@@ -2,6 +2,7 @@ import { ImageUp } from "lucide-react";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 
 import { useSelector } from "react-redux";
+import { RootState } from "../app/store";
 
 function Picture({
   picture,
@@ -12,7 +13,7 @@ function Picture({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
-  const darkMode = useSelector((state) => state.darkMode.isDarkMode);
+  const darkMode = useSelector((state: RootState) => state.darkMode.isDarkMode);
 
   const handlerPicture = (e: React.ChangeEvent<HTMLInputElement>) => {
     const pic = e?.target?.files?.[0];

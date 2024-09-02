@@ -1,4 +1,4 @@
-import { MessageCircleMore, Search, User, Bell, Users } from "lucide-react";
+import { MessageCircleMore, Search, User, Users } from "lucide-react";
 
 export const sidebarItems = [
   {

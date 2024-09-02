@@ -28,6 +28,9 @@ export interface User {
   email: string;
   picture: string;
   status?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
 }
 
 export interface Conversation {
@@ -35,11 +38,11 @@ export interface Conversation {
   name: string;
   picture: string;
   isGroup: boolean;
-  users: User[];
+  users: UserDataForUtil[];
   createdAt: string;
   updatedAt: string;
   __v: number;
-  latestMessage: string;
+  latestMessage: Message;
 }
 
 export interface Message {
@@ -54,33 +57,133 @@ export interface Message {
 }
 
 export interface CallData {
+  socketId: string;
   receivingCall: boolean;
   callEnded: boolean;
-  socketId: string;
   name: string;
   picture: string;
   signal: string;
-  usersInCall: [];
+  usersInCall: SocketUser[];
 }
 
-interface FriendRequest {
+export interface UserForNotification {
   _id: string;
-  sender: User;
-  receiver: User;
-  status: string;
+  name: string;
+  email: string;
+  picture: string;
+}
+
+export interface FriendRequest {
+  _id: string;
+  sender: UserForNotification;
+  receiver: UserForNotification;
+  status: "accepted" | "rejected" | "pending";
   requestDate: string;
   createdAt: string;
   updatedAt: string;
   __v: number;
 }
 
+export interface request {
+  friendRequests: FriendRequest[];
+}
+
 export interface FriendRequestsResponse {
   success: boolean;
-  friendRequests: FriendRequest[];
+  friendRequests: request;
+}
+
+export interface CallState {
+  receivingCall: boolean;
+  callEnded: boolean;
+  socketId: string;
+  name: string;
+  picture: string;
+  signal: string;
+  myPeerId: string;
+  remotePeerId: string;
 }
 
 export interface FriendsData {
   success: boolean;
   friends: User[];
-  activeFriend: User;
+  activeFriend: User | null;
+}
+
+export interface SocketUser {
+  userId: string;
+  socketId: string;
+}
+
+export interface ToggleVideoPayload {
+  userId: string;
+  enabled: boolean;
+}
+
+export interface ToggleAudioPayload {
+  userId: string;
+  enabled: boolean;
+}
+
+export interface UploadedFile {
+  file: {
+    asset_id: string;
+    public_id: string;
+    version: number;
+    version_id: string;
+    signature: string;
+    resource_type: string;
+    created_at: string;
+    tags: string[];
+    bytes: number;
+    type: string;
+    etag: string;
+    placeholder: boolean;
+    url: string;
+    secure_url: string;
+    folder: string;
+    access_mode: string;
+    original_filename: string;
+  };
+  type: string;
+}
+
+export interface FileItem {
+  file: UploadedFile | File;
+  type: "IMAGE" | "VIDEO" | "DOCUMENT" | "OTHER"; // Adjust as necessary
+  fileData: string; // URL or base64 string representing file data
+}
+
+export type FileData = {
+  file: File;
+  fileData: string;
+  type:
+    | "TXT"
+    | "PDF"
+    | "DOCX"
+    | "XLSX"
+    | "PPTX"
+    | "VIDEO"
+    | "MP3"
+    | "OGG"
+    | "WAV"
+    | "ARCHIVE"
+    | "IMAGE";
+};
+
+export interface UserDataForUtil {
+  _id: string;
+  name: string;
+  email: string;
+  picture: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface searchResult {
+  value: string;
+  label: string;
+  picture: string;
 }

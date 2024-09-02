@@ -1,14 +1,15 @@
 import { TbFileDownload } from "react-icons/tb";
 import { timeHandler, trimString } from "../../lib/utils/utils";
+import { Message, UploadedFile } from "../../types/types";
 
 function FileOther({
   file,
   type,
   message,
 }: {
-  file: any;
+  file: UploadedFile;
   type: string;
-  message: any;
+  message: Message;
 }) {
   return (
     <div className="flex flex-col justify-center gap-1 px-1">

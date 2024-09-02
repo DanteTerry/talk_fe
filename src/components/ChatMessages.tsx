@@ -8,25 +8,26 @@ import { useInView } from "react-intersection-observer";
 import { getConversationMessages, setHasNext } from "../features/chatSlice";
 import { useDispatch } from "react-redux";
 import { setPage } from "../features/pageSlice";
+import { AppDispatch, RootState } from "../app/store";
 
 function ChatMessages({ endRef }: { endRef: React.RefObject<HTMLDivElement> }) {
-  const { messages } = useSelector((state) => state.chat);
-  const { user } = useSelector((state) => state.user);
-  const typing = useSelector((state) => state.typing);
-  const { isDarkMode } = useSelector((state) => state.darkMode);
-  const { activeConversation } = useSelector((state: any) => state.chat);
-  const { token } = useSelector((state: any) => state.user.user);
-  const { language } = useSelector((state: any) => state.translate);
-  const { hasNext } = useSelector((state: any) => state.chat);
-  const dispatch = useDispatch();
+  const { messages } = useSelector((state: RootState) => state.chat);
+  const { user } = useSelector((state: RootState) => state.user);
+  const typing = useSelector((state: RootState) => state.typing);
+  const { isDarkMode } = useSelector((state: RootState) => state.darkMode);
+  const { activeConversation } = useSelector((state: RootState) => state.chat);
+  const { token } = useSelector((state: RootState) => state.user.user);
+  const { language } = useSelector((state: RootState) => state.translate);
+  const { hasNext } = useSelector((state: RootState) => state.chat);
+  const { page } = useSelector((state: RootState) => state.page);
+  const dispatch = useDispatch<AppDispatch>();
+
   const [showLoader, setShowLoader] = useState(false);
   const [ref, inView] = useInView();
 
-  const { page } = useSelector((state: any) => state.page);
-
   const values = {
     token,
-    conversation_id: activeConversation._id,
+    conversation_id: activeConversation?._id as string,
     lang: language,
     page,
   };
@@ -52,11 +53,12 @@ function ChatMessages({ endRef }: { endRef: React.RefObject<HTMLDivElement> }) {
     } else {
       setShowLoader(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView, hasNext, dispatch]);
 
   // Fetch messages when activeConversation changes
   useEffect(() => {
-    if (activeConversation._id) {
+    if (activeConversation?._id) {
       dispatch(setPage(1));
       dispatch(getConversationMessages(values));
 
@@ -66,7 +68,8 @@ function ChatMessages({ endRef }: { endRef: React.RefObject<HTMLDivElement> }) {
 
       dispatch(setPage(1));
     }
-  }, [activeConversation._id, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeConversation?._id, dispatch]);
 
   return (
     <div
@@ -87,7 +90,8 @@ function ChatMessages({ endRef }: { endRef: React.RefObject<HTMLDivElement> }) {
           <div key={index}>
             {/* Add a unique key to the parent element */}
             {message?.files?.length > 0 &&
-              message?.files.map((file) => (
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              message?.files.map((file: any) => (
                 <FileMessage
                   key={file.file.asset_id}
                   file={file}
