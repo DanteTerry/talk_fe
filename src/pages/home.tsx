@@ -264,7 +264,7 @@ function Home({ socket }: { socket: Socket }) {
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    socket.on("toggle-video", ({ userId, enabled }: ToggleVideoPayload) => {
+    socket.on("toggle-video", ({ enabled }: ToggleVideoPayload) => {
       if (userVideo.current) {
         const mediaStream = userVideo.current.srcObject as MediaStream | null;
 
@@ -283,7 +283,7 @@ function Home({ socket }: { socket: Socket }) {
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    socket.on("toggle-audio", ({ userId, enabled }: ToggleAudioPayload) => {
+    socket.on("toggle-audio", ({ enabled }: ToggleAudioPayload) => {
       if (userVideo.current) {
         const mediaStream = userVideo.current.srcObject as MediaStream | null;
 
@@ -400,7 +400,7 @@ function Home({ socket }: { socket: Socket }) {
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    socket.on("end call", (data) => {
+    socket.on("end call", () => {
       setCallAccepted(false);
 
       if (callAccepted) {
@@ -480,6 +480,7 @@ function Home({ socket }: { socket: Socket }) {
     }
 
     getRequest();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //  Accept friend request

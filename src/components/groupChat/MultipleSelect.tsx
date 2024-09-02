@@ -1,4 +1,4 @@
-import Select from "react-select";
+import Select, { MultiValue } from "react-select";
 import { searchResult } from "../../types/types";
 import { Dispatch, SetStateAction } from "react";
 
@@ -13,11 +13,15 @@ function MultipleSelect({
   setSelectedUsers: Dispatch<SetStateAction<searchResult[]>>;
   handleSearch: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }) {
+  const handleChange = (newValue: MultiValue<searchResult>) => {
+    setSelectedUsers(newValue as searchResult[]);
+  };
+
   return (
     <div className="w-full">
       <Select
         options={searchResults}
-        onChange={setSelectedUsers}
+        onChange={handleChange}
         onKeyDown={(e) => handleSearch(e)}
         placeholder={"Select users"}
         isMulti
@@ -35,10 +39,10 @@ function MultipleSelect({
           control: (styles, { isFocused }) => ({
             ...styles,
             backgroundColor: "#202124",
-            color: "#22c55e ",
+            color: "#22c55e",
             border: "none",
             outline: "none",
-            boxShadow: isFocused && "none",
+            boxShadow: isFocused ? "none" : undefined, // Fix boxShadow type issue
           }),
           placeholder: (styles) => ({
             ...styles,

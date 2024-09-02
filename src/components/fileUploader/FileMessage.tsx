@@ -25,7 +25,6 @@ function FileMessage({
                   <PhotoAndVideoView
                     file={file}
                     message={message}
-                    me={me}
                     type={file?.type}
                   />
                 ) : (
@@ -65,7 +64,6 @@ function FileMessage({
                   <PhotoAndVideoView
                     file={file}
                     message={message}
-                    me={me}
                     type={file?.type}
                   />
                 ) : (

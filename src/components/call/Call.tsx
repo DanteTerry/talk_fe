@@ -12,8 +12,7 @@ function Call({
   myVideo,
   callType,
   endCall,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setVideoAndAudio,
+  // setVideoAndAudio,
   videoAndAudio,
   toggleVideo,
   toggleAudio,
@@ -74,7 +73,7 @@ function Call({
             videoAndAudio={videoAndAudio}
             toggleVideo={toggleVideo}
             toggleAudio={toggleAudio}
-            setVideoAndAudio={setVideoAndAudio}
+            // setVideoAndAudio={setVideoAndAudio}
             setIsMuted={setIsMuted}
           />
         )}

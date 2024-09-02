@@ -64,14 +64,12 @@ function NewChatInput({
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const createGroupHandler = async () => {
     if (status !== "loading") {
       setLoading(true);
-      const users: string[] = [];
-      selectedUsers.forEach((user: searchResult) => {
-        users.push(user.value);
-      });
+      const users: string[] = selectedUsers.map(
+        (user: searchResult) => user.value,
+      );
       const values = {
         name,
         users,
@@ -79,10 +77,16 @@ function NewChatInput({
       };
 
       const newConversation = await dispatch(createGroupConversation(values));
-      if (newConversation?.payload?._id) {
+
+      if (
+        newConversation?.payload &&
+        typeof newConversation.payload !== "string"
+      ) {
         setLoading(false);
         setShow(false);
         dispatch(getConversation(user.token));
+      } else {
+        setLoading(false);
       }
     }
   };

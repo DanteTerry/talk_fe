@@ -163,7 +163,7 @@ function ChatBar({
           </button>
         </div>
         {showTranslate && (
-          <div className="absolute right-10 top-12 w-[150px] rounded-md bg-white p-2 dark:bg-slate-700">
+          <div className="absolute right-10 top-12 z-50 w-[150px] rounded-md bg-white p-2 dark:bg-slate-700">
             {options.map((option) => (
               <li
                 key={option.code}

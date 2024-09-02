@@ -8,7 +8,7 @@ function CallAction({
   callType,
   endCall,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setVideoAndAudio,
+  // setVideoAndAudio,
   videoAndAudio,
   toggleVideo,
   toggleAudio,
@@ -16,12 +16,12 @@ function CallAction({
 }: {
   callType: "video" | "voice" | null;
   endCall: () => void;
-  setVideoAndAudio: Dispatch<
-    SetStateAction<{
-      video: boolean;
-      audio: boolean;
-    }>
-  >;
+  // setVideoAndAudio: Dispatch<
+  //   SetStateAction<{
+  //     video: boolean;
+  //     audio: boolean;
+  //   }>
+  // >;
   videoAndAudio: { video: boolean; audio: boolean };
   toggleVideo: () => void;
   toggleAudio: () => void;

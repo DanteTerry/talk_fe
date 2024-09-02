@@ -7,12 +7,14 @@ import { useDispatch } from "react-redux";
 import { emptyFile, removeFile, sendMessages } from "../../features/chatSlice";
 import SocketContext from "../../context/SocketContext";
 import { ClipLoader } from "react-spinners";
-import VideoThumbnail from "react-video-thumbnail";
 import { Socket } from "socket.io-client";
 import { AppDispatch, RootState } from "../../app/store";
 import AddFilesButton from "./AddFilesButton";
 import FileUploaderInput from "./FileUploaderInput";
 import { UserDataForUtil } from "../../types/types";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+import VideoThumbnail from "react-video-thumbnail";
 
 function FileViewer({ socket }: { socket: Socket }) {
   const { files, activeConversation } = useSelector(
@@ -52,12 +54,12 @@ function FileViewer({ socket }: { socket: Socket }) {
     // dispatch action to send message
     if (values.conversation_id && values.otherUserId) {
       const newMessage = await dispatch(sendMessages(values));
-      console.log(newMessage);
-      socket.emit("send message", newMessage.payload);
-      setLoading(false);
-      if (newMessage?.payload?._id) {
+
+      if (typeof newMessage.payload !== "string" && newMessage.payload?._id) {
+        socket.emit("send message", newMessage.payload);
         dispatch(emptyFile());
       }
+      setLoading(false);
     }
   };
 
