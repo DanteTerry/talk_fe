@@ -11,6 +11,7 @@ import { checkOnlineStatus } from "../lib/utils/utils";
 import FilePreview from "./fileUploader/FilePreview";
 import { RootState } from "../app/store";
 import { Conversation } from "../types/types";
+import Inputs from "../components/Inputs";
 
 function Chat({
   callUser,
@@ -19,6 +20,7 @@ function Chat({
   sendMessage,
   setSendMessage,
   textRef,
+  setEmojiPicker,
 }: {
   callUser: (callType: "video" | "voice") => void;
   setCallType: Dispatch<SetStateAction<"video" | "voice" | "">>;
@@ -26,6 +28,7 @@ function Chat({
   sendMessage: string;
   setSendMessage: Dispatch<SetStateAction<string>>;
   textRef: React.RefObject<HTMLInputElement>;
+  setEmojiPicker: Dispatch<SetStateAction<boolean>>;
 }) {
   const endRef = useRef<HTMLDivElement>(null);
   const { activeConversation } = useSelector((state: RootState) => state.chat);
@@ -63,7 +66,9 @@ function Chat({
 
   return (
     <div
-      className={`relative grid w-full ${files.length ? "grid-rows-11" : "grid-rows-12"}`}
+      className={`relative grid h-full w-full ${
+        files.length ? "grid-rows-11" : "grid-rows-12"
+      } md:grid-rows-12`}
     >
       <ChatBar
         conversation={activeConversation}
@@ -73,16 +78,27 @@ function Chat({
       />
       {files.length > 0 ? <FilePreview /> : <ChatMessages endRef={endRef} />}
 
-      <div className="absolute bottom-36 left-2">
+      <div className="absolute bottom-24 left-2 md:bottom-36">
         {emojiPicker && (
           <EmojiPicker
             theme={emojiPicker ? Theme.DARK : Theme.LIGHT}
             emojiStyle={EmojiStyle.FACEBOOK}
-            className={` ${emojiPicker && "translate-y-0 transition-all duration-300"}`}
+            className={`${
+              emojiPicker ? "translate-y-0 transition-all duration-300" : ""
+            }`}
             onEmojiClick={handleEmojiClick}
           />
         )}
       </div>
+      {!files.length ? (
+        <Inputs
+          sendMessage={sendMessage}
+          setSendMessage={setSendMessage}
+          setEmojiPicker={setEmojiPicker}
+          emojiPicker={emojiPicker}
+          textRef={textRef}
+        />
+      ) : null}
     </div>
   );
 }

@@ -25,7 +25,6 @@ import {
 import { Socket } from "socket.io-client";
 import Ringing from "../components/call/Ringing";
 import BottomMenu from "../components/BottomMenu";
-import Inputs from "../components/Inputs";
 import { setFriendRequests } from "../features/notificationSlice";
 import { setFriends } from "../features/friendSlice";
 import ProfileInfo from "../components/ProfileInfo";
@@ -63,7 +62,6 @@ function Home({ socket }: { socket: Socket }) {
   const [callType, setCallType] = useState<"video" | "voice" | "">("");
 
   const onlineUsers = useSelector((state: RootState) => state.onlineUsers);
-  const { files } = useSelector((state: RootState) => state.chat);
 
   const [videoAndAudio, setVideoAndAudio] = useState({
     video: true,
@@ -555,16 +553,8 @@ function Home({ socket }: { socket: Socket }) {
                   setSendMessage={setSendMessage}
                   emojiPicker={emojiPicker}
                   textRef={textRef}
+                  setEmojiPicker={setEmojiPicker}
                 />
-                {!files.length ? (
-                  <Inputs
-                    sendMessage={sendMessage}
-                    setSendMessage={setSendMessage}
-                    setEmojiPicker={setEmojiPicker}
-                    emojiPicker={emojiPicker}
-                    textRef={textRef}
-                  />
-                ) : null}
               </div>
             ) : (
               <HomeInfo />
