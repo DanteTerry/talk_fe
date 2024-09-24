@@ -27,8 +27,8 @@ function Chat({
   emojiPicker: boolean;
   sendMessage: string;
   setSendMessage: Dispatch<SetStateAction<string>>;
-  textRef: React.RefObject<HTMLInputElement>;
   setEmojiPicker: Dispatch<SetStateAction<boolean>>;
+  textRef: React.RefObject<HTMLInputElement>;
 }) {
   const endRef = useRef<HTMLDivElement>(null);
   const { activeConversation } = useSelector((state: RootState) => state.chat);
@@ -66,9 +66,7 @@ function Chat({
 
   return (
     <div
-      className={`relative grid h-full w-full ${
-        files.length ? "grid-rows-11" : "grid-rows-12"
-      } md:grid-rows-12`}
+      className={`relative grid w-full ${files.length ? "grid-rows-11" : "grid-rows-12"}`}
     >
       <ChatBar
         conversation={activeConversation}
@@ -78,14 +76,12 @@ function Chat({
       />
       {files.length > 0 ? <FilePreview /> : <ChatMessages endRef={endRef} />}
 
-      <div className="absolute bottom-24 left-2 md:bottom-36">
+      <div className="absolute bottom-36 left-2">
         {emojiPicker && (
           <EmojiPicker
             theme={emojiPicker ? Theme.DARK : Theme.LIGHT}
             emojiStyle={EmojiStyle.FACEBOOK}
-            className={`${
-              emojiPicker ? "translate-y-0 transition-all duration-300" : ""
-            }`}
+            className={` ${emojiPicker && "translate-y-0 transition-all duration-300"}`}
             onEmojiClick={handleEmojiClick}
           />
         )}

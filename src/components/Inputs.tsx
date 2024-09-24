@@ -97,7 +97,7 @@ function Inputs({
 
   return (
     <form
-      className="bottom-0 left-0 right-0 row-span-1 flex w-screen items-center justify-between gap-5 border-t-2 px-5 py-3 dark:border-gray-700 dark:bg-[#17181B]"
+      className="row-span-1 flex max-w-full items-center justify-between gap-5 border-t-2 px-5 py-3 dark:border-gray-700 dark:bg-[#17181B]"
       onSubmit={sendMessageHandler}
     >
       <div className="relative flex gap-4">
