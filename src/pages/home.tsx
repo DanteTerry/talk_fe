@@ -560,11 +560,7 @@ function Home({ socket }: { socket: Socket }) {
               <HomeInfo />
             )}
 
-            {activeFriend?.name ? (
-              <ProfileInfo callUser={callUser} setCallType={setCallType} />
-            ) : (
-              <HomeInfo />
-            )}
+            {activeFriend?.name ? <ProfileInfo /> : <HomeInfo />}
           </div>
           {(callType === "video" || callType === "voice") && !receivingCall && (
             <Call

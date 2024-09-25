@@ -8,7 +8,6 @@ import { AppDispatch } from "../app/store";
 function Friend({ user }: { user: User }) {
   const dispatch = useDispatch<AppDispatch>();
 
-  console.log(user);
   const handleClick = () => {
     dispatch(setActiveFriend(user));
     dispatch(setActiveConversation(null));
