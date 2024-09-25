@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Message, UploadedFile } from "../../types/types";
 
 function PhotoAndVideoView({
@@ -17,9 +16,9 @@ function PhotoAndVideoView({
           <img
             src={file && file.file.secure_url}
             alt={"image"}
-            className="h-[150px] cursor-pointer rounded-lg sm:h-[180px] lg:h-[230px]"
+            className="h-[150px] cursor-pointer rounded-lg object-cover sm:h-[180px] md:h-[200px] lg:h-[250px]"
           />
-          <p className="mt-1 max-w-[210px] px-2 leading-tight tracking-tighter">
+          <p className="mt-1 max-w-[210px] px-2 text-sm leading-tight tracking-tight md:text-base">
             {message?.message}
           </p>
         </>
@@ -27,7 +26,7 @@ function PhotoAndVideoView({
         <video
           src={file && file.file.secure_url}
           controls
-          className="h-40 cursor-pointer rounded-lg sm:h-44 lg:h-52"
+          className="h-40 cursor-pointer rounded-lg object-cover sm:h-44 md:h-48 lg:h-56"
         />
       ) : null}
     </div>

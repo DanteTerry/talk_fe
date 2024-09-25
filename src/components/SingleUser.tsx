@@ -27,12 +27,21 @@ export function SingleUser({
   );
 
   const handleSendFriendRequest = async () => {
-    const data = await sendFriendRequest(token, value);
-    if (data) {
-      socket.emit("send-friend-request", {
-        sender: CurrentUser?._id,
-        receiver: user?._id,
-      });
+    try {
+      // Attempt to send the friend request
+      const data = await sendFriendRequest(token, value);
+
+      if (data.success) {
+        // Emit the socket event only if the request was successful
+        socket.emit("send-friend-request", {
+          sender: CurrentUser._id,
+          receiver: user._id,
+        });
+      } else {
+        console.error("Failed to send friend request:", data.message);
+      }
+    } catch (error) {
+      console.error("Error sending friend request:", error);
     }
   };
 
@@ -51,7 +60,7 @@ export function SingleUser({
             {user?.name}
           </span>
           <span className="text-[13px] font-semibold text-white opacity-95 dark:text-black">
-            {trimString(user?.status, 0)}
+            {trimString(user?.status, 25)}
           </span>
         </div>
         {!isFriend ? (

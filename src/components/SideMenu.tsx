@@ -13,6 +13,7 @@ import { getFriendRequests } from "../lib/utils/utils";
 import { setFriendRequests } from "../features/notificationSlice";
 import { setActiveFriend } from "../features/friendSlice";
 import { RootState } from "../app/store";
+import { FriendRequest } from "../types/types";
 
 function SideMenu({ socket }: { socket: Socket }) {
   const location = useLocation();
@@ -21,6 +22,23 @@ function SideMenu({ socket }: { socket: Socket }) {
   const { user } = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
   const { token } = useSelector((state: RootState) => state.user.user);
+  const notification = useSelector(
+    (state: RootState) => state.notification.friendRequests,
+  );
+
+  // Filter notifications for the current user with "pending", "accepted", and "rejected" statuses
+  const pendingRequests = notification.friendRequests?.filter(
+    (request: FriendRequest) =>
+      user._id === request.receiver._id && request.status === "pending",
+  );
+
+  const completedRequests = notification.friendRequests?.filter(
+    (request: FriendRequest) =>
+      // Show accepted requests to only the sender
+      (user._id === request.sender._id && request.status === "accepted") ||
+      // Show rejected requests only to the sender
+      (user._id === request.sender._id && request.status === "rejected"),
+  );
 
   useEffect(() => {
     socket.on("receive-friend-request", async (data) => {
@@ -51,10 +69,6 @@ function SideMenu({ socket }: { socket: Socket }) {
     getRequest();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const notification = useSelector(
-    (state: RootState) => state.notification.friendRequests,
-  );
 
   return (
     <aside className="hidden h-full w-[100px] flex-col items-center justify-between pb-10 dark:bg-[#17181B] lg:flex">
@@ -87,10 +101,10 @@ function SideMenu({ socket }: { socket: Socket }) {
           );
         })}
 
-        {notification.friendRequests?.length === 0 ? (
+        {pendingRequests?.length === 0 && completedRequests?.length === 0 ? (
           <Link to={"notifications"}>
             <div
-              className={`flex h-12 w-12 items-center justify-center rounded-xl ${location.pathname.split("/")[1] === "notification" && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
+              className={`flex h-12 w-12 items-center justify-center rounded-xl ${location.pathname.split("/")[1] === "notifications" && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
             >
               <Bell
                 size={30}
@@ -102,7 +116,7 @@ function SideMenu({ socket }: { socket: Socket }) {
         ) : (
           <Link to={"notifications"}>
             <div
-              className={`flex h-12 w-12 items-center justify-center rounded-xl ${location.pathname.split("/")[1] === "notification" && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
+              className={`flex h-12 w-12 items-center justify-center rounded-xl ${location.pathname.split("/")[1] === "notifications" && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
             >
               <BellDot
                 size={30}
@@ -138,7 +152,7 @@ function SideMenu({ socket }: { socket: Socket }) {
             <img
               src={user?.picture}
               alt="user avatar"
-              className="h-full w-full rounded-full object-cover"
+              className="w-14!important h-14!important rounded-full object-cover"
             />
           </div>
         </Link>

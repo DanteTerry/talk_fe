@@ -17,9 +17,9 @@ function FileMessage({
   return (
     <>
       {me ? (
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-end gap-2 md:gap-3">
           <div className="flex flex-col gap-1">
-            <div className="w-max rounded-lg bg-green-500 text-lg text-white dark:text-white">
+            <div className="w-max rounded-lg bg-green-500 text-base text-white dark:text-white md:text-lg">
               <div className="relative flex flex-col">
                 {type === "IMAGE" || type === "VIDEO" ? (
                   <PhotoAndVideoView
@@ -30,17 +30,16 @@ function FileMessage({
                 ) : (
                   <FileOther file={file} message={message} type={file?.type} />
                 )}
-
                 {((message.message && type === "IMAGE") ||
                   type === "VIDEO") && (
-                  <span className="absolute bottom-2 right-2 self-end text-xs">
+                  <span className="absolute bottom-2 right-2 self-end text-xs md:text-sm">
                     {timeHandler(message.createdAt)}
                   </span>
                 )}
               </div>
             </div>
           </div>
-          <div className="h-5!important w-5 self-end rounded-full">
+          <div className="h-6 w-6 self-end rounded-full">
             <img
               src={message.sender.picture}
               alt="user avatar"
@@ -49,8 +48,8 @@ function FileMessage({
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-3">
-          <div className="h-5!important w-5 self-end rounded-full">
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className="h-6 w-6 self-end rounded-full">
             <img
               src={message.sender.picture}
               alt="user avatar"
@@ -58,7 +57,7 @@ function FileMessage({
             />
           </div>
           <div className="flex flex-col gap-1">
-            <div className="bg-white-500 w-max rounded-lg bg-black/90 text-lg dark:bg-white dark:text-black">
+            <div className="w-max rounded-lg bg-black/90 text-base text-white dark:bg-white dark:text-black md:text-lg">
               <div className="relative">
                 {type === "IMAGE" || type === "VIDEO" ? (
                   <PhotoAndVideoView
@@ -69,7 +68,7 @@ function FileMessage({
                 ) : (
                   <FileOther file={file} message={message} type={file?.type} />
                 )}
-                <span className="absolute bottom-1 right-2 self-end text-xs text-white dark:text-white">
+                <span className="absolute bottom-1 right-2 text-xs text-white dark:text-black md:text-sm">
                   {timeHandler(message.createdAt)}
                 </span>
               </div>

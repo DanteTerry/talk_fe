@@ -1,4 +1,4 @@
-import { Info, Languages, MoveLeft, Phone, Video } from "lucide-react";
+import { Languages, MoveLeft, Phone, Video } from "lucide-react";
 import { Conversation, UserDataForUtil } from "../types/types";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -37,6 +37,7 @@ function ChatBar({
   const [showTranslate, setShowTranslate] = useState(false);
   const { page } = useSelector((state: RootState) => state.page);
 
+  // Handle translation by setting new language, resetting messages, and fetching new ones
   const handleTranslate = async (option: {
     name: string;
     code: string;
@@ -73,8 +74,9 @@ function ChatBar({
   };
 
   return (
-    <div className="row-span-1 flex items-center justify-between border-b-2 px-2 shadow-sm dark:border-gray-700 dark:bg-green-500 sm:px-4 lg:px-6">
-      <div className="flex items-center justify-center gap-3">
+    <div className="row-span-1 flex items-center justify-between border-b-2 px-2 py-2 shadow-sm dark:border-gray-700 dark:bg-green-500 sm:px-4 lg:px-6">
+      {/* Left section: Back button, user picture, and conversation name */}
+      <div className="flex items-center gap-3">
         <button
           onClick={() => {
             dispatch(setActiveConversation(null));
@@ -85,8 +87,8 @@ function ChatBar({
         >
           <MoveLeft size={25} className="text-green-500 dark:text-white" />
         </button>
-        <div className="flex items-center justify-center gap-3">
-          <div className="h-10!important w-10 gap-10 rounded-full">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full">
             <img
               src={
                 activeConversation?.isGroup
@@ -116,7 +118,9 @@ function ChatBar({
         </div>
       </div>
 
-      <div className="relative flex items-center justify-between gap-4 sm:gap-6 md:gap-8 lg:gap-10">
+      {/* Right section: Call buttons, translate, and info */}
+      <div className="relative flex items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10">
+        {/* If user is online and not in a group chat, show call buttons */}
         {!activeConversation?.isGroup && online && (
           <div className="flex items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10">
             <button
@@ -128,7 +132,7 @@ function ChatBar({
               <Phone
                 size={24}
                 strokeWidth={1.5}
-                className="course-pointer text-green-500 dark:text-white"
+                className="text-green-500 dark:text-white"
               />
             </button>
             <button
@@ -145,7 +149,9 @@ function ChatBar({
             </button>
           </div>
         )}
-        <div className="relative flex items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-10">
+
+        {/* Translate and Info buttons */}
+        <div className="relative flex items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10">
           <button onClick={() => setShowTranslate((prev) => !prev)}>
             <Languages
               size={25}
@@ -153,24 +159,18 @@ function ChatBar({
               className="text-green-500 dark:text-white"
             />
           </button>
-
-          <button>
-            <Info
-              size={30}
-              strokeWidth={1.5}
-              className="text-green-500 dark:text-white"
-            />
-          </button>
         </div>
+
+        {/* Dropdown menu for language selection */}
         {showTranslate && (
-          <div className="absolute right-10 top-12 z-50 w-[150px] rounded-md bg-white p-2 dark:bg-slate-700">
+          <div className="absolute right-10 top-12 z-50 w-[150px] rounded-md bg-white p-2 shadow-md dark:bg-slate-700">
             {options.map((option) => (
               <li
                 key={option.code}
-                className="flex cursor-pointer list-none items-center justify-between rounded-md px-2 py-1 capitalize text-white transition-all duration-300"
+                className="flex cursor-pointer list-none items-center justify-between rounded-md px-2 py-1 text-sm capitalize text-black hover:bg-gray-200 dark:text-white dark:hover:bg-slate-600"
                 onClick={() => handleTranslate(option)}
               >
-                <img src={option.flag} className="h-5" />
+                <img src={option.flag} className="h-5" alt="language flag" />
                 {option.name}
               </li>
             ))}

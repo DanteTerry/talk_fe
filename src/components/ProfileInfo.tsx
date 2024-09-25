@@ -1,31 +1,19 @@
 import { useDispatch } from "react-redux";
-import { setActiveFriend } from "../features/friendSlice";
-import {
-  MessageCircleMore,
-  MoveLeft,
-  Phone,
-  UserMinus,
-  Video,
-} from "lucide-react";
+import { setActiveFriend, setFriends } from "../features/friendSlice";
+import { MessageCircleMore, MoveLeft, UserMinus } from "lucide-react";
 import { useSelector } from "react-redux";
 import {
   emptyMessages,
   openCreateConversation,
   setActiveConversation,
 } from "../features/chatSlice";
-import { Dispatch, SetStateAction } from "react";
 import { AppDispatch, RootState } from "../app/store";
+import { getFriends, removeFriend } from "../lib/utils/utils";
 
-function ProfileInfo({
-  callUser,
-  setCallType,
-}: {
-  callUser: (callType: "video" | "voice") => void;
-  setCallType: Dispatch<SetStateAction<"video" | "voice" | "">>;
-}) {
+function ProfileInfo() {
   const dispatch = useDispatch<AppDispatch>();
   const { activeFriend } = useSelector((state: RootState) => state.friends);
-  const { token } = useSelector((state: RootState) => state.user.user);
+  const { token, _id } = useSelector((state: RootState) => state.user.user);
   const value = {
     receiver_id: activeFriend && (activeFriend?._id as string),
     isGroup: false,
@@ -41,11 +29,20 @@ function ProfileInfo({
 
   const { isDarkMode } = useSelector((state: RootState) => state.darkMode);
 
-  // Todo create rendering of call button based on onlineUser
-  // const onlineUsers = useSelector((state: RootState) => state.onlineUsers);
-  // const isOnline = onlineUsers.find(
-  //   (user: onlineUser) => user.userId === activeFriend?._id,
-  // );
+  const dataToRemoveFriend = {
+    userId: _id || "",
+    friendId: activeFriend?._id || "",
+  };
+
+  const handleRemoveFriend = async () => {
+    await removeFriend(token, dataToRemoveFriend);
+    const friends = await getFriends(token, _id);
+    if (friends?.success) {
+      dispatch(setFriends(friends?.friends));
+      dispatch(setActiveFriend(null));
+      dispatch(setActiveConversation(null));
+    }
+  };
 
   return (
     <div
@@ -89,29 +86,11 @@ function ProfileInfo({
           >
             <MessageCircleMore size={30} />
           </button>
-          {false && (
-            <>
-              <button
-                onClick={() => {
-                  setCallType("voice");
-                  callUser("voice");
-                }}
-                className="rounded-lg bg-green-500 px-2 py-2 text-white"
-              >
-                <Phone size={30} />
-              </button>
-              <button
-                onClick={() => {
-                  setCallType("video");
-                  callUser("video");
-                }}
-                className="rounded-lg bg-green-500 px-2 py-2 text-white"
-              >
-                <Video size={30} />
-              </button>
-            </>
-          )}
-          <button className="rounded-lg bg-green-500 px-2 py-2 text-white">
+
+          <button
+            onClick={handleRemoveFriend}
+            className="rounded-lg bg-green-500 px-2 py-2 text-white"
+          >
             <UserMinus size={30} />
           </button>
         </div>

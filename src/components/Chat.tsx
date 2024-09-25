@@ -11,6 +11,7 @@ import { checkOnlineStatus } from "../lib/utils/utils";
 import FilePreview from "./fileUploader/FilePreview";
 import { RootState } from "../app/store";
 import { Conversation } from "../types/types";
+import Inputs from "../components/Inputs";
 
 function Chat({
   callUser,
@@ -19,12 +20,14 @@ function Chat({
   sendMessage,
   setSendMessage,
   textRef,
+  setEmojiPicker,
 }: {
   callUser: (callType: "video" | "voice") => void;
   setCallType: Dispatch<SetStateAction<"video" | "voice" | "">>;
   emojiPicker: boolean;
   sendMessage: string;
   setSendMessage: Dispatch<SetStateAction<string>>;
+  setEmojiPicker: Dispatch<SetStateAction<boolean>>;
   textRef: React.RefObject<HTMLInputElement>;
 }) {
   const endRef = useRef<HTMLDivElement>(null);
@@ -83,6 +86,15 @@ function Chat({
           />
         )}
       </div>
+      {!files.length ? (
+        <Inputs
+          sendMessage={sendMessage}
+          setSendMessage={setSendMessage}
+          setEmojiPicker={setEmojiPicker}
+          emojiPicker={emojiPicker}
+          textRef={textRef}
+        />
+      ) : null}
     </div>
   );
 }
