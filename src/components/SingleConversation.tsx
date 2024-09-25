@@ -52,7 +52,7 @@ export function SingleConversation({
             {getConversationName(user, conversation.users)}
           </span>
           <span className="text-[13px] font-semibold text-white opacity-95 dark:text-black">
-            {trimString(conversation?.latestMessage?.message, 27)}
+            {trimString(conversation?.latestMessage?.message, 32)}
           </span>
         </div>
         <span className="absolute right-0 h-full justify-start pl-2 text-xs text-green-500 opacity-95 dark:bg-white dark:text-green-500">

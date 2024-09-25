@@ -217,11 +217,18 @@ export const sendFriendRequest = async (
       },
     );
 
-    if (data.success) {
+    if (data?.success) {
       return data;
+    } else {
+      console.error(
+        "Failed to send friend request:",
+        data?.message || "Unknown error",
+      );
+      return { success: false, message: "Friend request failed" };
     }
   } catch (error) {
-    console.log(error);
+    console.error("Error during sending friend request:", error);
+    return { success: false, message: "Error occurred while sending request" };
   }
 };
 
@@ -255,6 +262,30 @@ export const acceptFriendRequest = async (
   try {
     const { data } = await axios.post(
       `${import.meta.env.VITE_APP_API_ENDPOINT}/friends`,
+      value,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (data?.success) {
+      return data;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// remove friend from friend list
+export const removeFriend = async (
+  token: string,
+  value: { userId: string; friendId: string },
+) => {
+  try {
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_APP_API_ENDPOINT}/friends/removeFriend`,
       value,
       {
         headers: {

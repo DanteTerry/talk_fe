@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { sidebarItems } from "../constants/constants";
 import { useSelector } from "react-redux";
 import { Bell, BellDot, Grip, Sun, SunMoon } from "lucide-react";
@@ -8,7 +8,7 @@ import { useState } from "react";
 import SocketContext from "../context/SocketContext";
 import { setActiveFriend } from "../features/friendSlice";
 import { RootState } from "../app/store";
-import { CallData } from "../types/types";
+import { CallData, FriendRequest } from "../types/types";
 
 function BottomMenu({ call }: { call: CallData }) {
   const { activeConversation } = useSelector((state: RootState) => state.chat);
@@ -16,23 +16,27 @@ function BottomMenu({ call }: { call: CallData }) {
   const { user } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
+  const location = useLocation();
+
   const darkMode = useSelector((state: RootState) => state.darkMode.isDarkMode);
 
   const notification = useSelector(
     (state: RootState) => state.notification.friendRequests,
   );
 
-  const isRequestAcceptedOrRejected = notification?.friendRequests?.some(
-    (req) =>
-      req.sender._id === user._id &&
-      (req.status === "accepted" || req.status === "rejected"),
+  // Filter notifications for the current user with "pending", "accepted", and "rejected" statuses
+  const pendingRequests = notification.friendRequests?.filter(
+    (request: FriendRequest) =>
+      user._id === request.receiver._id && request.status === "pending",
   );
 
-  const isRequestPending = notification?.friendRequests?.some(
-    (req) => req.receiver._id === user._id && req.status === "pending",
+  const completedRequests = notification.friendRequests?.filter(
+    (request: FriendRequest) =>
+      // Show accepted requests to only the sender
+      (user._id === request.sender._id && request.status === "accepted") ||
+      // Show rejected requests only to the sender
+      (user._id === request.sender._id && request.status === "rejected"),
   );
-
-  const showNotificationIcon = isRequestAcceptedOrRejected || isRequestPending;
 
   return (
     <div
@@ -65,7 +69,7 @@ function BottomMenu({ call }: { call: CallData }) {
             );
           })}
 
-        {!showNotificationIcon && (
+        {pendingRequests?.length === 0 && completedRequests?.length === 0 ? (
           <Link
             to={"notifications"}
             onClick={() => {
@@ -73,7 +77,7 @@ function BottomMenu({ call }: { call: CallData }) {
             }}
           >
             <div
-              className={`flex h-12 w-12 items-center justify-center rounded-xl ${location.pathname.split("/")[1] === "notification" && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
+              className={`flex h-12 w-12 items-center justify-center rounded-xl ${location.pathname.split("/")[1] === "notifications" && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
             >
               <Bell
                 size={30}
@@ -82,9 +86,7 @@ function BottomMenu({ call }: { call: CallData }) {
               />
             </div>
           </Link>
-        )}
-
-        {showNotificationIcon && (
+        ) : (
           <Link
             to={"notifications"}
             onClick={() => {
@@ -92,7 +94,7 @@ function BottomMenu({ call }: { call: CallData }) {
             }}
           >
             <div
-              className={`flex h-12 w-12 items-center justify-center rounded-xl ${location.pathname.split("/")[1] === "notification" && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
+              className={`flex h-12 w-12 items-center justify-center rounded-xl ${location.pathname.split("/")[1] === "notifications" && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
             >
               <BellDot
                 size={30}
@@ -104,7 +106,9 @@ function BottomMenu({ call }: { call: CallData }) {
         )}
 
         <button className="relative">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl">
+          <div
+            className={`flex h-12 w-12 items-center justify-center rounded-xl ${showMenu && "bg-[#E8EBF9] dark:bg-[#202124]"}`}
+          >
             <Grip
               size={30}
               strokeWidth={1.25}
