@@ -12,7 +12,6 @@ function Call({
   myVideo,
   callType,
   endCall,
-  // setVideoAndAudio,
   videoAndAudio,
   toggleVideo,
   toggleAudio,
@@ -73,7 +72,6 @@ function Call({
             videoAndAudio={videoAndAudio}
             toggleVideo={toggleVideo}
             toggleAudio={toggleAudio}
-            // setVideoAndAudio={setVideoAndAudio}
             setIsMuted={setIsMuted}
           />
         )}
