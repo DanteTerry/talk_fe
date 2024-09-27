@@ -17,6 +17,8 @@ function Inputs({
   setEmojiPicker,
   socket,
   textRef,
+  callAccepted,
+  callEnded,
 }: {
   setEmojiPicker: Dispatch<SetStateAction<boolean>>;
   emojiPicker: boolean;
@@ -24,6 +26,8 @@ function Inputs({
   setSendMessage: Dispatch<SetStateAction<string>>;
   socket: Socket;
   textRef: React.RefObject<HTMLInputElement>;
+  callAccepted: boolean;
+  callEnded: boolean;
 }) {
   const dispatch = useDispatch<AppDispatch>();
   const { activeConversation, status } = useSelector(
@@ -97,7 +101,7 @@ function Inputs({
 
   return (
     <form
-      className="fixed bottom-0 row-span-1 flex w-full items-center justify-between gap-5 border-t-2 px-5 py-3 dark:border-gray-700 dark:bg-[#17181B] lg:w-8/12"
+      className={`fixed bottom-0 row-span-1 flex w-full items-center justify-between gap-5 border-t-2 px-5 py-3 dark:border-gray-700 dark:bg-[#17181B] lg:w-8/12 ${callAccepted && !callEnded && "hidden"}`}
       onSubmit={sendMessageHandler}
     >
       <div className="relative flex gap-4">

@@ -84,6 +84,8 @@ function Home({ socket }: { socket: Socket }) {
 
   const { language } = useSelector((state: RootState) => state.translate);
 
+  const { callEnded } = call;
+
   useEffect(() => {
     const value = {
       token: user.token,
@@ -554,6 +556,8 @@ function Home({ socket }: { socket: Socket }) {
                   emojiPicker={emojiPicker}
                   textRef={textRef}
                   setEmojiPicker={setEmojiPicker}
+                  callAccepted={callAccepted}
+                  callEnded={callEnded}
                 />
               </div>
             ) : (

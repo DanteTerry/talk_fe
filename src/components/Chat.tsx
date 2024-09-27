@@ -21,6 +21,8 @@ function Chat({
   setSendMessage,
   textRef,
   setEmojiPicker,
+  callEnded,
+  callAccepted,
 }: {
   callUser: (callType: "video" | "voice") => void;
   setCallType: Dispatch<SetStateAction<"video" | "voice" | "">>;
@@ -29,6 +31,8 @@ function Chat({
   setSendMessage: Dispatch<SetStateAction<string>>;
   setEmojiPicker: Dispatch<SetStateAction<boolean>>;
   textRef: React.RefObject<HTMLInputElement>;
+  callEnded: boolean;
+  callAccepted: boolean;
 }) {
   const endRef = useRef<HTMLDivElement>(null);
   const { activeConversation } = useSelector((state: RootState) => state.chat);
@@ -93,6 +97,8 @@ function Chat({
           setEmojiPicker={setEmojiPicker}
           emojiPicker={emojiPicker}
           textRef={textRef}
+          callAccepted={callAccepted}
+          callEnded={callEnded}
         />
       ) : null}
     </div>
