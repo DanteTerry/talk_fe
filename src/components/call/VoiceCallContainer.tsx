@@ -1,14 +1,6 @@
-import { RefObject, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { continuousVisualizer } from "sound-visualizer";
-import { createTimeModel, useTimeModel } from "react-compound-timer";
 import { CallData } from "../../types/types";
-
-// Create a timer model instance
-const timer = createTimeModel({
-  initialTime: 0,
-  timeToUpdate: 1000,
-  direction: "forward",
-});
 
 interface VoiceCallContainerProps {
   audioCallTo: { name: string; picture: string };
@@ -17,8 +9,8 @@ interface VoiceCallContainerProps {
   stream: MediaStream | undefined;
   isMuted: boolean;
   remoteUserAudio: boolean;
-  userVideo: RefObject<HTMLAudioElement>; // Change to HTMLAudioElement
-  myVideo: RefObject<HTMLAudioElement>; // Change to HTMLAudioElement
+  userVideo: React.RefObject<HTMLAudioElement>;
+  myVideo: React.RefObject<HTMLAudioElement>;
 }
 
 function VoiceCallContainer({
@@ -31,10 +23,49 @@ function VoiceCallContainer({
   userVideo,
   myVideo,
 }: VoiceCallContainerProps) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null); // Type the canvas ref
-  const myAudioRef = useRef<HTMLAudioElement | null>(null); // Type the audio ref
-  const userAudioRef = useRef<HTMLAudioElement | null>(null); // Type the audio ref
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const myAudioRef = useRef<HTMLAudioElement | null>(null);
+  const userAudioRef = useRef<HTMLAudioElement | null>(null);
 
+  const [timer, setTimer] = useState(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Start the timer when the call is accepted, stop/reset when call ends
+  useEffect(() => {
+    if (callAccepted) {
+      // Start the timer
+      timerRef.current = setInterval(() => {
+        setTimer((prevTimer) => prevTimer + 1);
+      }, 1000);
+    } else {
+      // Stop and reset the timer when the call is not accepted
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      setTimer(0);
+    }
+
+    // Cleanup on component unmount or call end
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [callAccepted]);
+
+  // Format the time in MM:SS
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+
+    return `${formattedMinutes}:${formattedSeconds}`;
+  };
+
+  // Visualizer effect
   useEffect(() => {
     let startVisualizer: (() => void) | undefined;
     let stopVisualizer: (() => void) | undefined;
@@ -60,36 +91,6 @@ function VoiceCallContainer({
       if (stopVisualizer) stopVisualizer();
     };
   }, [stream, callAccepted, isMuted, remoteUserAudio]);
-
-  console.log(callAccepted);
-
-  const useTimer = useTimeModel(timer);
-
-  useEffect(() => {
-    if (callAccepted) {
-      useTimer.start();
-    } else {
-      useTimer.stop();
-      useTimer.reset();
-    }
-
-    return () => {
-      useTimer.stop();
-      useTimer.reset();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [callAccepted]);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const formatTime = (time: any) => {
-    const minutes = time?.m ?? 0;
-    const seconds = time?.s ?? 0;
-
-    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-    const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
-
-    return `${formattedMinutes}:${formattedSeconds}`;
-  };
 
   // Attach the MediaStream to the audio elements for playback
   useEffect(() => {
@@ -124,9 +125,7 @@ function VoiceCallContainer({
           )}
 
           {callAccepted && (
-            <p className="text-xl leading-tight">
-              {formatTime(useTimer?.value)}
-            </p>
+            <p className="text-xl leading-tight">{formatTime(timer)}</p>
           )}
 
           <audio ref={myVideo} autoPlay muted={isMuted} />

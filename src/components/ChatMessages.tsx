@@ -91,9 +91,9 @@ function ChatMessages({ endRef }: { endRef: React.RefObject<HTMLDivElement> }) {
             {/* Add a unique key to the parent element */}
             {message?.files?.length > 0 &&
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              message?.files.map((file: any) => (
+              message?.files.map((file: any, index) => (
                 <FileMessage
-                  key={file.file.asset_id}
+                  key={index}
                   file={file}
                   message={message}
                   me={user._id === message.sender._id}
