@@ -1,9 +1,9 @@
+import { CallData } from "../../types/types";
 import CallAction from "./CallAction";
+import { Dispatch, RefObject, SetStateAction, useState } from "react";
 import VoiceCallContainer from "./VoiceCallContainer";
 import AudioRing from "../../../public/ringing.mp3";
 import { MicOff, VideoOff } from "lucide-react";
-import { Dispatch, RefObject, SetStateAction, useState } from "react";
-import { CallData } from "../../types/types";
 
 function Call({
   call,
@@ -11,6 +11,7 @@ function Call({
   userVideo,
   myVideo,
   callType,
+  stream,
   endCall,
   videoAndAudio,
   toggleVideo,
@@ -18,7 +19,6 @@ function Call({
   remoteUserVideo,
   remoteUserAudio,
   audioCallTo,
-  stream,
 }: {
   call: CallData;
   setCall: Dispatch<SetStateAction<CallData>>;
@@ -30,41 +30,36 @@ function Call({
   answerCall: () => void;
   endCall: () => void;
   setVideoAndAudio: Dispatch<
-    SetStateAction<{
-      video: boolean;
-      audio: boolean;
-    }>
+    SetStateAction<{ video: boolean; audio: boolean }>
   >;
   videoAndAudio: { video: boolean; audio: boolean };
   toggleVideo: () => void;
   toggleAudio: () => void;
-  remoteUserAudio: boolean;
   remoteUserVideo: boolean;
+  remoteUserAudio: boolean;
   audioCallTo: { name: string; picture: string };
 }) {
   const { callEnded } = call;
   const [isMuted, setIsMuted] = useState(false);
 
   return (
-    <div
-      className={`absolute left-1/2 top-1/2 z-50 col-span-9 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-slate-800`}
-    >
-      <div className="relative flex h-full w-full flex-col justify-between">
-        {/* container */}
+    <div className="absolute left-1/2 top-1/2 z-50 col-span-9 h-full w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
+      <div className="relative flex h-full w-full flex-col justify-between p-4">
+        {/* Container */}
         {callType === "voice" && (
           <VoiceCallContainer
-            audioCallTo={audioCallTo}
             call={call}
             callAccepted={callAccepted}
             stream={stream}
-            remoteUserAudio={remoteUserAudio}
+            audioCallTo={audioCallTo}
             isMuted={isMuted}
-            myVideo={myVideo}
+            remoteUserAudio={remoteUserAudio}
             userVideo={userVideo}
+            myVideo={myVideo}
           />
         )}
 
-        {/* actions */}
+        {/* Actions */}
         {(callType === "video" || callType === "voice") && (
           <CallAction
             callType={callType}
@@ -76,18 +71,15 @@ function Call({
           />
         )}
 
-        {/* video streams */}
-
+        {/* Video Streams */}
         {callType === "video" && (
-          <div className="absolute flex h-[90vh] w-full items-center justify-center bg-slate-800">
-            {/* user video */}
-            <div
-              className={`relative h-[91%] w-[98%] overflow-hidden rounded-xl bg-black`}
-            >
-              {callAccepted && !callEnded && remoteUserVideo && (
+          <div className="relative flex h-[90vh] w-full items-center justify-center overflow-hidden rounded-lg bg-slate-800">
+            {/* User Video */}
+            <div className="relative flex h-full w-full rounded-lg bg-black">
+              {callAccepted && !callEnded && (
                 <video
                   ref={userVideo}
-                  className="w-full"
+                  className="absolute inset-0 h-full w-full rounded-lg object-cover"
                   playsInline
                   autoPlay
                 />
@@ -100,32 +92,28 @@ function Call({
               )}
 
               {!remoteUserVideo && (
-                <div className="absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center gap-2 bg-black">
+                <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-black opacity-75">
                   <VideoOff size={25} color="gray" />
-                  <p className="text-xs font-semibold text-gray-500">
+                  <p className="text-xs font-semibold text-gray-400">
                     User camera is turned off
                   </p>
                 </div>
               )}
-
-              {/* remote user video */}
-
-              {/* my video */}
             </div>
-            <div className="absolute bottom-14 right-10 flex h-36 w-[230px] items-center justify-center overflow-hidden rounded-xl text-white shadow-md">
-              {videoAndAudio.video && (
+
+            {/* My Video */}
+            <div className="absolute bottom-14 right-10 flex h-36 w-[230px] items-center justify-center overflow-hidden rounded-lg shadow-md">
+              {videoAndAudio.video ? (
                 <video
                   ref={myVideo}
-                  className="z-50 w-full"
+                  className="w-full rounded-lg"
                   playsInline
                   autoPlay
                 />
-              )}
-
-              {!videoAndAudio.video && (
-                <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-black">
+              ) : (
+                <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-lg bg-black">
                   <VideoOff size={25} color="gray" />
-                  <p className="text-xs font-semibold text-gray-500">
+                  <p className="text-xs font-semibold text-gray-400">
                     Your camera is turned off
                   </p>
                 </div>
@@ -133,13 +121,12 @@ function Call({
 
               {isMuted && (
                 <div className="absolute bottom-3 right-3 z-50">
-                  <MicOff size={25} />
+                  <MicOff size={25} color="white" />
                 </div>
               )}
             </div>
-            {!callAccepted && !callEnded && (
-              <audio src={AudioRing} autoPlay loop></audio>
-            )}
+
+            {!callAccepted && <audio src={AudioRing} autoPlay loop />}
           </div>
         )}
       </div>

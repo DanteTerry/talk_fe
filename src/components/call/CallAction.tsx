@@ -7,8 +7,6 @@ import { RootState } from "../../app/store";
 function CallAction({
   callType,
   endCall,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // setVideoAndAudio,
   videoAndAudio,
   toggleVideo,
   toggleAudio,
@@ -16,12 +14,6 @@ function CallAction({
 }: {
   callType: "video" | "voice" | null;
   endCall: () => void;
-  // setVideoAndAudio: Dispatch<
-  //   SetStateAction<{
-  //     video: boolean;
-  //     audio: boolean;
-  //   }>
-  // >;
   videoAndAudio: { video: boolean; audio: boolean };
   toggleVideo: () => void;
   toggleAudio: () => void;
@@ -31,42 +23,45 @@ function CallAction({
 
   return (
     <div
-      className={`fixed z-50 flex w-full justify-center ${activeConversation?._id ? "bottom-0" : "bottom-0"}`}
+      className={`fixed z-50 flex w-full justify-center ${
+        activeConversation?._id ? "bottom-0" : "bottom-0"
+      }`}
     >
       <div
-        className={`flex w-full justify-center gap-3 rounded-t-3xl px-3 py-4 ${callType === "video" ? "bg-gray-900" : "bg-transparent"} text-white`}
+        className={`flex w-full max-w-md justify-center gap-4 rounded-t-2xl px-4 py-3 ${
+          callType === "video" ? "bg-gray-900" : "bg-transparent"
+        } text-white shadow-lg`}
       >
-        {/* add user button */}
-
-        {/* video button */}
-
+        {/* Video button */}
         {callType === "video" && (
           <button
-            className="grid h-12 w-12 place-items-center rounded-full bg-slate-800 p-1"
+            className="grid h-14 w-14 place-items-center rounded-full bg-slate-700 transition duration-300 ease-in-out hover:bg-slate-600"
             onClick={toggleVideo}
+            aria-label="Toggle Video"
           >
-            {videoAndAudio.video ? <Video size={25} /> : <VideoOff size={25} />}
+            {videoAndAudio.video ? <Video size={28} /> : <VideoOff size={28} />}
           </button>
         )}
 
-        {/* microphone button */}
-
+        {/* Microphone button */}
         <button
-          className="grid h-12 w-12 place-items-center rounded-full bg-slate-800 p-1"
+          className="grid h-14 w-14 place-items-center rounded-full bg-slate-700 transition duration-300 ease-in-out hover:bg-slate-600"
           onClick={() => {
             toggleAudio();
             setIsMuted((prev) => !prev);
           }}
+          aria-label="Toggle Audio"
         >
-          {videoAndAudio.audio ? <Mic size={25} /> : <MicOff size={25} />}
+          {videoAndAudio.audio ? <Mic size={28} /> : <MicOff size={28} />}
         </button>
 
-        {/* end call button */}
+        {/* End call button */}
         <button
-          className="grid place-items-center rounded-full bg-red-700 px-7 py-1"
+          className="grid h-14 w-14 place-items-center rounded-full bg-red-600 transition duration-300 ease-in-out hover:bg-red-500"
           onClick={endCall}
+          aria-label="End Call"
         >
-          <MdCallEnd size={25} />
+          <MdCallEnd size={28} />
         </button>
       </div>
     </div>
