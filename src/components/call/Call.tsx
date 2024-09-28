@@ -44,7 +44,7 @@ function Call({
 
   return (
     <div className="absolute left-1/2 top-1/2 z-50 col-span-9 h-full w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
-      <div className="relative flex h-full w-full flex-col justify-between md:p-4">
+      <div className="relative flex h-full w-full flex-col justify-between p-4">
         {/* Container */}
         {callType === "voice" && (
           <VoiceCallContainer
@@ -102,7 +102,7 @@ function Call({
             </div>
 
             {/* My Video */}
-            <div className="absolute bottom-8 right-5 flex h-24 w-[100px] items-center justify-center overflow-hidden rounded-lg md:bottom-14 md:right-10 md:h-36 md:w-[250px]">
+            <div className="absolute bottom-14 right-10 flex h-36 w-[230px] items-center justify-center overflow-hidden rounded-lg shadow-md">
               {videoAndAudio.video ? (
                 <video
                   ref={myVideo}
@@ -113,7 +113,7 @@ function Call({
               ) : (
                 <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-lg bg-black">
                   <VideoOff size={25} color="gray" />
-                  <p className="hidden text-xs font-semibold text-gray-400 md:flex">
+                  <p className="text-xs font-semibold text-gray-400">
                     Your camera is turned off
                   </p>
                 </div>
