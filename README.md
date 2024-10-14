@@ -1,12 +1,13 @@
 <div align="center">
-  <img width="100%" height="auto" src="https://github.com/DanteTerry/bitway/assets/112513589/19602cce-4147-4c8d-9c1f-42d4bc70d6ef"  />
+  <img width="100%" height="auto" src="https://private-user-images.githubusercontent.com/112513589/376260774-93355086-0b52-48e6-9f0e-f1af6fda97f7.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjg5MTMwNzksIm5iZiI6MTcyODkxMjc3OSwicGF0aCI6Ii8xMTI1MTM1ODkvMzc2MjYwNzc0LTkzMzU1MDg2LTBiNTItNDhlNi05ZjBlLWYxYWY2ZmRhOTdmNy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQxMDE0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MTAxNFQxMzMyNTlaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0yMDE2NDQ1N2U0Yzg1MjFlMjUwYjFjYzAxMTNiOWZjODg0MTcyZDFjMjBhNGIwYWQ4MWJmYWVkN2U1OWE4MTJkJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.Q8UQSVOUyCRFXw6dJtfnI_jDxIpE6cXDqzZcxZnRmyw"  />
 </div>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/-Next_JS-black?style=for-the-badge&logoColor=white&logo=nextdotjs&color=000000" alt="nextdotjs" />
    <img src="https://img.shields.io/badge/-React_JS-black?style=for-the-badge&logoColor=white&logo=react&color=61DAFB" alt="react.js" />
   <img src="https://img.shields.io/badge/-MongoDB-black?style=for-the-badge&logoColor=white&logo=mongodb&color=47A248" alt="mongodb" />
   <img src="https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=06B6D4" alt="tailwindcss" />
+<img src="https://img.shields.io/badge/-Express_JS-black?style=for-the-badge&logoColor=white&logo=express&color=000000" alt="express.js" />
+<img src="https://img.shields.io/badge/-Socket.IO-black?style=for-the-badge&logoColor=white&logo=socket.io&color=010101" alt="socket.io" />
 </div>
 
 ###
