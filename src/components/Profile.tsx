@@ -3,6 +3,11 @@ import { logout } from "../features/userSlice";
 import { useSelector } from "react-redux";
 import { LogOut, Pencil } from "lucide-react";
 import { RootState } from "../app/store";
+import {
+  removeConversation,
+  removeMessages,
+  setActiveConversation,
+} from "../features/chatSlice";
 
 function Profile() {
   const dispatch = useDispatch();
@@ -41,7 +46,12 @@ function Profile() {
             </button>
             <button
               className="rounded-md bg-green-500 px-2 py-1 text-xl text-green-500 dark:text-white"
-              onClick={() => dispatch(logout())}
+              onClick={() => {
+                dispatch(removeMessages([]));
+                dispatch(removeConversation([]));
+                dispatch(setActiveConversation(null));
+                dispatch(logout());
+              }}
             >
               <LogOut color="white" />
             </button>

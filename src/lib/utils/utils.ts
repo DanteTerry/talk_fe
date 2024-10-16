@@ -36,7 +36,7 @@ export const dateHandler = (date: string) => {
 // write another utility function like dateHandler in which only time is shown for all scenarios
 export const timeHandler = (date: string) => {
   const momentDate = moment(date);
-  return momentDate.format("HH:MM");
+  return momentDate.format("HH:mm");
 };
 
 //  get conversation name

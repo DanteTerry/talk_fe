@@ -109,7 +109,7 @@ export const createGroupConversation = createAsyncThunk<
 
 // Function to get messages of a conversation
 export const getConversationMessages = createAsyncThunk<
-  Message[], // Return type
+  Message[],
   { token: string; conversation_id: string; lang: string; page: number },
   { rejectValue: string }
 >(
@@ -180,6 +180,12 @@ export const chatSlice = createSlice({
     ) => {
       state.activeConversation = action.payload;
       state.files = [];
+    },
+    removeMessages: (state, action: PayloadAction<Message[]>) => {
+      state.messages = action.payload;
+    },
+    removeConversation: (state, action: PayloadAction<Conversation[]>) => {
+      state.conversations = action.payload;
     },
     updateMessagesAndConversation: (state, action: PayloadAction<Message>) => {
       // Update messages if the conversation matches
@@ -297,6 +303,8 @@ export const {
   setMessages,
   emptyMessages,
   setHasNext,
+  removeMessages,
+  removeConversation,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

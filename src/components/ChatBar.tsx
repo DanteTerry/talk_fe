@@ -44,7 +44,7 @@ function ChatBar({
     flag: string;
   }) => {
     dispatch(setMessages([]));
-    dispatch(setLanguage(option.code));
+    dispatch(setLanguage(option.code)); // Set currently selected language
 
     const values = {
       token: user.token,
@@ -52,8 +52,6 @@ function ChatBar({
       lang: option.code,
       page,
     };
-
-    setShowTranslate(false);
 
     if (activeConversation?._id) {
       dispatch(setPage(1));
@@ -71,6 +69,7 @@ function ChatBar({
 
     dispatch(setPage(1));
     dispatch(setHasNext(false));
+    setShowTranslate(false);
   };
 
   return (
@@ -163,7 +162,7 @@ function ChatBar({
 
         {/* Dropdown menu for language selection */}
         {showTranslate && (
-          <div className="absolute right-10 top-12 z-50 w-[150px] rounded-md bg-white p-2 shadow-md dark:bg-slate-700">
+          <div className="absolute right-2 top-12 z-50 w-[150px] rounded-md bg-white p-2 shadow-md dark:bg-slate-700">
             {options.map((option) => (
               <li
                 key={option.code}
