@@ -1,11 +1,11 @@
 import { Outlet } from "react-router-dom";
 import SideMenu from "../components/SideMenu";
 import Chat from "../components/Chat";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import HomeInfo from "../components/HomeInfo";
 import SocketContext from "../context/SocketContext";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+// Removed duplicate import of useDispatch
 import { updateMessagesAndConversation } from "../features/chatSlice";
 import { setOnlineUsers } from "../features/onlineUserSlice";
 import { setTyping } from "../features/typingSlice";
@@ -102,8 +102,8 @@ function Home({ socket }: { socket: Socket }) {
   useEffect(() => {
     socket.emit("join", user._id);
     // Listen for online users
-    socket.on("get-online-users", async (users) => {
-      await dispatch(setOnlineUsers(users));
+    socket.on("get-online-users", (users) => {
+      dispatch(setOnlineUsers(users));
     });
   }, [dispatch, user._id, socket]);
 
@@ -200,12 +200,12 @@ function Home({ socket }: { socket: Socket }) {
 
     socket.on("call accepted", (signal) => {
       setCallAccepted(true);
-      setCall({
-        ...call,
+      setCall((prevCall) => ({
+        ...prevCall,
         receivingCall: false,
         callEnded: false,
         usersInCall: signal.usersInCall,
-      });
+      }));
 
       setAudioCallTo({
         name: signal.userName,
@@ -219,6 +219,21 @@ function Home({ socket }: { socket: Socket }) {
 
     peer.on("close", () => {
       socket.off("call accepted");
+      setCallAccepted(false);
+      setCallType("");
+      setCall((prevCall) => ({
+        ...prevCall,
+        callEnded: true,
+        receivingCall: false,
+        usersInCall: [],
+      }));
+      setVideoAndAudio({
+        video: true,
+        audio: true,
+      });
+      if (myVideo.current) {
+        myVideo.current.srcObject = null;
+      }
     });
   };
 
@@ -226,7 +241,7 @@ function Home({ socket }: { socket: Socket }) {
 
   // Toggle video
   const toggleVideo = () => {
-    if (stream) {
+    if (stream && socketId) {
       stream.getVideoTracks().forEach((track) => {
         track.enabled = !track.enabled;
       });
@@ -265,36 +280,27 @@ function Home({ socket }: { socket: Socket }) {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     socket.on("toggle-video", ({ enabled }: ToggleVideoPayload) => {
+      setRemoteUserVideo(enabled);
       if (userVideo.current) {
         const mediaStream = userVideo.current.srcObject as MediaStream | null;
-
         if (mediaStream) {
           mediaStream.getVideoTracks().forEach((track) => {
             track.enabled = enabled;
           });
-
-          if (enabled && stream) {
-            userVideo.current.srcObject = stream;
-          }
         }
       }
-
-      setRemoteUserVideo(enabled);
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     socket.on("toggle-audio", ({ enabled }: ToggleAudioPayload) => {
+      setRemoteUserAudio(enabled);
       if (userVideo.current) {
         const mediaStream = userVideo.current.srcObject as MediaStream | null;
-
         if (mediaStream) {
-          mediaStream
-            .getAudioTracks()
-            .forEach((track) => (track.enabled = enabled));
+          mediaStream.getAudioTracks().forEach((track) => {
+            track.enabled = enabled;
+          });
         }
       }
-
-      setRemoteUserAudio(enabled);
     });
 
     return () => {
@@ -308,12 +314,12 @@ function Home({ socket }: { socket: Socket }) {
     enableMedia();
 
     setCallAccepted(true);
-    setCall({
-      ...call,
+    setCall((prevCall) => ({
+      ...prevCall,
       receivingCall: false,
       callEnded: false,
-      usersInCall: call.usersInCall,
-    });
+      usersInCall: prevCall.usersInCall,
+    }));
 
     const peer = new Peer({
       initiator: false,
@@ -377,12 +383,12 @@ function Home({ socket }: { socket: Socket }) {
     setUpMedia();
 
     socket.on("setup socket", (id) => {
-      setCall({ ...call, socketId: id });
+      setCall((prevCall) => ({ ...prevCall, socketId: id }));
     });
 
     socket.on("call user", (data) => {
-      setCall({
-        ...call,
+      setCall((prevCall) => ({
+        ...prevCall,
         callEnded: false,
         socketId: data.from,
         name: data.name,
@@ -390,7 +396,7 @@ function Home({ socket }: { socket: Socket }) {
         receivingCall: true,
         signal: data.signal,
         usersInCall: data.usersInCall,
-      });
+      }));
 
       setAudioCallTo({
         name: data.to,

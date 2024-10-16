@@ -103,33 +103,35 @@ function VoiceCallContainer({
   }, [stream]);
 
   return (
-    <div className="callBackground flex h-[100vh] w-full items-center justify-center">
-      <div className="flex w-full flex-col items-center justify-center gap-4">
-        <div className="h-48 w-48 overflow-hidden rounded-full">
+    <div className="callBackground flex h-screen w-full items-center justify-center bg-gradient-to-r from-green-400 to-blue-500">
+      <div className="flex w-full max-w-lg flex-col items-center justify-center gap-6 rounded-lg shadow-2xl">
+        <div className="h-40 w-40 overflow-hidden rounded-full border-4 border-green-500 shadow-md">
           <img
             src={call.picture || audioCallTo.picture}
-            className="h-full w-full"
+            className="h-full w-full object-cover"
             alt="Call"
           />
         </div>
         <div className="flex flex-col items-center text-white">
-          <p className="text-3xl capitalize leading-tight">
+          <p className="text-2xl font-bold capitalize leading-tight">
             {call.name || audioCallTo.name}
           </p>
-          {!callAccepted && <p className="text-xl leading-tight">Ringing</p>}
-          {callAccepted && (
-            <canvas
-              ref={canvasRef}
-              className="h-16 w-32 leading-tight"
-            ></canvas>
+          {!callAccepted && (
+            <p className="text-lg leading-tight text-white">Ringing...</p>
           )}
-
           {callAccepted && (
-            <p className="text-xl leading-tight">{formatTime(timer)}</p>
+            <>
+              <canvas ref={canvasRef} className="mt-4 h-20 w-40"></canvas>
+              <p className="mt-2 text-lg leading-tight">{formatTime(timer)}</p>
+            </>
           )}
-
-          <audio ref={myVideo} autoPlay muted={isMuted} />
-          <audio ref={userVideo} autoPlay muted={!remoteUserAudio} />
+          <audio ref={myVideo} autoPlay muted={isMuted} className="hidden" />
+          <audio
+            ref={userVideo}
+            autoPlay
+            muted={!remoteUserAudio}
+            className="hidden"
+          />
         </div>
       </div>
     </div>

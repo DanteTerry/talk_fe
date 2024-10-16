@@ -30,7 +30,7 @@ function CallAction({
       <div
         className={`flex w-full max-w-md justify-center gap-4 rounded-t-2xl px-4 py-3 ${
           callType === "video" ? "bg-gray-900" : "bg-transparent"
-        } text-white shadow-lg`}
+        } text-white shadow-lg md:max-w-lg lg:max-w-xl`}
       >
         {/* Video button */}
         {callType === "video" && (

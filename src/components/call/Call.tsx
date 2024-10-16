@@ -43,8 +43,10 @@ function Call({
   const [isMuted, setIsMuted] = useState(false);
 
   return (
-    <div className="absolute left-1/2 top-1/2 z-50 col-span-9 h-full w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
-      <div className="relative flex h-full w-full flex-col justify-between p-4">
+    <div className="absolute inset-0 z-50 flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
+      <div
+        className={`relative flex h-full w-full flex-col justify-between ${callType === "video" ? "p-4" : "p-0"}`}
+      >
         {/* Container */}
         {callType === "voice" && (
           <VoiceCallContainer
