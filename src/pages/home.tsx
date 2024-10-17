@@ -146,6 +146,7 @@ function Home({ socket }: { socket: Socket }) {
         setStream(stream);
         if (myVideo.current) {
           myVideo.current.srcObject = stream; // Set video stream to myVideo element
+          myVideo.current.muted = true; // Mute the local video to avoid hearing own voice
         }
       });
   };
@@ -154,6 +155,7 @@ function Home({ socket }: { socket: Socket }) {
   const enableMedia = () => {
     if (myVideo.current && stream) {
       myVideo.current.srcObject = stream; // Set video stream to myVideo element
+      myVideo.current.muted = true; // Mute the local video to avoid hearing own voice
     }
   };
 

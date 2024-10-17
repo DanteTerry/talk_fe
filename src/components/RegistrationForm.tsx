@@ -114,7 +114,7 @@ function RegistrationForm() {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-3">
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             {/* First Name input */}
             <div className="flex flex-col">
               <input

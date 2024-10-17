@@ -23,7 +23,7 @@ function CallAction({
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 flex w-full justify-center ${
+      className={`fixed bottom-0 left-0 right-0 z-50 flex w-full justify-center bg-[#111827] ${
         activeConversation?._id ? "bottom-0" : "bottom-0"
       }`}
     >
