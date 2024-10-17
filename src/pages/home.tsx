@@ -50,6 +50,7 @@ function Home({ socket }: { socket: Socket }) {
 
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [sendMessage, setSendMessage] = useState("");
+  const endRef = useRef<HTMLDivElement>(null);
 
   const { activeConversation } = useSelector((state: RootState) => state.chat);
   const { activeFriend } = useSelector((state: RootState) => state.friends);
@@ -577,6 +578,7 @@ function Home({ socket }: { socket: Socket }) {
                   setEmojiPicker={setEmojiPicker}
                   callAccepted={callAccepted}
                   callEnded={callEnded}
+                  endRef={endRef}
                 />
               </div>
             ) : (

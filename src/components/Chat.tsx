@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import ChatBar from "./ChatBar";
 import ChatMessages from "./ChatMessages";
-import { Dispatch, SetStateAction, useRef } from "react";
+import { Dispatch, SetStateAction } from "react";
 import EmojiPicker, {
   EmojiClickData,
   EmojiStyle,
@@ -23,6 +23,7 @@ function Chat({
   setEmojiPicker,
   callEnded,
   callAccepted,
+  endRef,
 }: {
   callUser: (callType: "video" | "voice") => void;
   setCallType: Dispatch<SetStateAction<"video" | "voice" | "">>;
@@ -31,10 +32,10 @@ function Chat({
   setSendMessage: Dispatch<SetStateAction<string>>;
   setEmojiPicker: Dispatch<SetStateAction<boolean>>;
   textRef: React.RefObject<HTMLInputElement>;
+  endRef: React.RefObject<HTMLDivElement>;
   callEnded: boolean;
   callAccepted: boolean;
 }) {
-  const endRef = useRef<HTMLDivElement>(null);
   const { activeConversation } = useSelector((state: RootState) => state.chat);
   const onlineUsers = useSelector((state: RootState) => state.onlineUsers);
   const { user } = useSelector((state: RootState) => state.user);
@@ -99,6 +100,7 @@ function Chat({
           textRef={textRef}
           callAccepted={callAccepted}
           callEnded={callEnded}
+          endRef={endRef}
         />
       ) : null}
     </div>

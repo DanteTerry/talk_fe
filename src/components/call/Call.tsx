@@ -45,7 +45,7 @@ function Call({
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
       <div
-        className={`relative flex h-full w-full flex-col justify-between ${callType === "video" ? "p-4" : "p-0"}`}
+        className={`relative flex h-full w-full flex-col justify-between ${callType === "video" ? "md:p-4" : "p-0"}`}
       >
         {/* Container */}
         {callType === "voice" && (
@@ -104,18 +104,18 @@ function Call({
             </div>
 
             {/* My Video */}
-            <div className="absolute bottom-14 right-10 flex h-36 w-[230px] items-center justify-center overflow-hidden rounded-lg shadow-md">
+            <div className="absolute bottom-4 right-4 flex h-36 w-24 items-center justify-center overflow-hidden rounded-lg shadow-md md:bottom-14 md:right-10 md:h-36 md:w-[230px]">
               {videoAndAudio.video ? (
                 <video
                   ref={myVideo}
-                  className="w-full rounded-lg"
+                  className="h-full w-full rounded-lg object-cover"
                   playsInline
                   autoPlay
                 />
               ) : (
                 <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-lg bg-black">
                   <VideoOff size={25} color="gray" />
-                  <p className="text-xs font-semibold text-gray-400">
+                  <p className="hidden text-xs font-semibold text-gray-400 md:flex">
                     Your camera is turned off
                   </p>
                 </div>

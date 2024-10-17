@@ -19,6 +19,7 @@ function Inputs({
   textRef,
   callAccepted,
   callEnded,
+  endRef,
 }: {
   setEmojiPicker: Dispatch<SetStateAction<boolean>>;
   emojiPicker: boolean;
@@ -28,6 +29,7 @@ function Inputs({
   textRef: React.RefObject<HTMLInputElement>;
   callAccepted: boolean;
   callEnded: boolean;
+  endRef: React.RefObject<HTMLDivElement>;
 }) {
   const dispatch = useDispatch<AppDispatch>();
   const { activeConversation, status } = useSelector(
@@ -69,6 +71,7 @@ function Inputs({
     setEmojiPicker(false);
     setSendMessage("");
     setLoading(false);
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   };
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
