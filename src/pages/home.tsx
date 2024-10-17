@@ -107,9 +107,9 @@ function Home({ socket }: { socket: Socket }) {
     });
   }, [dispatch, user._id, socket]);
 
-  // Listen for new messages and typing events
+  // Listen for new messages
   useEffect(() => {
-    socket.on("receive message", async (message) => {
+    const handleMessage = async (message: string) => {
       const data = {
         message,
         lang: language,
@@ -117,12 +117,25 @@ function Home({ socket }: { socket: Socket }) {
       const translatedMessage = await translateMessage(data, user.token);
       data.lang = "";
       dispatch(updateMessagesAndConversation(translatedMessage));
-    });
+    };
 
+    socket.on("receive message", handleMessage);
+
+    return () => {
+      socket.off("receive message", handleMessage);
+    };
+  }, [socket, language, user.token, dispatch]);
+
+  // Listen for typing events
+  useEffect(() => {
     socket.on("typing", () => dispatch(setTyping(true)));
-
     socket.on("stop typing", () => dispatch(setTyping(false)));
-  }, [dispatch, socket, language, user.token]);
+
+    return () => {
+      socket.off("typing");
+      socket.off("stop typing");
+    };
+  }, [dispatch, socket]);
 
   // Set up media devices (video and audio)
   const setUpMedia = () => {

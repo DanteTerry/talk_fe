@@ -2,7 +2,7 @@ import { Languages, MoveLeft, Phone, Video } from "lucide-react";
 import { Conversation, UserDataForUtil } from "../types/types";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { options } from "../constants/constants";
 import { setLanguage } from "../features/translateSlice";
 import { setPage } from "../features/pageSlice";
@@ -35,7 +35,25 @@ function ChatBar({
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const [showTranslate, setShowTranslate] = useState(false);
+  const translateRef = useRef<HTMLDivElement>(null);
   const { page } = useSelector((state: RootState) => state.page);
+  const { language } = useSelector((state: RootState) => state.translate);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        translateRef.current &&
+        !translateRef.current.contains(event.target as Node)
+      ) {
+        setShowTranslate(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [translateRef]);
 
   // Handle translation by setting new language, resetting messages, and fetching new ones
   const handleTranslate = async (option: {
@@ -43,33 +61,35 @@ function ChatBar({
     code: string;
     flag: string;
   }) => {
-    dispatch(setMessages([]));
-    dispatch(setLanguage(option.code)); // Set currently selected language
+    if (activeConversation && user.token) {
+      dispatch(setMessages([]));
+      if (option.code !== language) {
+        // Prevent unnecessary re-render
+        dispatch(setLanguage(option.code)); // Set currently selected language
+        const values = {
+          token: user.token,
+          conversation_id: activeConversation?._id,
+          lang: option.code,
+          page,
+        };
 
-    const values = {
-      token: user.token,
-      conversation_id: activeConversation?._id,
-      lang: option.code,
-      page,
-    };
-
-    if (activeConversation?._id) {
-      dispatch(setPage(1));
-      dispatch(
-        getConversationMessages(
-          values as {
-            token: string;
-            conversation_id: string;
-            lang: string;
-            page: number;
-          },
-        ),
-      );
+        if (activeConversation?._id) {
+          dispatch(setPage(1));
+          dispatch(
+            getConversationMessages(
+              values as {
+                token: string;
+                conversation_id: string;
+                lang: string;
+                page: number;
+              },
+            ),
+          );
+        }
+        dispatch(setHasNext(false));
+      }
+      setShowTranslate(false);
     }
-
-    dispatch(setPage(1));
-    dispatch(setHasNext(false));
-    setShowTranslate(false);
   };
 
   return (
@@ -80,7 +100,7 @@ function ChatBar({
           onClick={() => {
             dispatch(setActiveConversation(null));
             navigate("/messages");
-            setPage(1);
+            dispatch(setPage(1));
             dispatch(setHasNext(false));
           }}
         >
@@ -119,7 +139,6 @@ function ChatBar({
 
       {/* Right section: Call buttons, translate, and info */}
       <div className="relative flex items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10">
-        {/* If user is online and not in a group chat, show call buttons */}
         {!activeConversation?.isGroup && online && (
           <div className="flex items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10">
             <button
@@ -149,7 +168,6 @@ function ChatBar({
           </div>
         )}
 
-        {/* Translate and Info buttons */}
         <div className="relative flex items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10">
           <button onClick={() => setShowTranslate((prev) => !prev)}>
             <Languages
@@ -160,19 +178,23 @@ function ChatBar({
           </button>
         </div>
 
-        {/* Dropdown menu for language selection */}
         {showTranslate && (
-          <div className="absolute right-2 top-12 z-50 w-[150px] rounded-md bg-white p-2 shadow-md dark:bg-slate-700">
-            {options.map((option) => (
-              <li
-                key={option.code}
-                className="flex cursor-pointer list-none items-center justify-between rounded-md px-2 py-1 text-sm capitalize text-black hover:bg-gray-200 dark:text-white dark:hover:bg-slate-600"
-                onClick={() => handleTranslate(option)}
-              >
-                <img src={option.flag} className="h-5" alt="language flag" />
-                {option.name}
-              </li>
-            ))}
+          <div
+            ref={translateRef}
+            className="absolute right-2 top-12 z-50 w-[150px] rounded-md bg-white p-2 shadow-md dark:bg-slate-700"
+          >
+            <ul>
+              {options.map((option) => (
+                <li
+                  key={option.code}
+                  className={`flex cursor-pointer list-none items-center justify-between rounded-md px-2 py-1 text-sm capitalize text-black hover:bg-gray-200 dark:text-white dark:hover:bg-slate-600 ${option.code === language ? "bg-gray-200 dark:bg-slate-600" : ""}`}
+                  onClick={() => handleTranslate(option)}
+                >
+                  <img src={option.flag} className="h-5" alt="language flag" />
+                  {option.name}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>
