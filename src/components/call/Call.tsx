@@ -2,9 +2,8 @@ import { CallData } from "../../types/types";
 import CallAction from "./CallAction";
 import { Dispatch, RefObject, SetStateAction, useState } from "react";
 import VoiceCallContainer from "./VoiceCallContainer";
-import AudioRing from "../../../public/ringing.mp3";
+import AudioRing from "/ringing.mp3";
 import { MicOff, VideoOff } from "lucide-react";
-import RealTimeTranslation from "../RealTimeTranslation";
 
 function Call({
   call,
@@ -74,6 +73,7 @@ function Call({
             toggleVideo={toggleVideo}
             toggleAudio={toggleAudio}
             setIsMuted={setIsMuted}
+            remoteAudioStream={remoteAudioStream}
           />
         )}
 
@@ -105,10 +105,6 @@ function Call({
                   </p>
                 </div>
               )}
-
-              <div className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-lg bg-black opacity-75">
-                <RealTimeTranslation audioStream={remoteAudioStream} />
-              </div>
             </div>
 
             {/* My Video */}

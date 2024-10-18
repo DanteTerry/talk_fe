@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction } from "react";
 import { MdCallEnd } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
+import RealTimeTranslation from "../RealTimeTranslation";
 
 function CallAction({
   callType,
@@ -11,6 +12,7 @@ function CallAction({
   toggleVideo,
   toggleAudio,
   setIsMuted,
+  remoteAudioStream,
 }: {
   callType: "video" | "voice" | null;
   endCall: () => void;
@@ -18,6 +20,7 @@ function CallAction({
   toggleVideo: () => void;
   toggleAudio: () => void;
   setIsMuted: Dispatch<SetStateAction<boolean>>;
+  remoteAudioStream: MediaStream | undefined;
 }) {
   const { activeConversation } = useSelector((state: RootState) => state.chat);
 
@@ -28,7 +31,7 @@ function CallAction({
       }`}
     >
       <div
-        className={`flex w-full max-w-md justify-center gap-4 rounded-t-2xl px-4 py-3 ${
+        className={`relative flex w-full max-w-md justify-center gap-4 rounded-t-2xl px-4 py-3 ${
           callType === "video" ? "bg-gray-900" : "bg-transparent"
         } text-white shadow-lg md:max-w-lg lg:max-w-xl`}
       >
@@ -63,6 +66,9 @@ function CallAction({
         >
           <MdCallEnd size={28} />
         </button>
+        <div className="absolute -top-10 w-full text-white">
+          <RealTimeTranslation audioStream={remoteAudioStream} />
+        </div>
       </div>
     </div>
   );

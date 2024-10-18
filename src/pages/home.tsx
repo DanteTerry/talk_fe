@@ -366,6 +366,12 @@ function Home({ socket }: { socket: Socket }) {
       if (userVideo.current) {
         userVideo.current.srcObject = stream; // Set received stream to userVideo element
       }
+
+      const audioTracks = stream.getAudioTracks();
+      if (audioTracks.length > 0) {
+        const remoteAudioStream = new MediaStream([audioTracks[0]]); // Get the audio stream
+        setRemoteAudioStream(remoteAudioStream);
+      }
     });
 
     peer.signal(call.signal); // Signal the peer with the received signal
@@ -383,6 +389,20 @@ function Home({ socket }: { socket: Socket }) {
 
     if (myVideo.current) {
       myVideo.current.srcObject = null; // Clear my video stream
+    }
+
+    if (userVideo.current) {
+      userVideo.current.srcObject = null; // Clear the remote video stream
+    }
+
+    if (remoteAudioStream) {
+      remoteAudioStream.getTracks().forEach((track) => track.stop()); // Stop all tracks of the remote audio stream
+      setRemoteAudioStream(undefined);
+    }
+
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop()); // Stop all tracks of the local stream
+      setStream(undefined);
     }
 
     socket.emit("end call", {

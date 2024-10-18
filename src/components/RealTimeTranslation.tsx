@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import * as SpeechSDK from "microsoft-cognitiveservices-speech-sdk";
-import { debounce } from "lodash";
 
 const RealTimeTranslation = ({
   audioStream,
@@ -17,18 +16,10 @@ const RealTimeTranslation = ({
       import.meta.env.VITE_APP_AZURE_SPEECH_KEY as string,
       import.meta.env.VITE_APP_AZURE_SPEECH_REGION as string,
     );
-    config.speechRecognitionLanguage = "en-US";
-    config.addTargetLanguage(targetLanguage);
+    config.speechRecognitionLanguage = "en-US"; // Source language
+    config.addTargetLanguage(targetLanguage); // Translation target
     return config;
   }, [targetLanguage]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedSetTranslatedText = useCallback(
-    debounce((text: string) => {
-      setTranslatedText(text);
-    }, 300),
-    [],
-  );
 
   const startListening = useCallback(() => {
     if (!audioStream) {
@@ -36,7 +27,10 @@ const RealTimeTranslation = ({
       return;
     }
 
+    // Create an AudioConfig from the remote audio stream
     const audioConfig = SpeechSDK.AudioConfig.fromStreamInput(audioStream);
+
+    // Initialize a new recognizer for real-time translation
     const newRecognizer = new SpeechSDK.TranslationRecognizer(
       speechTranslationConfig,
       audioConfig,
@@ -46,17 +40,13 @@ const RealTimeTranslation = ({
 
     newRecognizer.recognizing = (_, e) => {
       if (e.result.reason === SpeechSDK.ResultReason.TranslatingSpeech) {
-        debouncedSetTranslatedText(
-          e.result.translations.get(targetLanguage) || "",
-        );
+        setTranslatedText(e.result.translations.get(targetLanguage) || "");
       }
     };
 
     newRecognizer.recognized = (_, e) => {
       if (e.result.reason === SpeechSDK.ResultReason.TranslatedSpeech) {
-        debouncedSetTranslatedText(
-          e.result.translations.get(targetLanguage) || "",
-        );
+        setTranslatedText(e.result.translations.get(targetLanguage) || "");
       } else if (e.result.reason === SpeechSDK.ResultReason.NoMatch) {
         console.error("No speech could be recognized.");
       } else if (e.result.reason === SpeechSDK.ResultReason.Canceled) {
@@ -65,19 +55,16 @@ const RealTimeTranslation = ({
     };
 
     recognizerRef.current = newRecognizer;
-  }, [
-    audioStream,
-    speechTranslationConfig,
-    targetLanguage,
-    debouncedSetTranslatedText,
-  ]);
+  }, [audioStream, speechTranslationConfig, targetLanguage]);
 
   const stopListening = useCallback(() => {
     if (recognizerRef.current) {
       recognizerRef.current.stopContinuousRecognitionAsync(
         () => {
-          recognizerRef.current?.close();
-          recognizerRef.current = null;
+          if (recognizerRef.current) {
+            recognizerRef.current.close();
+            recognizerRef.current = null;
+          }
         },
         (err) => {
           console.error("Error stopping recognition: ", err);
@@ -99,11 +86,8 @@ const RealTimeTranslation = ({
   }, [audioStream, startListening, stopListening]);
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="mt-4 flex gap-2 rounded p-4">
-        <h2 className="text-xl font-bold">Translated Call :</h2>
-        <p>{translatedText}</p>
-      </div>
+    <div className="absolute bottom-0 left-0 w-full p-4 text-center text-white">
+      <p className="text-lg">{translatedText}</p>
     </div>
   );
 };
