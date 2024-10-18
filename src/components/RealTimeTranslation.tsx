@@ -56,7 +56,9 @@ const RealTimeTranslation = ({ audioStream }: RealTimeTranslationProps) => {
       } else if (event.result.reason === SpeechSDK.ResultReason.NoMatch) {
         console.warn("No speech could be recognized.");
       } else if (event.result.reason === SpeechSDK.ResultReason.Canceled) {
-        const cancellationDetails = event.result.cancellationDetails;
+        const cancellationDetails = SpeechSDK.CancellationDetails.fromResult(
+          event.result,
+        );
         console.error(
           "Speech recognition canceled: ",
           cancellationDetails.errorDetails,
