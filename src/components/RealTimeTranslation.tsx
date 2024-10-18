@@ -3,13 +3,22 @@ import * as SpeechSDK from "microsoft-cognitiveservices-speech-sdk";
 
 interface RealTimeTranslationProps {
   audioStream: MediaStream | undefined;
+  targetLanguage: string;
+  inputLanguage: string;
+  isTranslating: boolean;
 }
 
-const RealTimeTranslation = ({ audioStream }: RealTimeTranslationProps) => {
+const RealTimeTranslation = ({
+  audioStream,
+  targetLanguage,
+  inputLanguage,
+  isTranslating,
+}: RealTimeTranslationProps) => {
   const [translatedText, setTranslatedText] = useState("");
   const recognizerRef = useRef<SpeechSDK.TranslationRecognizer | null>(null);
 
-  const targetLanguage = "cs"; // Set your target translation language
+  console.log(inputLanguage);
+  console.log(targetLanguage);
 
   const speechTranslationConfig = useMemo(() => {
     const config = SpeechSDK.SpeechTranslationConfig.fromSubscription(
@@ -17,7 +26,7 @@ const RealTimeTranslation = ({ audioStream }: RealTimeTranslationProps) => {
       import.meta.env.VITE_APP_AZURE_SPEECH_REGION as string,
     );
     config.speechRecognitionLanguage = "en-US";
-    config.addTargetLanguage(targetLanguage);
+    config.addTargetLanguage(targetLanguage || "cs");
     return config;
   }, [targetLanguage]);
 
@@ -87,14 +96,16 @@ const RealTimeTranslation = ({ audioStream }: RealTimeTranslationProps) => {
   }, []);
 
   useEffect(() => {
-    if (audioStream) {
+    if (isTranslating && audioStream) {
       startListening();
+    } else {
+      stopListening();
     }
 
     return () => {
       stopListening();
     };
-  }, [audioStream, startListening, stopListening]);
+  }, [audioStream, isTranslating, startListening, stopListening]);
 
   return (
     <div className="absolute bottom-0 left-0 w-3/4 p-4 text-center text-white sm:w-full">
