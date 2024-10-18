@@ -1,23 +1,23 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import * as SpeechSDK from "microsoft-cognitiveservices-speech-sdk";
 
-const RealTimeTranslation = ({
-  audioStream,
-}: {
+interface RealTimeTranslationProps {
   audioStream: MediaStream | undefined;
-}) => {
+}
+
+const RealTimeTranslation = ({ audioStream }: RealTimeTranslationProps) => {
   const [translatedText, setTranslatedText] = useState("");
   const recognizerRef = useRef<SpeechSDK.TranslationRecognizer | null>(null);
 
-  const targetLanguage = "cs"; // Target translation language
+  const targetLanguage = "cs"; // Set your target translation language
 
   const speechTranslationConfig = useMemo(() => {
     const config = SpeechSDK.SpeechTranslationConfig.fromSubscription(
       import.meta.env.VITE_APP_AZURE_SPEECH_KEY as string,
       import.meta.env.VITE_APP_AZURE_SPEECH_REGION as string,
     );
-    config.speechRecognitionLanguage = "en-US"; // Source language
-    config.addTargetLanguage(targetLanguage); // Translation target
+    config.speechRecognitionLanguage = "en-US";
+    config.addTargetLanguage(targetLanguage);
     return config;
   }, [targetLanguage]);
 
@@ -27,44 +27,53 @@ const RealTimeTranslation = ({
       return;
     }
 
-    // Create an AudioConfig from the remote audio stream
     const audioConfig = SpeechSDK.AudioConfig.fromStreamInput(audioStream);
-
-    // Initialize a new recognizer for real-time translation
-    const newRecognizer = new SpeechSDK.TranslationRecognizer(
+    const translationRecognizer = new SpeechSDK.TranslationRecognizer(
       speechTranslationConfig,
       audioConfig,
     );
 
-    newRecognizer.startContinuousRecognitionAsync();
+    translationRecognizer.startContinuousRecognitionAsync(
+      () => {
+        console.log("Recognition started successfully.");
+      },
+      (err) => {
+        console.error("Failed to start recognition: ", err);
+      },
+    );
 
-    newRecognizer.recognizing = (_, e) => {
-      if (e.result.reason === SpeechSDK.ResultReason.TranslatingSpeech) {
-        setTranslatedText(e.result.translations.get(targetLanguage) || "");
+    translationRecognizer.recognizing = (_, event) => {
+      if (event.result.reason === SpeechSDK.ResultReason.TranslatingSpeech) {
+        const translation = event.result.translations.get(targetLanguage);
+        setTranslatedText(translation || "");
       }
     };
 
-    newRecognizer.recognized = (_, e) => {
-      if (e.result.reason === SpeechSDK.ResultReason.TranslatedSpeech) {
-        setTranslatedText(e.result.translations.get(targetLanguage) || "");
-      } else if (e.result.reason === SpeechSDK.ResultReason.NoMatch) {
-        console.error("No speech could be recognized.");
-      } else if (e.result.reason === SpeechSDK.ResultReason.Canceled) {
-        console.error("Speech recognition canceled: ", e.result.errorDetails);
+    translationRecognizer.recognized = (_, event) => {
+      if (event.result.reason === SpeechSDK.ResultReason.TranslatedSpeech) {
+        const translation = event.result.translations.get(targetLanguage);
+        setTranslatedText(translation || "");
+      } else if (event.result.reason === SpeechSDK.ResultReason.NoMatch) {
+        console.warn("No speech could be recognized.");
+      } else if (event.result.reason === SpeechSDK.ResultReason.Canceled) {
+        const cancellationDetails = event.result.cancellationDetails;
+        console.error(
+          "Speech recognition canceled: ",
+          cancellationDetails.errorDetails,
+        );
       }
     };
 
-    recognizerRef.current = newRecognizer;
+    recognizerRef.current = translationRecognizer;
   }, [audioStream, speechTranslationConfig, targetLanguage]);
 
   const stopListening = useCallback(() => {
     if (recognizerRef.current) {
       recognizerRef.current.stopContinuousRecognitionAsync(
         () => {
-          if (recognizerRef.current) {
-            recognizerRef.current.close();
-            recognizerRef.current = null;
-          }
+          console.log("Recognition stopped successfully.");
+          recognizerRef.current?.close();
+          recognizerRef.current = null;
         },
         (err) => {
           console.error("Error stopping recognition: ", err);
@@ -86,7 +95,7 @@ const RealTimeTranslation = ({
   }, [audioStream, startListening, stopListening]);
 
   return (
-    <div className="absolute bottom-0 left-0 w-full p-4 text-center text-white">
+    <div className="absolute bottom-0 left-0 w-3/4 p-4 text-center text-white sm:w-full">
       <p className="text-lg">{translatedText}</p>
     </div>
   );
