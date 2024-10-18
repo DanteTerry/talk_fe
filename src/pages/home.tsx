@@ -61,6 +61,9 @@ function Home({ socket }: { socket: Socket }) {
   const [stream, setStream] = useState<MediaStream | undefined>(undefined);
   const [callAccepted, setCallAccepted] = useState(false);
   const [callType, setCallType] = useState<"video" | "voice" | "">("");
+  const [remoteAudioStream, setRemoteAudioStream] = useState<
+    MediaStream | undefined
+  >(undefined);
 
   const onlineUsers = useSelector((state: RootState) => state.onlineUsers);
 
@@ -211,6 +214,12 @@ function Home({ socket }: { socket: Socket }) {
     peer.on("stream", (stream) => {
       if (userVideo.current) {
         userVideo.current.srcObject = stream; // Set received stream to userVideo element
+      }
+
+      const audioTracks = stream.getAudioTracks();
+      if (audioTracks.length > 0) {
+        const remoteAudioStream = new MediaStream([audioTracks[0]]); // Get the audio stream
+        setRemoteAudioStream(remoteAudioStream);
       }
     });
 
@@ -607,6 +616,7 @@ function Home({ socket }: { socket: Socket }) {
               remoteUserVideo={remoteUserVideo}
               remoteUserAudio={remoteUserAudio}
               audioCallTo={audioCallTo}
+              remoteAudioStream={remoteAudioStream}
             />
           )}
 
