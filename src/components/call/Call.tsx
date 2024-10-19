@@ -60,7 +60,6 @@ function Call({
             remoteUserAudio={remoteUserAudio}
             userVideo={userVideo}
             myVideo={myVideo}
-            remoteAudioStream={remoteAudioStream}
           />
         )}
 

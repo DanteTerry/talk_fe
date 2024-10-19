@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { continuousVisualizer } from "sound-visualizer";
 import { CallData } from "../../types/types";
-import RealTimeTranslation from "../RealTimeTranslation";
 
 interface VoiceCallContainerProps {
   audioCallTo: { name: string; picture: string };
@@ -12,7 +11,6 @@ interface VoiceCallContainerProps {
   remoteUserAudio: boolean;
   userVideo: React.RefObject<HTMLAudioElement>;
   myVideo: React.RefObject<HTMLAudioElement>;
-  remoteAudioStream: MediaStream | undefined;
 }
 
 function VoiceCallContainer({
@@ -23,7 +21,6 @@ function VoiceCallContainer({
   isMuted,
   remoteUserAudio,
   userVideo,
-  remoteAudioStream,
   myVideo,
 }: VoiceCallContainerProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -119,7 +116,6 @@ function VoiceCallContainer({
           <p className="text-2xl font-bold capitalize leading-tight">
             {call.name || audioCallTo.name}
           </p>
-          <RealTimeTranslation audioStream={remoteAudioStream} />
           {!callAccepted && (
             <p className="text-lg leading-tight text-white">Ringing...</p>
           )}
