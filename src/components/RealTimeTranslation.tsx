@@ -6,37 +6,28 @@ interface RealTimeTranslationProps {
   targetLanguage: string;
   inputLanguage: string;
   isTranslating: boolean;
+  voice: string;
+  isLoudTranslating: boolean;
 }
-
-const languageToVoiceMap: Record<string, string> = {
-  cs: "cs-CZ-AntoninNeural", // Czech
-  en: "en-US-JennyNeural", // English (US)
-  fr: "fr-FR-DeniseNeural", // French
-  de: "de-DE-KatjaNeural", // German
-  hi: "hi-IN-SwaraNeural", // Hindi
-  ja: "ja-JP-NanamiNeural", // Japanese
-  ko: "ko-KR-SunHiNeural", // Korean
-  ph: "fil-PH-AngeloNeural", // Filipino
-  ru: "ru-RU-DariyaNeural", // Russian
-  es: "es-ES-ElviraNeural", // Spanish (Spain)
-  "zh-Hans": "zh-CN-XiaoxiaoNeural", // Chinese (Simplified)
-};
 
 const RealTimeTranslation = ({
   audioStream,
   targetLanguage,
   inputLanguage,
+  isLoudTranslating,
+  voice,
   isTranslating,
 }: RealTimeTranslationProps) => {
   const [translatedText, setTranslatedText] = useState("");
   const recognizerRef = useRef<SpeechSDK.TranslationRecognizer | null>(null);
+  const synthesizerRef = useRef<SpeechSDK.SpeechSynthesizer | null>(null);
 
   const speechTranslationConfig = useMemo(() => {
     const config = SpeechSDK.SpeechTranslationConfig.fromSubscription(
       import.meta.env.VITE_APP_AZURE_SPEECH_KEY as string,
       import.meta.env.VITE_APP_AZURE_SPEECH_REGION as string,
     );
-    config.speechRecognitionLanguage = "en-US"; // Fixed input language for now
+    config.speechRecognitionLanguage = "en-US";
     config.addTargetLanguage(targetLanguage || "cs");
     return config;
   }, [targetLanguage]);
@@ -65,29 +56,33 @@ const RealTimeTranslation = ({
     translationRecognizer.recognizing = (_, event) => {
       if (event.result.reason === SpeechSDK.ResultReason.TranslatingSpeech) {
         const translation = event.result.translations.get(targetLanguage);
-        setTranslatedText(translation || "");
+        setTranslatedText(translation || ""); // Update translated text
+        console.log("Recognizing:", translation); // Debug log
       }
     };
 
     translationRecognizer.recognized = (_, event) => {
       if (event.result.reason === SpeechSDK.ResultReason.TranslatedSpeech) {
         const translation = event.result.translations.get(targetLanguage);
-        setTranslatedText(translation || "");
+        setTranslatedText(translation || ""); // Update translated text
+        console.log("Recognized:", translation); // Debug log
 
-        // Add SSML-based speech synthesis for translated text
-        if (translation) {
-          const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(
-            import.meta.env.VITE_APP_AZURE_SPEECH_KEY as string,
-            import.meta.env.VITE_APP_AZURE_SPEECH_REGION as string,
-          );
-          speechConfig.speechSynthesisLanguage = targetLanguage; // Set synthesis language to target language
+        // Only execute speech synthesis if isLoudTranslating is true
+        if (isLoudTranslating && translation) {
+          // Check if the synthesizer is already created, reuse if it exists
+          if (!synthesizerRef.current) {
+            const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(
+              import.meta.env.VITE_APP_AZURE_SPEECH_KEY as string,
+              import.meta.env.VITE_APP_AZURE_SPEECH_REGION as string,
+            );
+            speechConfig.speechSynthesisLanguage = targetLanguage; // Set synthesis language to target language
+            speechConfig.speechSynthesisVoiceName =
+              voice || "en-US-JennyNeural"; // Ensure the selected voice is used
 
-          // Select voice based on target language
-          const voice =
-            languageToVoiceMap[targetLanguage] || "en-US-JennyNeural";
-          speechConfig.speechSynthesisVoiceName = voice;
-
-          const synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
+            synthesizerRef.current = new SpeechSDK.SpeechSynthesizer(
+              speechConfig,
+            );
+          }
 
           // Construct SSML with selected voice and default prosody
           const ssml = `
@@ -101,7 +96,8 @@ const RealTimeTranslation = ({
               </voice>
             </speak>`;
 
-          synthesizer.speakSsmlAsync(
+          // Speak the SSML
+          synthesizerRef.current.speakSsmlAsync(
             ssml,
             (result) => {
               if (
@@ -112,11 +108,9 @@ const RealTimeTranslation = ({
               } else {
                 console.error("Synthesis failed: ", result.errorDetails);
               }
-              synthesizer.close();
             },
             (err) => {
               console.error("Speech synthesis error: ", err);
-              synthesizer.close();
             },
           );
         }
@@ -134,7 +128,13 @@ const RealTimeTranslation = ({
     };
 
     recognizerRef.current = translationRecognizer;
-  }, [audioStream, speechTranslationConfig, targetLanguage]);
+  }, [
+    audioStream,
+    speechTranslationConfig,
+    targetLanguage,
+    voice,
+    isLoudTranslating,
+  ]);
 
   const stopListening = useCallback(() => {
     if (recognizerRef.current) {
@@ -150,6 +150,12 @@ const RealTimeTranslation = ({
           recognizerRef.current = null;
         },
       );
+
+      // Close the synthesizer when recognition stops
+      if (synthesizerRef.current) {
+        synthesizerRef.current.close();
+        synthesizerRef.current = null;
+      }
     }
   }, []);
 

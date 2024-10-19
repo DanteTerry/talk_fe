@@ -11,6 +11,7 @@ interface VoiceCallContainerProps {
   remoteUserAudio: boolean;
   userVideo: React.RefObject<HTMLAudioElement>;
   myVideo: React.RefObject<HTMLAudioElement>;
+  isLoudTranslating: boolean;
 }
 
 function VoiceCallContainer({
@@ -20,6 +21,7 @@ function VoiceCallContainer({
   stream,
   isMuted,
   remoteUserAudio,
+  isLoudTranslating,
   userVideo,
   myVideo,
 }: VoiceCallContainerProps) {
@@ -129,7 +131,7 @@ function VoiceCallContainer({
           <audio
             ref={userVideo}
             autoPlay
-            muted={!remoteUserAudio}
+            muted={!remoteUserAudio || isLoudTranslating}
             className="hidden"
           />
         </div>

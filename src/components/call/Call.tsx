@@ -43,6 +43,7 @@ function Call({
 }) {
   const { callEnded } = call;
   const [isMuted, setIsMuted] = useState(false);
+  const [isLoudTranslating, setIsLoudTranslating] = useState(false);
 
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
@@ -60,6 +61,7 @@ function Call({
             remoteUserAudio={remoteUserAudio}
             userVideo={userVideo}
             myVideo={myVideo}
+            isLoudTranslating={isLoudTranslating}
           />
         )}
 
@@ -73,6 +75,8 @@ function Call({
             toggleAudio={toggleAudio}
             setIsMuted={setIsMuted}
             remoteAudioStream={remoteAudioStream}
+            isLoudTranslating={isLoudTranslating}
+            setIsLoudTranslating={setIsLoudTranslating}
           />
         )}
 
@@ -87,6 +91,7 @@ function Call({
                   className="absolute inset-0 h-full w-full rounded-lg object-cover"
                   playsInline
                   autoPlay
+                  muted={isLoudTranslating}
                 />
               )}
 
