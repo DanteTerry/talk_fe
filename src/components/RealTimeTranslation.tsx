@@ -8,6 +8,20 @@ interface RealTimeTranslationProps {
   isTranslating: boolean;
 }
 
+const languageToVoiceMap: Record<string, string> = {
+  cs: "cs-CZ-AntoninNeural", // Czech
+  en: "en-US-JennyNeural", // English (US)
+  fr: "fr-FR-DeniseNeural", // French
+  de: "de-DE-KatjaNeural", // German
+  hi: "hi-IN-SwaraNeural", // Hindi
+  ja: "ja-JP-NanamiNeural", // Japanese
+  ko: "ko-KR-SunHiNeural", // Korean
+  ph: "fil-PH-AngeloNeural", // Filipino
+  ru: "ru-RU-DariyaNeural", // Russian
+  es: "es-ES-ElviraNeural", // Spanish (Spain)
+  "zh-Hans": "zh-CN-XiaoxiaoNeural", // Chinese (Simplified)
+};
+
 const RealTimeTranslation = ({
   audioStream,
   targetLanguage,
@@ -17,15 +31,12 @@ const RealTimeTranslation = ({
   const [translatedText, setTranslatedText] = useState("");
   const recognizerRef = useRef<SpeechSDK.TranslationRecognizer | null>(null);
 
-  console.log(inputLanguage);
-  console.log(targetLanguage);
-
   const speechTranslationConfig = useMemo(() => {
     const config = SpeechSDK.SpeechTranslationConfig.fromSubscription(
       import.meta.env.VITE_APP_AZURE_SPEECH_KEY as string,
       import.meta.env.VITE_APP_AZURE_SPEECH_REGION as string,
     );
-    config.speechRecognitionLanguage = "en-US";
+    config.speechRecognitionLanguage = "en-US"; // Fixed input language for now
     config.addTargetLanguage(targetLanguage || "cs");
     return config;
   }, [targetLanguage]);
@@ -62,6 +73,53 @@ const RealTimeTranslation = ({
       if (event.result.reason === SpeechSDK.ResultReason.TranslatedSpeech) {
         const translation = event.result.translations.get(targetLanguage);
         setTranslatedText(translation || "");
+
+        // Add SSML-based speech synthesis for translated text
+        if (translation) {
+          const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(
+            import.meta.env.VITE_APP_AZURE_SPEECH_KEY as string,
+            import.meta.env.VITE_APP_AZURE_SPEECH_REGION as string,
+          );
+          speechConfig.speechSynthesisLanguage = targetLanguage; // Set synthesis language to target language
+
+          // Select voice based on target language
+          const voice =
+            languageToVoiceMap[targetLanguage] || "en-US-JennyNeural";
+          speechConfig.speechSynthesisVoiceName = voice;
+
+          const synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
+
+          // Construct SSML with selected voice and default prosody
+          const ssml = `
+            <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="${targetLanguage}">
+              <voice name="${voice}">
+                <mstts:express-as style="cheerful">
+                  <prosody rate="0%" pitch="0%">
+                    ${translation}
+                  </prosody>
+                </mstts:express-as>
+              </voice>
+            </speak>`;
+
+          synthesizer.speakSsmlAsync(
+            ssml,
+            (result) => {
+              if (
+                result.reason ===
+                SpeechSDK.ResultReason.SynthesizingAudioCompleted
+              ) {
+                console.log("Synthesis completed.");
+              } else {
+                console.error("Synthesis failed: ", result.errorDetails);
+              }
+              synthesizer.close();
+            },
+            (err) => {
+              console.error("Speech synthesis error: ", err);
+              synthesizer.close();
+            },
+          );
+        }
       } else if (event.result.reason === SpeechSDK.ResultReason.NoMatch) {
         console.warn("No speech could be recognized.");
       } else if (event.result.reason === SpeechSDK.ResultReason.Canceled) {
