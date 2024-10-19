@@ -61,7 +61,7 @@ export const options = [
   },
   {
     name: "Philippine",
-    code: "ph",
+    code: "fil",
     flag: "https://hatscripts.github.io/circle-flags/flags/ph.svg",
   },
   {

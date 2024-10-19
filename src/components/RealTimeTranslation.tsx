@@ -1,6 +1,22 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import * as SpeechSDK from "microsoft-cognitiveservices-speech-sdk";
 
+// Map simple language codes to full locale codes
+const languageLocaleMap: { [key: string]: string } = {
+  en: "en-US",
+  es: "es-ES",
+  fr: "fr-FR",
+  de: "de-DE",
+  it: "it-IT",
+  cs: "cs-CZ",
+  hi: "hi-IN",
+  ja: "ja-JP",
+  ko: "ko-KR",
+  ru: "ru-RU",
+  zh: "zh-CN",
+  fil: "fil-PH",
+};
+
 interface RealTimeTranslationProps {
   audioStream: MediaStream | undefined;
   targetLanguage: string;
@@ -22,15 +38,20 @@ const RealTimeTranslation = ({
   const recognizerRef = useRef<SpeechSDK.TranslationRecognizer | null>(null);
   const synthesizerRef = useRef<SpeechSDK.SpeechSynthesizer | null>(null);
 
+  // Map inputLanguage to its locale format or default to "en-US"
+  const speechRecognitionLanguage = useMemo(() => {
+    return languageLocaleMap[inputLanguage] || "en-US";
+  }, [inputLanguage]);
+
   const speechTranslationConfig = useMemo(() => {
     const config = SpeechSDK.SpeechTranslationConfig.fromSubscription(
       import.meta.env.VITE_APP_AZURE_SPEECH_KEY as string,
       import.meta.env.VITE_APP_AZURE_SPEECH_REGION as string,
     );
-    config.speechRecognitionLanguage = "en-US";
+    config.speechRecognitionLanguage = speechRecognitionLanguage;
     config.addTargetLanguage(targetLanguage || "cs");
     return config;
-  }, [targetLanguage]);
+  }, [targetLanguage, speechRecognitionLanguage]);
 
   const startListening = useCallback(() => {
     if (!audioStream) {
