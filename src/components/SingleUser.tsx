@@ -1,5 +1,5 @@
 import { UserPlus } from "lucide-react";
-import { sendFriendRequest, trimString } from "../lib/utils/utils";
+import { sendFriendRequest } from "../lib/utils/utils";
 import { UserProfile } from "../types/types";
 import { useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
@@ -58,9 +58,6 @@ export function SingleUser({
         <div className="flex flex-col justify-between">
           <span className="font-semibold text-white opacity-95 dark:text-black">
             {user?.name}
-          </span>
-          <span className="text-[13px] font-semibold text-white opacity-95 dark:text-black">
-            {trimString(user?.status, 25)}
           </span>
         </div>
         {!isFriend ? (

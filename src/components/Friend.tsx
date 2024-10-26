@@ -1,6 +1,5 @@
 import { useDispatch } from "react-redux";
 import { User } from "../types/types";
-import { trimString } from "../lib/utils/utils";
 import { setActiveFriend } from "../features/friendSlice";
 import { setActiveConversation } from "../features/chatSlice";
 import { AppDispatch } from "../app/store";
@@ -29,9 +28,6 @@ function Friend({ user }: { user: User }) {
         <div className="flex flex-col justify-between">
           <span className="font-semibold text-white opacity-95 dark:text-black">
             {user?.name}
-          </span>
-          <span className="text-[13px] font-semibold text-white opacity-95 dark:text-black">
-            {trimString(user?.status as string, 25)}
           </span>
         </div>
         <span className="font-semibold capitalize text-white dark:text-green-500">
