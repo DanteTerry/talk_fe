@@ -36,7 +36,7 @@ function Profile() {
 
           <div className="mt-2 flex gap-3">
             <button
-              className="flex items-center gap-2 rounded-md bg-green-500 px-2 py-1 text-green-500 dark:text-white"
+              className="flex items-center gap-2 rounded-md bg-green-500 px-2 py-1 text-green-500 text-white dark:text-white"
               onClick={() => {
                 dispatch(removeMessages([]));
                 dispatch(removeConversation([]));

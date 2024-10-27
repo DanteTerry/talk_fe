@@ -102,7 +102,7 @@ export function Notification({ socket }: { socket: Socket }) {
             {/* Display Pending Requests */}
             {pendingRequests?.map((request: FriendRequest) => (
               <div className="w-full" key={request._id}>
-                <div className="flex w-full items-center justify-center gap-3 rounded-md bg-white px-2">
+                <div className="flex w-full items-center justify-center gap-3 rounded-md bg-green-500 bg-white px-2">
                   <div className="flex h-14 w-14 items-center rounded-full">
                     <img
                       src={request.sender.picture}
@@ -142,7 +142,7 @@ export function Notification({ socket }: { socket: Socket }) {
             {/* Display Accepted and Rejected Requests */}
             {completedRequests.map((request: FriendRequest) => (
               <div className="w-full" key={request._id}>
-                <div className="flex w-full items-center justify-center gap-3 rounded-md bg-white px-2 py-1">
+                <div className="flex w-full items-center justify-center gap-3 rounded-md bg-green-500 px-2 py-1 dark:bg-white">
                   <div className="flex h-14 w-14 items-center overflow-hidden rounded-full">
                     <img
                       src={
@@ -156,13 +156,13 @@ export function Notification({ socket }: { socket: Socket }) {
                   </div>
                   <div className="flex w-full flex-col justify-between">
                     <div className="flex flex-col">
-                      <span className="w-max font-semibold text-green-500">
+                      <span className="w-max font-semibold text-white dark:text-green-500">
                         {user._id === request.sender._id
                           ? request.receiver.name
                           : request.sender.name}
                       </span>
                       <span
-                        className={`w-max text-[13px] font-semibold leading-none ${
+                        className={`w-max text-[13px] font-semibold leading-none text-white dark:text-green-500 ${
                           request.status === "accepted"
                             ? "text-green-500"
                             : "text-red-700"

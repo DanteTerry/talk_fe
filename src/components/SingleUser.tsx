@@ -62,11 +62,13 @@ export function SingleUser({
         </div>
         {!isFriend ? (
           <UserPlus
-            className="cursor-pointer self-start"
+            className="cursor-pointer self-start text-white dark:text-black"
             onClick={handleSendFriendRequest}
           />
         ) : (
-          <span className="font-semibold capitalize">friends</span>
+          <span className="font-semibold capitalize text-white dark:text-black">
+            friends
+          </span>
         )}
       </div>
     </div>

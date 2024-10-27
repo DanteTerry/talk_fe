@@ -55,7 +55,7 @@ export function SingleConversation({
             {trimString(conversation?.latestMessage?.message, 32)}
           </span>
         </div>
-        <span className="absolute right-0 h-full justify-start pl-2 text-xs text-green-500 opacity-95 dark:bg-white dark:text-green-500">
+        <span className="absolute right-0 h-full justify-start pl-2 text-xs text-white opacity-95 dark:bg-white dark:text-green-500">
           {dateHandler(conversation?.latestMessage?.createdAt)}
         </span>
       </div>
