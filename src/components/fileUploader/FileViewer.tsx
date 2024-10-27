@@ -21,7 +21,6 @@ function FileViewer({ socket }: { socket: Socket }) {
     (state: RootState) => state.chat,
   );
 
-  console.log(files);
   const dispatch = useDispatch<AppDispatch>();
 
   const [caption, setCaption] = useState("");
@@ -79,7 +78,7 @@ function FileViewer({ socket }: { socket: Socket }) {
           ) : (
             <img
               className="w-3/4 rounded-xl object-cover"
-              src={`../../../public/uploader/${files[selectedFile]?.type}.svg`}
+              src={`/uploader/${files[selectedFile]?.type}.svg`}
               alt={files[selectedFile]?.file?.name}
             />
           )}
@@ -120,8 +119,8 @@ function FileViewer({ socket }: { socket: Socket }) {
                   />
                 ) : (
                   <img
-                    className="h-full w-full rounded-xl object-cover"
-                    src={`../../../public/uploader/${file?.type}.svg`}
+                    className="h-full w-full scale-75 rounded-xl object-cover"
+                    src={`/uploader/${file?.type}.svg`}
                     alt={file?.file?.name}
                   />
                 )}
