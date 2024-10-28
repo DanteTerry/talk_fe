@@ -260,7 +260,11 @@ export const chatSlice = createSlice({
       .addCase(getConversationMessages.fulfilled, (state, action) => {
         state.status = "success";
         if (action.payload.length > 0) {
-          state.messages = [...action.payload, ...state.messages];
+          const newMessages = action.payload.filter(
+            (newMessage) =>
+              !state.messages.some((message) => message._id === newMessage._id),
+          );
+          state.messages = [...newMessages, ...state.messages];
         } else {
           state.hasNext = false;
         }
