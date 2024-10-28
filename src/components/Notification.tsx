@@ -162,9 +162,9 @@ export function Notification({ socket }: { socket: Socket }) {
                           : request.sender.name}
                       </span>
                       <span
-                        className={`w-max text-[13px] font-semibold leading-none text-white dark:text-green-500 ${
+                        className={`w-max text-[13px] font-semibold leading-none ${
                           request.status === "accepted"
-                            ? "text-green-500"
+                            ? "text-white dark:text-green-500"
                             : "text-red-700"
                         }`}
                       >

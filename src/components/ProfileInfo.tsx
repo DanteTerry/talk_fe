@@ -74,8 +74,9 @@ function ProfileInfo() {
           <h1 className="text-2xl font-bold text-green-500 dark:text-white">
             {activeFriend?.name}
           </h1>
+
           <p className="text-lg text-green-500 dark:text-white">
-            {activeFriend?.status}
+            {activeFriend?.email}
           </p>
         </div>
 
