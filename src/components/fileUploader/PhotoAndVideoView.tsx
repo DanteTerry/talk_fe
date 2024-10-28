@@ -18,7 +18,7 @@ function PhotoAndVideoView({
             alt={"image"}
             className="h-[150px] cursor-pointer rounded-lg object-cover sm:h-[180px] md:h-[200px] lg:h-[250px]"
           />
-          <p className="mt-1 max-w-[210px] px-2 text-sm leading-tight tracking-tight md:text-base">
+          <p className="mt-1 max-w-full px-2 text-sm leading-tight tracking-tight md:text-base">
             {message?.message}
           </p>
         </>
