@@ -28,9 +28,8 @@ function Ringing({
       setTimer((prev) => prev + 1);
     }, 1000);
   };
-
   useEffect(() => {
-    if (timer <= 30) {
+    if (timer <= 120) {
       handleTimer();
     } else {
       setCall({ ...call, receivingCall: false });

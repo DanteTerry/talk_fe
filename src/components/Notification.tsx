@@ -102,7 +102,7 @@ export function Notification({ socket }: { socket: Socket }) {
             {/* Display Pending Requests */}
             {pendingRequests?.map((request: FriendRequest) => (
               <div className="w-full" key={request._id}>
-                <div className="flex w-full items-center justify-center gap-3 rounded-md bg-green-500 bg-white px-2">
+                <div className="flex w-full items-center justify-center gap-3 rounded-md bg-green-500 px-2 dark:bg-white">
                   <div className="flex h-14 w-14 items-center rounded-full">
                     <img
                       src={request.sender.picture}
