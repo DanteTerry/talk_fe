@@ -3,7 +3,7 @@ import { Video, X } from "lucide-react";
 import { MdCallEnd } from "react-icons/md";
 
 import { useEffect, useState } from "react";
-import AudioRing from "../../../public/ringing.mp3";
+// import AudioRing from "../../../public/ringing.mp3";
 import { FaPhoneAlt } from "react-icons/fa";
 
 function Ringing({
@@ -80,7 +80,7 @@ function Ringing({
           </div>
         </div>
       </div>
-      <audio src={AudioRing} autoPlay loop></audio>
+      {/* <audio src={AudioRing}  autoPlay loop></audio> */}
     </div>
   );
 }
